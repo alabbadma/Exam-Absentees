@@ -634,7 +634,7 @@ button, .action-card, .features-grid article, .journey-steps article, .info-box,
   position: absolute;
   top: 18px;
   right: 0;
-  width: 190px;
+  width: 215px;
   padding: 11px 14px;
   text-align: center;
   border-radius: 22px;
@@ -644,8 +644,8 @@ button, .action-card, .features-grid article, .journey-steps article, .info-box,
 }
 .date-widget span, .date-widget strong, .date-widget small { display: block; color: #fff; }
 .date-widget span { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
-.date-widget strong { font-size: 13px; line-height: 1.55; }
-.date-widget small { font-size: 11px; opacity: .94; line-height: 1.55; }
+.date-widget strong { font-size: 12px; line-height: 1.55; font-weight: 800; }
+.date-widget small { font-size: 12px; opacity: .96; line-height: 1.55; font-weight: 800; }
 
 .manager-card {
   width: 220px;
