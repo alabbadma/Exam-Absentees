@@ -10,8 +10,8 @@
   --shadow-soft: 0 14px 35px rgba(15, 76, 86, .10);
   --radius-xl: 30px;
   --radius-lg: 22px;
-  --font-title: "Kufam", "Cairo", system-ui, sans-serif;
-  --font-body: "Kufam", "Cairo", system-ui, sans-serif;
+  --font-title: "Cairo", system-ui, sans-serif;
+  --font-body: "Cairo", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -41,24 +41,34 @@ body::before { top: -120px; right: -80px; transform: rotate(28deg); }
 body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 
 .app-shell {
-  width: min(1380px, calc(100% - 34px));
-  margin: 0 auto;
-  min-height: 100vh;
-  padding: 26px 0 120px;
+  width: min(1460px, calc(100% - 28px));
+  margin: 18px auto 0;
+  min-height: calc(100vh - 18px);
+  padding: 24px 24px 126px;
   position: relative;
+  border: 1px solid rgba(15, 118, 110, .20);
+  border-radius: 38px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.92), rgba(244,255,251,.84)),
+    radial-gradient(circle at 15% 18%, rgba(29,155,215,.07), transparent 34%),
+    radial-gradient(circle at 86% 70%, rgba(14,173,105,.08), transparent 34%);
+  box-shadow:
+    0 34px 90px rgba(15,76,86,.13),
+    inset 0 1px 0 rgba(255,255,255,.92);
+  overflow: hidden;
 }
 
 .site-header {
   position: relative;
   text-align: center;
-  padding: 18px 230px 28px;
-  min-height: 205px;
+  padding: 18px 230px 24px;
+  min-height: 190px;
 }
 
 .moe-logo-wrap {
-  width: 156px;
-  height: 120px;
-  margin: 0 auto 18px;
+  width: 178px;
+  height: 118px;
+  margin: 0 auto 14px;
   display: grid;
   place-items: center;
 }
@@ -72,16 +82,16 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 .site-header h1 {
   font-family: var(--font-title);
   margin: 0;
-  font-size: clamp(29px, 3.4vw, 50px);
+  font-size: clamp(25px, 2.9vw, 42px);
   line-height: 1.35;
   color: #0f2f35;
   letter-spacing: -.6px;
 }
 .subtitle {
   max-width: 900px;
-  margin: 14px auto 0;
+  margin: 10px auto 0;
   color: #55706d;
-  font-size: 18px;
+  font-size: 15.5px;
   line-height: 1.9;
 }
 
@@ -89,8 +99,8 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   position: absolute;
   top: 20px;
   left: 0;
-  width: 260px;
-  padding: 14px;
+  width: 245px;
+  padding: 12px;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -99,11 +109,11 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 .manager-card h3 {
   margin: 0 0 4px;
   color: var(--teal-dark);
-  font-size: 17px;
+  font-size: 15.5px;
 }
 .manager-card p {
   margin: 0;
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.6;
   color: #55706d;
 }
@@ -155,13 +165,13 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 
 .home-grid {
   display: grid;
-  grid-template-columns: 1.55fr .95fr;
+  grid-template-columns: 1.58fr .92fr;
   gap: 24px;
   align-items: stretch;
 }
-.hero-screen { min-height: 610px; overflow: hidden; padding: 0; }
+.hero-screen { min-height: 565px; overflow: hidden; padding: 0; }
 .browser-bar {
-  height: 48px;
+  height: 42px;
   background: linear-gradient(90deg, #0f766e, #1d9bd7);
   color: #fff;
   display: flex;
@@ -185,8 +195,8 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   display: grid;
   grid-template-columns: 1.05fr .75fr;
   gap: 24px;
-  padding: 48px;
-  min-height: 560px;
+  padding: 36px;
+  min-height: 520px;
 }
 .badge {
   display: inline-flex;
@@ -198,14 +208,14 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   font-size: 13px;
 }
 .hero-copy h2 {
-  font-size: clamp(31px, 3.3vw, 48px);
+  font-size: clamp(25px, 2.8vw, 38px);
   line-height: 1.35;
   color: #10393a;
   margin: 22px 0 12px;
 }
 .hero-copy p {
   color: #587471;
-  font-size: 17px;
+  font-size: 15.5px;
   line-height: 1.9;
   margin: 0 0 26px;
 }
@@ -219,13 +229,13 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   border: 0;
   cursor: pointer;
   border-radius: 24px;
-  padding: 18px;
+  padding: 15px;
   background: linear-gradient(145deg, #ffffff, #f1fbf8);
   box-shadow: var(--shadow-soft);
   color: #164348;
   text-align: right;
   font-family: var(--font-title);
-  min-height: 116px;
+  min-height: 102px;
   transition: .2s ease;
 }
 .action-card:hover { transform: translateY(-5px); box-shadow: 0 22px 42px rgba(15,76,86,.16); }
@@ -233,11 +243,11 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 .action-card .icon {
   display: inline-grid;
   place-items: center;
-  width: 42px; height: 42px;
+  width: 34px; height: 34px;
   border-radius: 15px;
   background: rgba(255,255,255,.22);
   margin-bottom: 12px;
-  font-size: 24px;
+  font-size: 21px;
 }
 .action-card:not(.primary) .icon { background: #e3f8f2; color: var(--teal); }
 .action-card b, .action-card small { display: block; }
@@ -289,12 +299,12 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   display: grid;
   gap: 24px;
 }
-.feature-card, .journey-card { padding: 28px; }
+.feature-card, .journey-card { padding: 24px; }
 .feature-card h2, .journey-card h2, .panel h2, .table-card h2, .details-card h2 {
   font-family: var(--font-title);
   margin: 0 0 20px;
   color: var(--teal-dark);
-  font-size: 24px;
+  font-size: 21px;
 }
 .features-grid {
   display: grid;
@@ -303,13 +313,13 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 }
 .features-grid article {
   min-height: 145px;
-  padding: 18px;
+  padding: 15px;
   border-radius: 22px;
   background: linear-gradient(145deg, #fff, #effbf7);
   box-shadow: var(--shadow-soft);
 }
 .features-grid span {
-  font-size: 28px; display: block; margin-bottom: 10px;
+  font-size: 24px; display: block; margin-bottom: 10px;
 }
 .features-grid b { display: block; color: #164348; }
 .features-grid small { display: block; color: #627b78; line-height: 1.7; margin-top: 6px; }
@@ -325,10 +335,10 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
   padding: 14px 10px;
   border-radius: 22px;
   background: #f3fbfa;
-  min-height: 142px;
+  min-height: 125px;
 }
 .journey-steps i {
-  width: 38px; height: 38px;
+  width: 34px; height: 34px;
   margin: 0 auto 10px;
   display: grid; place-items: center;
   border-radius: 14px;
@@ -339,7 +349,7 @@ body::after { bottom: -150px; left: -120px; transform: rotate(-22deg); }
 .journey-steps small { color: #5b7472; line-height: 1.6; margin-top: 5px; }
 .arrow {
   color: var(--teal);
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   padding-top: 42px;
 }
@@ -464,7 +474,7 @@ textarea { min-height: 92px; resize: vertical; }
   gap: 14px;
 }
 .kpi-grid article {
-  padding: 18px;
+  padding: 15px;
   text-align: center;
 }
 .kpi-grid b { display: block; font-size: 30px; color: var(--teal); }
@@ -545,4 +555,34 @@ th { background: #0f766e; color: #fff; font-weight: 800; position: sticky; top: 
   .hero-content { padding: 24px; }
   .action-grid, .features-grid, .journey-steps { grid-template-columns: 1fr; }
   .arrow { transform: rotate(-90deg); padding-top: 0; text-align: center; }
+}
+
+
+/* تحديثات أبو عبدالعزيز: Cairo فقط + إطار خارجي + تخفيف الأحجام */
+body, button, input, select, textarea { font-family: "Cairo", system-ui, sans-serif !important; }
+.glass-card, .mini-3d, .panel, .dash-sidebar, .kpi-grid article { transform-style: preserve-3d; }
+.glass-card::before, .panel::before, .dash-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.55), transparent 42%);
+}
+.glass-card, .panel, .dash-sidebar { position: relative; }
+button, .action-card, .features-grid article, .journey-steps article, .info-box, .kpi-grid article {
+  box-shadow: 0 14px 30px rgba(15,76,86,.10), inset 0 1px 0 rgba(255,255,255,.8);
+}
+.features-grid b, .journey-steps b, label, th { font-size: .94rem; }
+.features-grid small, .journey-steps small, .action-card small, .manager-card p { font-size: .78rem; }
+.action-card b { font-size: .98rem; }
+.form-grid h3 { font-size: 1.05rem; }
+.panel h2, .table-card h2, .details-card h2 { font-size: 1.25rem; }
+.kpi-grid b { font-size: 24px; }
+.kpi-grid span, td, th { font-size: .88rem; }
+.site-footer p { font-size: .94rem; }
+
+@media (max-width: 700px) {
+  .app-shell { border-radius: 24px; padding-inline: 12px; }
+  .moe-logo-wrap { width: 146px; height: 96px; }
 }
