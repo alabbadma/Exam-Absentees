@@ -1018,3 +1018,34 @@ input:focus, select:focus, textarea:focus {
   .subject-date-row { grid-template-columns: 1fr; }
   .absence-count-label { max-width: none; width: 100%; }
 }
+
+/* تحديث عاجل: إظهار حقول المادة والتاريخ داخل بطاقة مواد الغياب */
+.subject-date-section {
+  padding: 18px !important;
+}
+.subject-date-rows {
+  display: grid !important;
+  gap: 12px !important;
+  margin-top: 14px !important;
+}
+.subject-date-row {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, .75fr) !important;
+  gap: 14px !important;
+  align-items: end !important;
+  padding: 13px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(145deg, #ffffff, #f7fbff) !important;
+  border: 1px solid rgba(61,126,185,.18) !important;
+  box-shadow: 0 14px 28px rgba(21,68,90,.08), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+.subject-date-row label {
+  font-size: 13.8px !important;
+  font-weight: 800 !important;
+}
+.subject-date-row input {
+  margin-top: 7px !important;
+}
+@media (max-width: 900px) {
+  .subject-date-row { grid-template-columns: 1fr !important; }
+}
