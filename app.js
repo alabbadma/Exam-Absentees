@@ -13,6 +13,8 @@ const CONFIG = {
 
 let SESSION = null;
 let CURRENT_REQUESTS = [];
+let CURRENT_ANALYTICS = null;
+let ANALYTICS_LOADING = false;
 
 function formatDateParts() {
   const now = new Date();
@@ -375,7 +377,7 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       if (!request.schoolEmail) throw new Error("بريد المدرسة الرسمي مطلوب لإشعار المدرسة بالقرار بعد اعتماده.");
 
       const attachments = await collectFiles(form.elements.attachments, progress);
-      progress("جاري حفظ المعاملة في النظام...");
+      progress("جاري رفع المرفقات وحفظ المعاملة...");
       const result = await api("submitRequest", { request, attachments });
       showToast(`تم تقديم الطلب بنجاح. رقم الطلب: ${result.requestId}`);
       form.reset();
@@ -433,6 +435,7 @@ $("#loginForm").addEventListener("submit", async (e) => {
 
 $("#logoutBtn").addEventListener("click", goHome);
 $("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري التحديث...", loadDashboard));
+$("#refreshAnalyticsBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تحديث الإحصاءات...", () => loadAnalytics(true)));
 
 async function loadDashboard() {
   try {
@@ -440,6 +443,7 @@ async function loadDashboard() {
     if (tbody) tbody.innerHTML = `<tr><td colspan="7">جاري تحميل البيانات...</td></tr>`;
     const result = await api("listRequests", { session: SESSION });
     CURRENT_REQUESTS = result.requests || [];
+    CURRENT_ANALYTICS = null;
     renderKpis(result.kpis || {});
     applyDashboardTab();
   } catch (err) {
@@ -464,8 +468,14 @@ function setDashboardTab(tab) {
 
 function applyDashboardTab() {
   const title = $("#dashboardTableTitle");
+  const tableCard = document.querySelector(".table-card");
+  const analyticsPanel = $("#analyticsPanel");
   let rows = CURRENT_REQUESTS.slice();
   const tab = ACTIVE_DASH_TAB;
+
+  if (analyticsPanel) analyticsPanel.classList.add("hidden");
+  if (tableCard) tableCard.classList.remove("hidden");
+
   if (tab === "overview") {
     if (title) title.textContent = "أحدث الطلبات";
   } else if (tab === "requests") {
@@ -474,13 +484,90 @@ function applyDashboardTab() {
     rows = rows.filter(r => String(r.finalDecision || "").trim());
     if (title) title.textContent = "الطلبات ذات القرارات المعتمدة";
   } else if (tab === "reports") {
-    if (title) title.textContent = "التقارير والإحصاءات - عرض الطلبات";
-    showToast("تم تحديث عرض التقارير والإحصاءات.");
+    if (tableCard) tableCard.classList.add("hidden");
+    if (analyticsPanel) analyticsPanel.classList.remove("hidden");
+    loadAnalytics(false);
+    return;
   } else if (tab === "settings") {
     if (title) title.textContent = "الإعدادات - بيانات الطلبات";
     showToast("الإعدادات الأساسية تتم من Google Sheets حالياً.");
   }
   renderRequests(rows);
+}
+
+async function loadAnalytics(force = false) {
+  if (ANALYTICS_LOADING) return;
+  if (CURRENT_ANALYTICS && !force) {
+    renderAnalytics(CURRENT_ANALYTICS);
+    return;
+  }
+  const content = $("#analyticsContent");
+  if (content) content.innerHTML = '<p class="muted">جاري تحميل الإحصاءات...</p>';
+  ANALYTICS_LOADING = true;
+  try {
+    const result = await api("getAnalytics", { session: SESSION });
+    CURRENT_ANALYTICS = result.analytics || {};
+    renderAnalytics(CURRENT_ANALYTICS);
+  } catch (err) {
+    if (content) content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+  } finally {
+    ANALYTICS_LOADING = false;
+  }
+}
+
+function renderAnalytics(a) {
+  const content = $("#analyticsContent");
+  if (!content) return;
+  const byDecision = a.byDecision || [];
+  const byStage = a.byStage || [];
+  const topSchools = a.topSchools || [];
+  const maxDecision = Math.max(1, ...byDecision.map(x => Number(x.count || 0)));
+  const maxStage = Math.max(1, ...byStage.map(x => Number(x.count || 0)));
+  const maxSchools = Math.max(1, ...topSchools.map(x => Number(x.count || 0)));
+
+  content.innerHTML = `
+    <div class="analytics-kpis">
+      <article><b>${escapeHtml(a.totalRequests || 0)}</b><span>إجمالي الطلبات</span></article>
+      <article><b>${escapeHtml(a.executed || 0)}</b><span>طلبات منفذة / معتمدة</span></article>
+      <article><b>${escapeHtml(a.pending || 0)}</b><span>لم تنفذ بعد</span></article>
+      <article><b>${escapeHtml(a.schoolsCount || 0)}</b><span>عدد المدارس الرافعة</span></article>
+      <article><b>${escapeHtml(a.totalAbsenceSubjects || 0)}</b><span>إجمالي مواد الغياب</span></article>
+      <article><b>${escapeHtml(a.todayRequests || 0)}</b><span>طلبات اليوم</span></article>
+    </div>
+    <div class="analytics-grid">
+      <section class="chart-box">
+        <h3>القرارات المعتمدة حسب النوع</h3>
+        ${renderBarList(byDecision, maxDecision)}
+      </section>
+      <section class="chart-box">
+        <h3>الطلبات حسب المرحلة</h3>
+        ${renderBarList(byStage, maxStage)}
+      </section>
+      <section class="chart-box">
+        <h3>أكثر المدارس رفعًا للطلبات</h3>
+        ${renderBarList(topSchools, maxSchools)}
+      </section>
+      <section class="chart-box">
+        <h3>مؤشرات تنفيذ الطلبات</h3>
+        <div class="donut-wrap">
+          <div class="donut" style="--done:${Number(a.executionPercent || 0)}"><span>${escapeHtml(a.executionPercent || 0)}%</span></div>
+          <div class="legend-mini">
+            <span>منفذة: ${escapeHtml(a.executed || 0)}</span>
+            <span>لم تنفذ: ${escapeHtml(a.pending || 0)}</span>
+            <span>آخر تحديث: ${escapeHtml(a.generatedAt || "")}</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function renderBarList(items, max) {
+  if (!items || !items.length) return '<p class="muted">لا توجد بيانات كافية.</p>';
+  return `<div class="bar-list">${items.map(item => {
+    const pct = Math.max(4, Math.round((Number(item.count || 0) / max) * 100));
+    return `<div class="bar-row"><span>${escapeHtml(item.label || "غير محدد")}</span><b>${escapeHtml(item.count || 0)}</b><i style="width:${pct}%"></i></div>`;
+  }).join("")}</div>`;
 }
 
 function renderRequests(rows) {
