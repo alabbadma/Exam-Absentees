@@ -123,18 +123,89 @@ async function collectFiles(input) {
 }
 
 
-function collectSubjectDates(form) {
-  const rows = Array.from(form.querySelectorAll(".subject-date-row"));
-  const pairs = [];
-  rows.forEach((row, idx) => {
-    const subject = row.querySelector("[data-subject]")?.value.trim() || "";
-    const date = row.querySelector("[data-exam-date]")?.value || "";
-    if (subject || date) {
-      if (!subject || !date) throw new Error(`يرجى تعبئة المادة وتاريخ الاختبار في الصف رقم ${idx + 1}.`);
-      pairs.push({ subject, date });
-    }
+
+const ARABIC_ORDINALS = ["الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة"];
+
+function toEnglishDigits(value) {
+  return String(value || "")
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+}
+
+function enforceDigits(input, maxLength) {
+  if (!input) return;
+  input.addEventListener("input", () => {
+    input.value = toEnglishDigits(input.value).replace(/\D/g, "").slice(0, maxLength);
   });
-  if (!pairs.length) throw new Error("يرجى إضافة مادة واحدة على الأقل مع تاريخ الاختبار.");
+  input.addEventListener("paste", () => setTimeout(() => {
+    input.value = toEnglishDigits(input.value).replace(/\D/g, "").slice(0, maxLength);
+  }, 0));
+}
+
+function renderSubjectRows(count = 1) {
+  const holder = document.getElementById("subjectDateRows");
+  if (!holder) return;
+
+  const current = Array.from(holder.querySelectorAll(".subject-date-row")).map(row => ({
+    subject: row.querySelector("[data-subject]")?.value || "",
+    date: row.querySelector("[data-exam-date]")?.value || "",
+  }));
+
+  const n = Math.max(1, Math.min(10, Number(count) || 1));
+  holder.innerHTML = "";
+
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement("div");
+    row.className = "subject-date-row";
+    row.dataset.index = String(i + 1);
+    row.innerHTML = `
+      <label class="subject-field">المادة ${ARABIC_ORDINALS[i] || (i + 1)}
+        <input data-subject name="subject_${i + 1}" required placeholder="مثال: الرياضيات" value="${escapeAttr(current[i]?.subject || "")}" />
+      </label>
+      <label class="date-field">تاريخ الغياب / الاختبار
+        <input data-exam-date name="examDate_${i + 1}" type="date" required value="${escapeAttr(current[i]?.date || "")}" />
+      </label>
+    `;
+    holder.appendChild(row);
+  }
+}
+
+function ensureSubjectRowsRendered() {
+  const count = document.getElementById("absenceSubjectsCount");
+  const holder = document.getElementById("subjectDateRows");
+  if (!holder) return;
+  const wanted = Math.max(1, Math.min(10, Number(count?.value || 1) || 1));
+  const existing = holder.querySelectorAll(".subject-date-row").length;
+  if (existing !== wanted) renderSubjectRows(wanted);
+}
+
+function collectSubjectDates(form) {
+  ensureSubjectRowsRendered();
+  const rows = Array.from(form.querySelectorAll(".subject-date-row"));
+  const expectedCount = Number(document.getElementById("absenceSubjectsCount")?.value || rows.length || 1);
+  const pairs = [];
+
+  if (!rows.length) {
+    renderSubjectRows(expectedCount);
+  }
+
+  const finalRows = Array.from(form.querySelectorAll(".subject-date-row"));
+  for (let idx = 0; idx < finalRows.length; idx++) {
+    const row = finalRows[idx];
+    const subjectInput = row.querySelector("[data-subject]");
+    const dateInput = row.querySelector("[data-exam-date]");
+    const subject = subjectInput ? subjectInput.value.trim() : "";
+    const date = dateInput ? dateInput.value : "";
+    if (!subject || !date) {
+      throw new Error(`يرجى تعبئة المادة ${ARABIC_ORDINALS[idx] || (idx + 1)} وتاريخ الغياب/الاختبار.`);
+    }
+    pairs.push({ subject, date });
+  }
+
+  if (pairs.length !== expectedCount) {
+    throw new Error("عدد حقول المواد لا يطابق عدد مواد الغياب المختار. فضلاً اختر العدد مرة أخرى أو حدّث الصفحة.");
+  }
+
   return {
     pairs,
     subjects: pairs.map(x => x.subject).join(" | "),
@@ -143,33 +214,38 @@ function collectSubjectDates(form) {
 }
 
 function resetSubjectRows() {
-  const holder = $("#subjectDateRows");
-  if (!holder) return;
-  holder.innerHTML = `
-    <div class="subject-date-row">
-      <label>المادة/المواد<input data-subject required placeholder="مثال: الرياضيات" /></label>
-      <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
-      <button class="small-btn remove-subject-row" type="button" disabled>حذف</button>
-    </div>
-  `;
+  const count = $("#absenceSubjectsCount");
+  if (count) count.value = "1";
+  renderSubjectRows(1);
 }
 
-function addSubjectRow() {
-  const holder = $("#subjectDateRows");
-  if (!holder) return;
-  const row = document.createElement("div");
-  row.className = "subject-date-row";
-  row.innerHTML = `
-    <label>المادة/المواد<input data-subject required placeholder="مثال: العلوم" /></label>
-    <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
-    <button class="small-btn remove-subject-row" type="button">حذف</button>
-  `;
-  holder.appendChild(row);
+function initFormGuards() {
+  enforceDigits(document.querySelector('[name="nationalId"]'), 10);
+  enforceDigits(document.querySelector('[name="mobile"]'), 10);
+
+  const count = document.getElementById("absenceSubjectsCount");
+  if (count) {
+    const handler = () => renderSubjectRows(count.value || 1);
+    count.addEventListener("change", handler);
+    count.addEventListener("input", handler);
+    count.addEventListener("click", () => setTimeout(handler, 0));
+    renderSubjectRows(count.value || 1);
+  }
 }
+
+// احتياطي مهم: لو حمل المتصفح نسخة قديمة أو تأخر تحميل DOM، نعيد توليد حقول المواد بعد جاهزية الصفحة.
+document.addEventListener("DOMContentLoaded", () => {
+  initFormGuards();
+  ensureSubjectRowsRendered();
+});
+
 
 document.addEventListener("click", (e) => {
   const open = e.target.closest("[data-open]");
-  if (open) showSection(open.dataset.open);
+  if (open) {
+    showSection(open.dataset.open);
+    if (open.dataset.open === "requestForm") setTimeout(ensureSubjectRowsRendered, 80);
+  }
 
   const login = e.target.closest("[data-login]");
   if (login) {
@@ -179,14 +255,9 @@ document.addEventListener("click", (e) => {
   }
 
   if (e.target.closest("[data-back-home]")) showSection("publicHome");
-
-  if (e.target.closest("#addSubjectRow")) addSubjectRow();
-
-  const removeSubject = e.target.closest(".remove-subject-row");
-  if (removeSubject && !removeSubject.disabled) {
-    removeSubject.closest(".subject-date-row")?.remove();
-  }
 });
+
+ensureSubjectRowsRendered();
 
 $("#newRequestForm").addEventListener("submit", async (e) => {
   e.preventDefault();
