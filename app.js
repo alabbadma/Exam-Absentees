@@ -9,6 +9,27 @@ const CONFIG = {
 let SESSION = null;
 let CURRENT_REQUESTS = [];
 
+function formatDateParts() {
+  const now = new Date();
+  const dayName = new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(now);
+  const greg = new Intl.DateTimeFormat('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+  let hijri = '';
+  try {
+    hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+  } catch (e) {
+    hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+  }
+  const dn = document.getElementById('todayName');
+  const gd = document.getElementById('gregDate');
+  const hd = document.getElementById('hijriDate');
+  if (dn) dn.textContent = dayName;
+  if (gd) gd.textContent = greg;
+  if (hd) hd.textContent = hijri;
+}
+
+formatDateParts();
+
+
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
