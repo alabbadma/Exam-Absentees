@@ -1049,3 +1049,153 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 900px) {
   .subject-date-row { grid-template-columns: 1fr !important; }
 }
+
+/* V5: تدفق المدرسة بدون حساب دخول + أزرار تنفيذ بسبنر + تحسين ألوان لوحة التحكم */
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.login-form-labeled label,
+.inline-form label {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.inline-form {
+  align-items: end;
+}
+
+button.loading,
+.submit-btn.loading,
+.ghost-btn.loading,
+.small-btn.loading,
+.action-card.loading {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  opacity: .92;
+  cursor: wait !important;
+  pointer-events: none;
+}
+
+.dash-sidebar button,
+.dash-sidebar .logout {
+  background: linear-gradient(135deg, var(--moe-blue-support), var(--moe-cyan-support)) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 22px rgba(21,68,90,.12), inset 0 1px 0 rgba(255,255,255,.22);
+  font-weight: 800;
+}
+
+.dash-sidebar button.active,
+.dash-sidebar button:hover {
+  background: linear-gradient(135deg, var(--moe-navy), var(--moe-blue-core), var(--moe-green-core)) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+}
+
+.dash-sidebar .logout {
+  background: linear-gradient(135deg, #991b1b, #ef4444) !important;
+  color: #fff !important;
+}
+
+.decision-tools button,
+.table-head button,
+.panel-head button,
+.row-actions button,
+#refreshBtn,
+#approveBtn,
+#pdfBtn,
+#emlBtn {
+  color: #fff !important;
+}
+
+#ccEmails {
+  direction: ltr;
+  text-align: left;
+}
+
+.result-card h3 {
+  color: var(--moe-navy);
+  margin-top: 0;
+}
+
+.error { color: #991b1b; font-weight: 800; }
+
+@media (max-width: 700px) {
+  .panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .panel-actions { justify-content: flex-start; }
+}
+
+/* V6: تجهيز البريد الرسمي عبر بريد الوزارة من المتصفح */
+.mail-prep-box {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(240,253,252,.92));
+  border: 1px solid rgba(13,169,166,.22);
+  box-shadow: 0 22px 44px rgba(21,68,90,.13), inset 0 1px 0 rgba(255,255,255,.8);
+}
+.mail-prep-box h2 {
+  color: #fff !important;
+  background: linear-gradient(135deg, #15445a, #0da9a6, #07a869);
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 18px;
+  margin: 0 0 12px;
+  display: inline-flex;
+}
+.mail-note {
+  background: rgba(193,180,137,.18);
+  border: 1px solid rgba(193,180,137,.35);
+  border-radius: 14px;
+  padding: 12px;
+  color: #15445a;
+  font-weight: 700;
+}
+.mail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.mail-grid label.wide { grid-column: 1 / -1; }
+.mail-grid input,
+.mail-grid textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(21,68,90,.16);
+  background: #fff;
+  padding: 10px 12px;
+  font-family: Cairo, sans-serif;
+  font-size: 14px;
+  color: #15445a;
+}
+.mail-grid textarea {
+  min-height: 190px;
+  resize: vertical;
+  line-height: 1.7;
+}
+.mail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.link-button {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+}
+@media (max-width: 700px) {
+  .mail-grid { grid-template-columns: 1fr; }
+}
