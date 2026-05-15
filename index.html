@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>منصة معالجة أعذار الغياب عن الاختبارات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800&family=Kufam:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="moe-logo-wrap">
+        <img src="assets/moe-logo.png" alt="وزارة التعليم" class="moe-logo" />
+      </div>
+
+      <div class="manager-card mini-3d">
+        <div class="avatar-3d" aria-hidden="true">
+          <div class="avatar-face"></div>
+          <div class="avatar-ghutra"></div>
+          <div class="avatar-body"></div>
+        </div>
+        <div>
+          <h3>أ. خالد العتيبي</h3>
+          <p>مدير إدارة تقويم الأداء المعرفي والمهاري</p>
+        </div>
+      </div>
+
+      <h1>منصة معالجة أعذار الغياب عن الاختبارات</h1>
+      <p class="subtitle">منصة رقمية لتنظيم طلبات أعذار الغياب، التحقق من المستندات الطبية، وتسريع اتخاذ القرار.</p>
+    </header>
+
+    <main id="publicHome" class="home-grid">
+      <section class="hero-screen glass-card">
+        <div class="browser-bar">
+          <span></span><span></span><span></span>
+          <strong>moe.gov.sa/excuse-platform</strong>
+        </div>
+        <div class="hero-content">
+          <div class="hero-copy">
+            <span class="badge">الواجهة الرئيسية</span>
+            <h2>مرحبًا بك في منصة معالجة أعذار الغياب عن الاختبارات</h2>
+            <p>حلول رقمية ذكية لإدارة الطلبات بدقة وموثوقية وسرعة، مع اعتماد القرار النهائي من صاحب الصلاحية.</p>
+
+            <div class="action-grid">
+              <button class="action-card primary" data-open="requestForm">
+                <span class="icon">＋</span>
+                <b>تقديم طلب جديد</b>
+                <small>ابدأ طلب عذر جديد</small>
+              </button>
+              <button class="action-card" data-open="trackForm">
+                <span class="icon">⌖</span>
+                <b>تتبع الطلب</b>
+                <small>متابعة حالة الطلب</small>
+              </button>
+              <button class="action-card" data-login="school">
+                <span class="icon">🏫</span>
+                <b>الدخول للمدرسة</b>
+                <small>لوحة المدرسة</small>
+              </button>
+              <button class="action-card" data-login="admin">
+                <span class="icon">☑</span>
+                <b>الدخول للإدارة</b>
+                <small>لوحة الاعتماد</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-illustration" aria-hidden="true">
+            <div class="doc-stack"></div>
+            <div class="shield-3d">✓</div>
+            <div class="cloud-3d">☁</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-panels">
+        <section class="glass-card feature-card">
+          <h2>ماذا تقدم المنصة؟</h2>
+          <div class="features-grid">
+            <article>
+              <span>📄</span>
+              <b>استقبال الطلبات</b>
+              <small>استقبال طلبات أعذار الغياب بسهولة وأمان.</small>
+            </article>
+            <article>
+              <span>☁</span>
+              <b>رفع التقارير الطبية</b>
+              <small>رفع المستندات الطبية للتحقق منها إلكترونيًا.</small>
+            </article>
+            <article>
+              <span>⏱</span>
+              <b>متابعة الحالة</b>
+              <small>متابعة حالة الطلب في كل خطوة.</small>
+            </article>
+            <article>
+              <span>⚖</span>
+              <b>إصدار القرارات</b>
+              <small>قرارات معتمدة بعد مراجعة مدير الإدارة.</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="glass-card journey-card">
+          <h2>رحلة الطلب</h2>
+          <div class="journey-steps">
+            <article>
+              <i>1</i>
+              <b>تقديم الطلب</b>
+              <small>إرفاق البيانات والمستندات</small>
+            </article>
+            <span class="arrow">←</span>
+            <article>
+              <i>2</i>
+              <b>التحقق</b>
+              <small>اكتمال البيانات والمرفقات</small>
+            </article>
+            <span class="arrow">←</span>
+            <article>
+              <i>3</i>
+              <b>المراجعة</b>
+              <small>قرار نظام أولي غير ظاهر</small>
+            </article>
+            <span class="arrow">←</span>
+            <article>
+              <i>4</i>
+              <b>الاعتماد</b>
+              <small>اعتماد أو تعديل القرار</small>
+            </article>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <section id="requestForm" class="panel hidden">
+      <div class="panel-head">
+        <h2>تقديم طلب عذر غياب عن اختبار</h2>
+        <button class="ghost-btn" data-back-home>عودة</button>
+      </div>
+
+      <form id="newRequestForm" class="form-grid">
+        <h3>بيانات الطالب/ـة</h3>
+        <label>اسم الطالب/ـة<input name="studentName" required /></label>
+        <label>رقم الهوية<input name="nationalId" required inputmode="numeric" /></label>
+        <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
+        <label>رقم الجوال<input name="mobile" required inputmode="tel" /></label>
+        <label>البريد الإلكتروني<input name="email" type="email" /></label>
+
+        <h3>بيانات المدرسة والاختبار</h3>
+        <label>المرحلة<select name="stage"><option>الابتدائية</option><option>المتوسطة</option><option>الثانوية</option></select></label>
+        <label>الصف<input name="grade" required /></label>
+        <label>اسم المدرسة<input name="schoolName" required /></label>
+        <label>كود المدرسة<input name="schoolCode" required placeholder="مثال: SCH-001" /></label>
+        <label>المادة/المواد<input name="subjects" required /></label>
+        <label>تاريخ الاختبار<input name="examDate" type="date" required /></label>
+
+        <h3>بيانات العذر والمرفقات</h3>
+        <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
+        <label>تصنيف الحالة الصحية<select name="medicalCategory" required>
+          <option>تنويم في المستشفى</option>
+          <option>أورام وعلاج كيماوي/إشعاعي</option>
+          <option>كسور أو إصابات تمنع الحضور أو الكتابة</option>
+          <option>أمراض معدية أو عزل طبي</option>
+          <option>إعاقة مؤقتة أو دائمة تؤثر على أداء الاختبار</option>
+          <option>حالة نفسية أو صحية شديدة موثقة</option>
+          <option>مستندات غير مكتملة</option>
+          <option>أخرى</option>
+        </select></label>
+        <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
+
+        <div class="checks">
+          <label><input type="checkbox" name="hasMedicalReport" checked /> يوجد تقرير طبي</label>
+          <label><input type="checkbox" name="isHospitalized" /> الطالب/ـة منوم</label>
+          <label><input type="checkbox" name="preventsAttendance" /> الحالة تمنع الحضور</label>
+          <label><input type="checkbox" name="preventsExamPerformance" /> الحالة تمنع أداء الاختبار</label>
+          <label><input type="checkbox" name="canRemoteExam" /> يستطيع أداء اختبار عن بعد</label>
+          <label><input type="checkbox" name="needsHealingPlaceExam" /> يحتاج اختبار في مكان الاستشفاء</label>
+        </div>
+
+        <label class="file-label">التقرير الطبي / المرفقات
+          <input name="attachments" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
+        </label>
+
+        <label>ملاحظات ولي الأمر<textarea name="parentNotes"></textarea></label>
+        <button class="submit-btn" type="submit">إرسال الطلب</button>
+      </form>
+    </section>
+
+    <section id="trackForm" class="panel hidden">
+      <div class="panel-head">
+        <h2>تتبع طلب</h2>
+        <button class="ghost-btn" data-back-home>عودة</button>
+      </div>
+      <form id="trackRequestForm" class="inline-form">
+        <input name="requestId" required placeholder="رقم الطلب مثل REQ-2026-00001" />
+        <input name="nationalId" required placeholder="رقم الهوية" />
+        <button class="submit-btn" type="submit">استعلام</button>
+      </form>
+      <div id="trackResult" class="result-card"></div>
+    </section>
+
+    <section id="loginPanel" class="panel hidden">
+      <div class="panel-head">
+        <h2 id="loginTitle">تسجيل الدخول</h2>
+        <button class="ghost-btn" data-back-home>عودة</button>
+      </div>
+      <form id="loginForm" class="inline-form">
+        <input type="hidden" name="role" />
+        <input name="code" required placeholder="كود الدخول" />
+        <input name="password" type="password" required placeholder="كلمة المرور" />
+        <button class="submit-btn" type="submit">دخول</button>
+      </form>
+    </section>
+
+    <main id="dashboard" class="dashboard hidden">
+      <aside class="dash-sidebar glass-card">
+        <img src="assets/moe-logo.png" alt="وزارة التعليم" class="dash-logo" />
+        <button class="active" data-dash-tab="overview">الرئيسية</button>
+        <button data-dash-tab="requests">الطلبات</button>
+        <button data-dash-tab="decisions">القرارات</button>
+        <button data-dash-tab="reports">التقارير والإحصاءات</button>
+        <button data-dash-tab="settings">الإعدادات</button>
+        <button id="logoutBtn" class="logout">تسجيل الخروج</button>
+      </aside>
+
+      <section class="dash-content">
+        <div class="welcome-strip glass-card">
+          <div>
+            <h2>مرحبًا بكم في لوحة التحكم</h2>
+            <p id="roleLabel">إدارة تقويم الأداء المعرفي والمهاري</p>
+          </div>
+          <div class="manager-badge">أ. خالد العتيبي</div>
+        </div>
+
+        <div class="kpi-grid">
+          <article><b id="kpiNew">0</b><span>طلبات جديدة</span></article>
+          <article><b id="kpiReview">0</b><span>قيد المراجعة</span></article>
+          <article><b id="kpiComplete">0</b><span>مستكملة</span></article>
+          <article><b id="kpiApproved">0</b><span>معتمدة</span></article>
+          <article><b id="kpiRejected">0</b><span>مرفوضة</span></article>
+        </div>
+
+        <section class="glass-card table-card">
+          <div class="table-head">
+            <h2>أحدث الطلبات</h2>
+            <button id="refreshBtn" class="ghost-btn">تحديث</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الطلب</th>
+                  <th>اسم الطالب</th>
+                  <th>المدرسة</th>
+                  <th>الحالة</th>
+                  <th>قرار النظام</th>
+                  <th>القرار المعتمد</th>
+                  <th>الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="requestDetails" class="glass-card details-card hidden"></section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <footer class="site-footer">
+      <p>جميع الحقوق محفوظة</p>
+      <p>أ. محمد بن عبدالعزيز العباد 0563660366</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
