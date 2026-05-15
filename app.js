@@ -4,7 +4,11 @@
 */
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbw_n5sBb6x7dXeaJBXuc8m9_5w0wpQphvVwj_JtzJTvLVF9YzG96118egz1zbBqb2WV/exec",
-  WEBMAIL_URL: "https://sts.moe.gov.sa/adfs/ls?wa=wsignin1.0&wtrealm=https%3a%2f%2fwebmail.moe.gov.sa%2fowa%2f&wctx=rm%3d0%26id%3dpassive%26ru%3d%252fowa%252f&wct=2024-03-22T10%3a40%3a34Z"
+  WEBMAIL_URL: "https://sts.moe.gov.sa/adfs/ls?wa=wsignin1.0&wtrealm=https%3a%2f%2fwebmail.moe.gov.sa%2fowa%2f&wctx=rm%3d0%26id%3dpassive%26ru%3d%252fowa%252f&wct=2024-03-22T10%3a40%3a34Z",
+  API_TIMEOUT_MS: 60000,
+  IMAGE_MAX_WIDTH: 1400,
+  IMAGE_MAX_HEIGHT: 1400,
+  IMAGE_QUALITY: 0.72
 };
 
 let SESSION = null;
@@ -61,7 +65,7 @@ function setButtonLoading(btn, isLoading, loadingText = "جاري التنفيذ
 async function withButtonLoading(btn, loadingText, task) {
   setButtonLoading(btn, true, loadingText);
   try {
-    return await task();
+    return await task((msg) => setButtonLoading(btn, true, msg || loadingText));
   } finally {
     setButtonLoading(btn, false);
   }
@@ -95,12 +99,23 @@ async function api(action, payload = {}) {
     throw new Error("لم يتم ضبط رابط Google Apps Script في ملف app.js.");
   }
 
-  const response = await fetch(CONFIG.API_URL, {
-    method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ action, payload }),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), CONFIG.API_TIMEOUT_MS || 60000);
+  let response;
+  try {
+    response = await fetch(CONFIG.API_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action, payload }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err.name === "AbortError") throw new Error("استغرق الاتصال وقتًا أطول من المتوقع. حاول مرة أخرى، أو قلّل حجم المرفقات.");
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   const text = await response.text();
   let data;
@@ -138,6 +153,7 @@ function fileToBase64(file) {
       resolve({
         name: file.name,
         type: file.type || "application/octet-stream",
+        size: file.size || 0,
         data: result.includes(",") ? result.split(",")[1] : result,
       });
     };
@@ -145,15 +161,56 @@ function fileToBase64(file) {
   });
 }
 
-async function collectFiles(input) {
+function canvasToBlob(canvas, type, quality) {
+  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
+}
+
+async function compressImageFile(file) {
+  if (!/^image\//.test(file.type || "")) return file;
+  if (file.size <= 950 * 1024) return file;
+
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("تعذر ضغط الصورة: " + file.name));
+    img.src = URL.createObjectURL(file);
+  });
+
+  let { width, height } = image;
+  const maxW = CONFIG.IMAGE_MAX_WIDTH || 1400;
+  const maxH = CONFIG.IMAGE_MAX_HEIGHT || 1400;
+  const ratio = Math.min(1, maxW / width, maxH / height);
+  width = Math.max(1, Math.round(width * ratio));
+  height = Math.max(1, Math.round(height * ratio));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.drawImage(image, 0, 0, width, height);
+  URL.revokeObjectURL(image.src);
+
+  const outType = file.type === "image/png" ? "image/jpeg" : (file.type || "image/jpeg");
+  const blob = await canvasToBlob(canvas, outType, CONFIG.IMAGE_QUALITY || 0.72);
+  if (!blob || blob.size >= file.size) return file;
+  const cleanName = file.name.replace(/\.(png|jpg|jpeg|webp)$/i, "") + "_compressed.jpg";
+  return new File([blob], cleanName, { type: outType, lastModified: Date.now() });
+}
+
+async function collectFiles(input, onProgress) {
   const files = Array.from(input?.files || []);
   const maxFiles = 5;
   const maxBytes = 10 * 1024 * 1024;
   if (files.length > maxFiles) throw new Error(`الحد الأقصى للمرفقات هو ${maxFiles} ملفات.`);
-  for (const f of files) {
-    if (f.size > maxBytes) throw new Error(`حجم الملف ${f.name} أكبر من 10 ميجابايت.`);
+
+  const output = [];
+  for (let i = 0; i < files.length; i++) {
+    onProgress?.(`جاري تجهيز المرفق ${i + 1} من ${files.length}...`);
+    const prepared = await compressImageFile(files[i]);
+    if (prepared.size > maxBytes) throw new Error(`حجم الملف ${prepared.name} أكبر من 10 ميجابايت. فضلاً قلّل حجم الملف قبل رفعه.`);
+    output.push(await fileToBase64(prepared));
   }
-  return Promise.all(files.map(fileToBase64));
+  return output;
 }
 
 
@@ -305,7 +362,7 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const form = e.currentTarget;
   const btn = e.submitter || form.querySelector("button[type=submit]");
-  await withButtonLoading(btn, "جاري إرسال الطلب...", async () => {
+  await withButtonLoading(btn, "جاري تجهيز الطلب...", async (progress) => {
     try {
       const request = formToObject(form);
       const subjectData = collectSubjectDates(form);
@@ -317,7 +374,8 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
       if (!request.schoolEmail) throw new Error("بريد المدرسة الرسمي مطلوب لإشعار المدرسة بالقرار بعد اعتماده.");
 
-      const attachments = await collectFiles(form.elements.attachments);
+      const attachments = await collectFiles(form.elements.attachments, progress);
+      progress("جاري حفظ المعاملة في النظام...");
       const result = await api("submitRequest", { request, attachments });
       showToast(`تم تقديم الطلب بنجاح. رقم الطلب: ${result.requestId}`);
       form.reset();
@@ -378,6 +436,8 @@ $("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTar
 
 async function loadDashboard() {
   try {
+    const tbody = $("#requestsTbody");
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7">جاري تحميل البيانات...</td></tr>`;
     const result = await api("listRequests", { session: SESSION });
     CURRENT_REQUESTS = result.requests || [];
     renderKpis(result.kpis || {});
