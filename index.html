@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260515-v6-webmail-pdf" />
+  <link rel="stylesheet" href="style.css?v=20260515-v8-smart-ux-performance" />
 </head>
 
 <body>
@@ -56,11 +56,6 @@
                 <span class="icon">＋</span>
                 <b>تقديم طلب جديد</b>
                 <small>ابدأ طلب عذر جديد</small>
-              </button>
-              <button class="action-card" data-open="trackForm">
-                <span class="icon">⌖</span>
-                <b>تتبع الطلب</b>
-                <small>متابعة حالة الطلب</small>
               </button>
               <button class="action-card" data-open="trackForm">
                 <span class="icon">🏫</span>
@@ -257,10 +252,10 @@
         <img src="assets/moe-logo.png" alt="وزارة التعليم" class="dash-logo" />
         <button type="button" data-dash-back>رجوع</button>
         <button type="button" data-home>الصفحة الرئيسية</button>
-        <button type="button" class="active" data-dash-tab="overview">الرئيسية</button>
+        <button type="button" class="active" data-dash-tab="overview">لوحة التحكم</button>
         <button type="button" data-dash-tab="requests">الطلبات</button>
         <button type="button" data-dash-tab="decisions">القرارات</button>
-        <button type="button" data-dash-tab="reports">التقارير والإحصاءات</button>
+        <button type="button" data-dash-tab="reports">الإحصاءات</button>
         <button type="button" data-dash-tab="settings">الإعدادات</button>
         <button type="button" id="logoutBtn" class="logout">تسجيل الخروج</button>
       </aside>
@@ -281,6 +276,17 @@
           <article><b id="kpiApproved">0</b><span>معتمدة</span></article>
           <article><b id="kpiRejected">0</b><span>مرفوضة</span></article>
         </div>
+
+
+        <section id="analyticsPanel" class="glass-card analytics-card hidden">
+          <div class="table-head">
+            <h2>الإحصاءات والمؤشرات</h2>
+            <button id="refreshAnalyticsBtn" class="ghost-btn" type="button">تحديث الإحصاءات</button>
+          </div>
+          <div id="analyticsContent" class="analytics-content">
+            <p class="muted">اختر الإحصاءات من القائمة لعرض المؤشرات.</p>
+          </div>
+        </section>
 
         <section class="glass-card table-card">
           <div class="table-head">
@@ -317,6 +323,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260515-v6-webmail-pdf"></script>
+  <script src="app.js?v=20260515-v8-smart-ux-performance"></script>
 </body>
 </html>
