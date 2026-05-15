@@ -1199,3 +1199,59 @@ button.loading,
 @media (max-width: 700px) {
   .mail-grid { grid-template-columns: 1fr; }
 }
+
+/* V8 Smart UX + Analytics */
+.action-grid { grid-template-columns: repeat(3, 1fr); }
+.analytics-card { padding: 24px; }
+.analytics-content { display: grid; gap: 18px; }
+.analytics-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 12px;
+}
+.analytics-kpis article {
+  padding: 15px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff, #f0fbf8);
+  box-shadow: var(--deep-3d);
+  text-align: center;
+  border: 1px solid rgba(13,169,166,.12);
+}
+.analytics-kpis b { display:block; color:#15445a; font-size: 22px; line-height: 1.2; }
+.analytics-kpis span { display:block; color:#52706e; font-size: 13px; margin-top: 5px; }
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+}
+.chart-box {
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #ffffff, #f8fffd);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(13,169,166,.12);
+}
+.chart-box h3 { margin: 0 0 14px; color:#15445a; font-size: 16px; }
+.bar-list { display:grid; gap: 12px; }
+.bar-row { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items:center; padding-bottom: 12px; }
+.bar-row span { color:#294f51; font-weight: 700; font-size: 13px; }
+.bar-row b { color:#15445a; font-size: 13px; }
+.bar-row i { position:absolute; bottom:0; right:0; height:7px; border-radius: 99px; background: linear-gradient(90deg, #07a869, #0da9a6, #3d7eb9); box-shadow: 0 5px 12px rgba(13,169,166,.2); }
+.donut-wrap { display:flex; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.donut {
+  width: 130px; height:130px; border-radius:50%;
+  display:grid; place-items:center;
+  background: conic-gradient(#07a869 calc(var(--done) * 1%), #dbeeed 0);
+  box-shadow: var(--deep-3d);
+  position:relative;
+}
+.donut::after { content:""; position:absolute; width:88px; height:88px; border-radius:50%; background:#fff; }
+.donut span { position:relative; z-index:1; color:#15445a; font-weight:900; font-size:21px; }
+.legend-mini { display:grid; gap:8px; color:#52706e; font-weight:700; font-size:13px; }
+.muted { color:#6a7e80; }
+.error { color:#b91c1c; font-weight:700; }
+@media (max-width: 900px) {
+  .action-grid { grid-template-columns: 1fr; }
+  .analytics-kpis { grid-template-columns: repeat(2, 1fr); }
+  .analytics-grid { grid-template-columns: 1fr; }
+}
