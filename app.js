@@ -4,6 +4,7 @@
 */
 const CONFIG = {
   API_URL: "https://script.google.com/macros/s/AKfycbw_n5sBb6x7dXeaJBXuc8m9_5w0wpQphvVwj_JtzJTvLVF9YzG96118egz1zbBqb2WV/exec",
+  WEBMAIL_URL: "https://sts.moe.gov.sa/adfs/ls?wa=wsignin1.0&wtrealm=https%3a%2f%2fwebmail.moe.gov.sa%2fowa%2f&wctx=rm%3d0%26id%3dpassive%26ru%3d%252fowa%252f&wct=2024-03-22T10%3a40%3a34Z"
 };
 
 let SESSION = null;
@@ -42,13 +43,46 @@ function showToast(message, isError = false) {
   setTimeout(() => el.classList.add("hidden"), 4200);
 }
 
+function setButtonLoading(btn, isLoading, loadingText = "جاري التنفيذ...") {
+  if (!btn) return;
+  if (isLoading) {
+    btn.dataset.originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.classList.add("loading");
+    btn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span><span>${escapeHtml(loadingText)}</span>`;
+  } else {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
+    delete btn.dataset.originalHtml;
+  }
+}
+
+async function withButtonLoading(btn, loadingText, task) {
+  setButtonLoading(btn, true, loadingText);
+  try {
+    return await task();
+  } finally {
+    setButtonLoading(btn, false);
+  }
+}
+
+let LAST_SECTION = "publicHome";
+let ACTIVE_DASH_TAB = "overview";
 function showSection(sectionId) {
+  const currentVisible = ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"].find(id => !document.getElementById(id)?.classList.contains("hidden"));
+  if (currentVisible && currentVisible !== sectionId) LAST_SECTION = currentVisible;
   ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add("hidden");
   });
   document.getElementById(sectionId).classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function goBack() {
+  if (LAST_SECTION && LAST_SECTION !== "dashboard") showSection(LAST_SECTION);
+  else showSection("publicHome");
 }
 
 function goHome() {
@@ -249,12 +283,20 @@ document.addEventListener("click", (e) => {
 
   const login = e.target.closest("[data-login]");
   if (login) {
-    $("#loginTitle").textContent = login.dataset.login === "admin" ? "دخول إدارة تقويم الأداء المعرفي والمهاري" : "دخول المدرسة";
-    $("#loginForm [name=role]").value = login.dataset.login;
+    // لا توجد صلاحيات دخول للمدرسة. الدخول محصور على إدارة تقويم الأداء المعرفي والمهاري.
+    $("#loginTitle").textContent = "دخول إدارة تقويم الأداء المعرفي والمهاري";
+    $("#loginForm [name=role]").value = "admin";
     showSection("loginPanel");
   }
 
-  if (e.target.closest("[data-back-home]")) showSection("publicHome");
+  const tabBtn = e.target.closest("[data-dash-tab]");
+  if (tabBtn) {
+    setDashboardTab(tabBtn.dataset.dashTab);
+  }
+
+  if (e.target.closest("[data-home]")) goHome();
+  if (e.target.closest("[data-back-home]")) goBack();
+  if (e.target.closest("[data-dash-back]")) goBack();
 });
 
 ensureSubjectRowsRendered();
@@ -263,84 +305,83 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const form = e.currentTarget;
   const btn = e.submitter || form.querySelector("button[type=submit]");
-  const originalText = btn?.textContent || "إرسال الطلب";
-  if (btn) {
-    btn.disabled = true;
-    btn.classList.add("loading");
-    btn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span><span>جاري إرسال الطلب...</span>`;
-  }
-  try {
-    const request = formToObject(form);
-    const subjectData = collectSubjectDates(form);
-    request.subjects = subjectData.subjects;
-    request.examDate = subjectData.examDate;
-    request.subjectDatesJson = JSON.stringify(subjectData.pairs);
+  await withButtonLoading(btn, "جاري إرسال الطلب...", async () => {
+    try {
+      const request = formToObject(form);
+      const subjectData = collectSubjectDates(form);
+      request.subjects = subjectData.subjects;
+      request.examDate = subjectData.examDate;
+      request.subjectDatesJson = JSON.stringify(subjectData.pairs);
 
-    if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
-    if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
+      if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
+      if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
+      if (!request.schoolEmail) throw new Error("بريد المدرسة الرسمي مطلوب لإشعار المدرسة بالقرار بعد اعتماده.");
 
-    const attachments = await collectFiles(form.elements.attachments);
-    const result = await api("submitRequest", { request, attachments });
-    showToast(`تم تقديم الطلب بنجاح. رقم الطلب: ${result.requestId}`);
-    form.reset();
-    resetSubjectRows();
-    showSection("trackForm");
-    $("#trackRequestForm [name=requestId]").value = result.requestId;
-    $("#trackResult").innerHTML = `<b>رقم الطلب:</b> ${result.requestId}<br><span>احتفظ برقم الطلب لمتابعة الحالة.</span>`;
-  } catch (err) {
-    showToast(err.message, true);
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.classList.remove("loading");
-      btn.textContent = originalText;
+      const attachments = await collectFiles(form.elements.attachments);
+      const result = await api("submitRequest", { request, attachments });
+      showToast(`تم تقديم الطلب بنجاح. رقم الطلب: ${result.requestId}`);
+      form.reset();
+      resetSubjectRows();
+      showSection("trackForm");
+      $("#trackRequestForm [name=requestId]").value = result.requestId;
+      $("#trackRequestForm [name=schoolCode]").value = request.schoolCode || "";
+      $("#trackResult").innerHTML = `<b>رقم الطلب:</b> ${result.requestId}<br><span>يمكن للمدرسة متابعة الطلب باستخدام رقم الطلب والرقم الوزاري.</span>`;
+    } catch (err) {
+      showToast(err.message, true);
     }
-  }
+  });
 });
 
 $("#trackRequestForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  $("#trackResult").textContent = "جاري الاستعلام...";
-  try {
-    const payload = formToObject(e.currentTarget);
-    const result = await api("trackRequest", payload);
-    const r = result.request;
-    $("#trackResult").innerHTML = `
-      <h3>نتيجة الاستعلام</h3>
-      <p><b>رقم الطلب:</b> ${escapeHtml(r.requestId)}</p>
-      <p><b>اسم الطالب/ـة:</b> ${escapeHtml(r.studentName)}</p>
-      <p><b>المدرسة:</b> ${escapeHtml(r.schoolName)}</p>
-      <p><b>حالة الطلب:</b> <span class="status-pill">${escapeHtml(r.status)}</span></p>
-      <p><b>القرار المعتمد:</b> ${escapeHtml(r.finalDecision || "لم يعتمد بعد")}</p>
-    `;
-  } catch (err) {
-    $("#trackResult").innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
-  }
+  const btn = e.submitter || e.currentTarget.querySelector("button[type=submit]");
+  await withButtonLoading(btn, "جاري الاستعلام...", async () => {
+    $("#trackResult").textContent = "جاري الاستعلام...";
+    try {
+      const payload = formToObject(e.currentTarget);
+      const result = await api("trackRequest", payload);
+      const r = result.request;
+      $("#trackResult").innerHTML = `
+        <h3>نتيجة الاستعلام</h3>
+        <p><b>رقم الطلب:</b> ${escapeHtml(r.requestId)}</p>
+        <p><b>اسم الطالب/ـة:</b> ${escapeHtml(r.studentName)}</p>
+        <p><b>المدرسة:</b> ${escapeHtml(r.schoolName)}</p>
+        <p><b>حالة الطلب:</b> <span class="status-pill">${escapeHtml(r.status)}</span></p>
+        <p><b>القرار المعتمد:</b> ${escapeHtml(r.finalDecision || "لم يعتمد بعد")}</p>
+      `;
+    } catch (err) {
+      $("#trackResult").innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+    }
+  });
 });
 
 $("#loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  try {
-    const payload = formToObject(e.currentTarget);
-    const result = await api("login", payload);
-    SESSION = result.session;
-    $("#roleLabel").textContent = SESSION.role === "admin" ? "إدارة تقويم الأداء المعرفي والمهاري" : `مدرسة: ${SESSION.orgName || ""}`;
-    showSection("dashboard");
-    await loadDashboard();
-  } catch (err) {
-    showToast(err.message, true);
-  }
+  const btn = e.submitter || e.currentTarget.querySelector("button[type=submit]");
+  await withButtonLoading(btn, "جاري الدخول...", async () => {
+    try {
+      const payload = formToObject(e.currentTarget);
+      payload.role = "admin";
+      const result = await api("login", payload);
+      SESSION = result.session;
+      $("#roleLabel").textContent = "إدارة تقويم الأداء المعرفي والمهاري";
+      showSection("dashboard");
+      await loadDashboard();
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  });
 });
 
 $("#logoutBtn").addEventListener("click", goHome);
-$("#refreshBtn").addEventListener("click", loadDashboard);
+$("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري التحديث...", loadDashboard));
 
 async function loadDashboard() {
   try {
     const result = await api("listRequests", { session: SESSION });
     CURRENT_REQUESTS = result.requests || [];
     renderKpis(result.kpis || {});
-    renderRequests(CURRENT_REQUESTS);
+    applyDashboardTab();
   } catch (err) {
     showToast(err.message, true);
   }
@@ -352,6 +393,34 @@ function renderKpis(kpis) {
   $("#kpiComplete").textContent = kpis.complete || 0;
   $("#kpiApproved").textContent = kpis.approved || 0;
   $("#kpiRejected").textContent = kpis.rejected || 0;
+}
+
+
+function setDashboardTab(tab) {
+  ACTIVE_DASH_TAB = tab || "overview";
+  $$('[data-dash-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.dashTab === ACTIVE_DASH_TAB));
+  applyDashboardTab();
+}
+
+function applyDashboardTab() {
+  const title = $("#dashboardTableTitle");
+  let rows = CURRENT_REQUESTS.slice();
+  const tab = ACTIVE_DASH_TAB;
+  if (tab === "overview") {
+    if (title) title.textContent = "أحدث الطلبات";
+  } else if (tab === "requests") {
+    if (title) title.textContent = "كل الطلبات";
+  } else if (tab === "decisions") {
+    rows = rows.filter(r => String(r.finalDecision || "").trim());
+    if (title) title.textContent = "الطلبات ذات القرارات المعتمدة";
+  } else if (tab === "reports") {
+    if (title) title.textContent = "التقارير والإحصاءات - عرض الطلبات";
+    showToast("تم تحديث عرض التقارير والإحصاءات.");
+  } else if (tab === "settings") {
+    if (title) title.textContent = "الإعدادات - بيانات الطلبات";
+    showToast("الإعدادات الأساسية تتم من Google Sheets حالياً.");
+  }
+  renderRequests(rows);
 }
 
 function renderRequests(rows) {
@@ -378,7 +447,7 @@ function renderRequests(rows) {
     tbody.appendChild(tr);
   });
 
-  $$("[data-view]").forEach(btn => btn.addEventListener("click", () => openDetails(btn.dataset.view)));
+  $$("[data-view]").forEach(btn => btn.addEventListener("click", () => withButtonLoading(btn, "جاري الفتح...", () => openDetails(btn.dataset.view))));
 }
 
 async function openDetails(requestId) {
@@ -408,16 +477,16 @@ function renderDetails(r) {
       </select>
       <textarea id="directorNote" placeholder="سبب التعديل أو ملاحظات المدير">${escapeHtml(r.directorNote || "")}</textarea>
       <input id="ccEmails" placeholder="CC اختياري - أكثر من بريد مفصول بفاصلة" />
-      <button class="submit-btn" id="approveBtn">اعتماد القرار</button>
-      <button class="ghost-btn" id="pdfBtn">توليد PDF</button>
-      <button class="ghost-btn" id="emlBtn">تجهيز بريد Outlook EML</button>
+      <button class="submit-btn" type="button" id="approveBtn">اعتماد القرار</button>
+      <button class="ghost-btn" type="button" id="pdfBtn">توليد PDF</button>
+      <button class="ghost-btn" type="button" id="emlBtn">تجهيز البريد الرسمي</button>
     </div>
   ` : "";
 
   details.innerHTML = `
     <div class="panel-head">
       <h2>تفاصيل الطلب: ${escapeHtml(r.requestId)}</h2>
-      <button class="ghost-btn" onclick="document.getElementById('requestDetails').classList.add('hidden')">إغلاق</button>
+      <div class="panel-actions"><button class="ghost-btn" type="button" onclick="document.getElementById('requestDetails').classList.add('hidden')">إغلاق</button><button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button></div>
     </div>
     <div class="details-grid">
       <div class="info-box"><b>اسم الطالب/ـة</b><span>${escapeHtml(r.studentName)}</span></div>
@@ -433,7 +502,7 @@ function renderDetails(r) {
     ${adminTools}
   `;
 
-  $("#approveBtn")?.addEventListener("click", async () => {
+  $("#approveBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري الاعتماد...", async () => {
     try {
       const finalDecision = $("#finalDecisionSelect").value;
       const directorNote = $("#directorNote").value;
@@ -444,9 +513,9 @@ function renderDetails(r) {
     } catch (err) {
       showToast(err.message, true);
     }
-  });
+  }));
 
-  $("#pdfBtn")?.addEventListener("click", async () => {
+  $("#pdfBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري توليد PDF...", async () => {
     try {
       const result = await api("generatePdf", { session: SESSION, requestId: r.requestId });
       showToast("تم توليد ملف PDF.");
@@ -454,20 +523,75 @@ function renderDetails(r) {
     } catch (err) {
       showToast(err.message, true);
     }
-  });
+  }));
 
-  $("#emlBtn")?.addEventListener("click", async () => {
-    try {
-      const result = await api("generateOutlookEml", {
-        session: SESSION,
-        requestId: r.requestId,
-        cc: $("#ccEmails")?.value || ""
-      });
-      showToast("تم تجهيز ملف Outlook EML.");
-      if (result.emlUrl) window.open(result.emlUrl, "_blank");
-    } catch (err) {
-      showToast(err.message, true);
-    }
+  $("#emlBtn")?.addEventListener("click", (e) => {
+    const emlWindow = window.open("about:blank", "_blank");
+    const mailWindow = window.open("about:blank", "_blank");
+    return withButtonLoading(e.currentTarget, "جاري تجهيز البريد...", async () => {
+      try {
+        const result = await api("generateOutlookEml", {
+          session: SESSION,
+          requestId: r.requestId,
+          cc: $("#ccEmails")?.value || ""
+        });
+        showToast("تم تجهيز البريد الرسمي. تم تحميل PDF ونسخ نص الرسالة.");
+        if (emlWindow) emlWindow.location = result.pdfDownloadUrl || result.pdfUrl;
+        if (mailWindow) mailWindow.location = result.webmailUrl || CONFIG.WEBMAIL_URL;
+        await copyPreparedText(result.body || "");
+        showMailPreparationPanel(result);
+      } catch (err) {
+        if (emlWindow) emlWindow.close();
+        if (mailWindow) mailWindow.close();
+        showToast(err.message, true);
+      }
+    });
+  });
+}
+
+async function copyPreparedText(text) {
+  try {
+    await navigator.clipboard.writeText(text || "");
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function showMailPreparationPanel(result) {
+  let box = document.getElementById("mailPrepBox");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "mailPrepBox";
+    box.className = "mail-prep-box";
+    const details = document.getElementById("requestDetails");
+    if (details) details.appendChild(box);
+  }
+  box.innerHTML = `
+    <h2>تم تجهيز البريد الرسمي</h2>
+    <p class="mail-note">تم توليد ملف PDF للمعاملة كاملة، وتمت محاولة تحميله ونسخ نص الرسالة. بعد الدخول على بريد الوزارة أنشئ رسالة جديدة ثم استخدم الأزرار التالية للنسخ والإرفاق.</p>
+    <div class="mail-grid">
+      <label>إلى<input id="preparedTo" readonly value="${escapeAttr(result.to || "")}" /></label>
+      <label>CC<input id="preparedCc" readonly value="${escapeAttr(result.cc || "")}" /></label>
+      <label class="wide">الموضوع<input id="preparedSubject" readonly value="${escapeAttr(result.subject || "")}" /></label>
+      <label class="wide">نص الرسالة<textarea id="preparedBody" readonly>${escapeHtml(result.body || "")}</textarea></label>
+      <label class="wide">ملف PDF المطلوب إرفاقه<input readonly value="${escapeAttr(result.pdfFileName || "ملف المعاملة PDF")}" /></label>
+    </div>
+    <div class="mail-actions">
+      <button class="submit-btn" type="button" data-copy="preparedTo">نسخ بريد المدرسة</button>
+      <button class="submit-btn" type="button" data-copy="preparedCc">نسخ CC</button>
+      <button class="submit-btn" type="button" data-copy="preparedSubject">نسخ الموضوع</button>
+      <button class="submit-btn" type="button" data-copy="preparedBody">نسخ نص الرسالة</button>
+      <a class="submit-btn link-button" href="${escapeAttr(result.pdfDownloadUrl || result.pdfUrl || "#")}" target="_blank" rel="noopener">تحميل PDF المعاملة</a>
+      <a class="submit-btn link-button" href="${escapeAttr(result.webmailUrl || CONFIG.WEBMAIL_URL)}" target="_blank" rel="noopener">فتح بريد الوزارة</a>
+    </div>
+  `;
+  box.querySelectorAll("[data-copy]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const el = document.getElementById(btn.dataset.copy);
+      const ok = await copyPreparedText(el?.value || el?.textContent || "");
+      showToast(ok ? "تم النسخ." : "لم يتم النسخ تلقائيًا، انسخ النص يدويًا.", !ok);
+    });
   });
 }
 
