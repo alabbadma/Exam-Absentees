@@ -152,7 +152,8 @@
         <label>اسم الطالب/ـة<input name="studentName" required /></label>
         <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
-        <label>رقم الجوال<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="10 أرقام تبدأ بـ 05" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
+        <label>الجنسية<input name="nationality" required placeholder="مثال: سعودي / يمني / مصري" /></label>
+        <label>رقم الجوال<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="مثال: 05XXXXXXXX" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
         <label>البريد الإلكتروني<input name="email" type="email" /></label>
 
         <h3>بيانات المدرسة والاختبار</h3>
@@ -163,17 +164,24 @@
 
         <div class="subject-date-section">
           <div class="subject-date-head">
-            <strong>المواد وتواريخ الاختبارات</strong>
-            <button class="ghost-btn compact-btn" id="addSubjectRow" type="button">إضافة مادة أخرى</button>
+            <strong>مواد الغياب وتواريخها</strong>
+            <label class="absence-count-label">عدد مواد الغياب
+              <select id="absenceSubjectsCount" name="absenceSubjectsCount" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </label>
           </div>
-          <div id="subjectDateRows" class="subject-date-rows">
-            <div class="subject-date-row">
-              <label>المادة/المواد<input data-subject required placeholder="مثال: الرياضيات" /></label>
-              <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
-              <button class="small-btn remove-subject-row" type="button" disabled>حذف</button>
-            </div>
-          </div>
-          <small class="hint-text">يمكن إضافة أكثر من مادة إذا كانت الاختبارات في أيام مختلفة.</small>
+          <div id="subjectDateRows" class="subject-date-rows"></div>
+          <small class="hint-text">اختر عدد مواد الغياب أولًا، وسيظهر لكل مادة حقل مستقل مع تاريخ اختبارها.</small>
         </div>
 
         <h3>بيانات العذر والمرفقات</h3>
