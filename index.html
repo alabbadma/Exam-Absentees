@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260515-subjectrows-fix" />
+  <link rel="stylesheet" href="style.css?v=20260515-v6-webmail-pdf" />
 </head>
 
 <body>
@@ -62,10 +62,10 @@
                 <b>تتبع الطلب</b>
                 <small>متابعة حالة الطلب</small>
               </button>
-              <button class="action-card" data-login="school">
+              <button class="action-card" data-open="trackForm">
                 <span class="icon">🏫</span>
-                <b>الدخول للمدرسة</b>
-                <small>لوحة المدرسة</small>
+                <b>متابعة المدرسة</b>
+                <small>برقم الطلب والرقم الوزاري</small>
               </button>
               <button class="action-card" data-login="admin">
                 <span class="icon">☑</span>
@@ -144,7 +144,10 @@
     <section id="requestForm" class="panel hidden">
       <div class="panel-head">
         <h2>تقديم طلب عذر غياب عن اختبار</h2>
-        <button class="ghost-btn" data-back-home>عودة</button>
+        <div class="panel-actions">
+          <button class="ghost-btn" type="button" data-back-home>عودة</button>
+          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
+        </div>
       </div>
 
       <form id="newRequestForm" class="form-grid">
@@ -161,6 +164,7 @@
         <label>الصف<input name="grade" required /></label>
         <label>اسم المدرسة<input name="schoolName" required /></label>
         <label>الرقم الوزاري<input name="schoolCode" required placeholder="مثال: 123456" /></label>
+        <label>بريد المدرسة الرسمي<input name="schoolEmail" type="email" required placeholder="example@moe.gov.sa" /></label>
 
         <div class="subject-date-section">
           <div class="subject-date-head">
@@ -218,12 +222,15 @@
 
     <section id="trackForm" class="panel hidden">
       <div class="panel-head">
-        <h2>تتبع طلب</h2>
-        <button class="ghost-btn" data-back-home>عودة</button>
+        <h2>متابعة طلب المدرسة</h2>
+        <div class="panel-actions">
+          <button class="ghost-btn" type="button" data-back-home>عودة</button>
+          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
+        </div>
       </div>
       <form id="trackRequestForm" class="inline-form">
-        <input name="requestId" required placeholder="رقم الطلب مثل REQ-2026-00001" />
-        <input name="nationalId" required placeholder="رقم الهوية" />
+        <label>رقم الطلب<input name="requestId" required placeholder="مثال: REQ-2026-00001" /></label>
+        <label>الرقم الوزاري<input name="schoolCode" required placeholder="الرقم الوزاري للمدرسة" /></label>
         <button class="submit-btn" type="submit">استعلام</button>
       </form>
       <div id="trackResult" class="result-card"></div>
@@ -231,13 +238,16 @@
 
     <section id="loginPanel" class="panel hidden">
       <div class="panel-head">
-        <h2 id="loginTitle">تسجيل الدخول</h2>
-        <button class="ghost-btn" data-back-home>عودة</button>
+        <h2 id="loginTitle">دخول إدارة تقويم الأداء المعرفي والمهاري</h2>
+        <div class="panel-actions">
+          <button class="ghost-btn" type="button" data-back-home>عودة</button>
+          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
+        </div>
       </div>
-      <form id="loginForm" class="inline-form">
-        <input type="hidden" name="role" />
-        <input name="code" required placeholder="كود الدخول" />
-        <input name="password" type="password" required placeholder="كلمة المرور" />
+      <form id="loginForm" class="inline-form login-form-labeled">
+        <input type="hidden" name="role" value="admin" />
+        <label>اسم المستخدم<input name="code" required placeholder="اسم المستخدم" /></label>
+        <label>كلمة المرور<input name="password" type="password" required placeholder="كلمة المرور" /></label>
         <button class="submit-btn" type="submit">دخول</button>
       </form>
     </section>
@@ -245,12 +255,14 @@
     <main id="dashboard" class="dashboard hidden">
       <aside class="dash-sidebar glass-card">
         <img src="assets/moe-logo.png" alt="وزارة التعليم" class="dash-logo" />
-        <button class="active" data-dash-tab="overview">الرئيسية</button>
-        <button data-dash-tab="requests">الطلبات</button>
-        <button data-dash-tab="decisions">القرارات</button>
-        <button data-dash-tab="reports">التقارير والإحصاءات</button>
-        <button data-dash-tab="settings">الإعدادات</button>
-        <button id="logoutBtn" class="logout">تسجيل الخروج</button>
+        <button type="button" data-dash-back>رجوع</button>
+        <button type="button" data-home>الصفحة الرئيسية</button>
+        <button type="button" class="active" data-dash-tab="overview">الرئيسية</button>
+        <button type="button" data-dash-tab="requests">الطلبات</button>
+        <button type="button" data-dash-tab="decisions">القرارات</button>
+        <button type="button" data-dash-tab="reports">التقارير والإحصاءات</button>
+        <button type="button" data-dash-tab="settings">الإعدادات</button>
+        <button type="button" id="logoutBtn" class="logout">تسجيل الخروج</button>
       </aside>
 
       <section class="dash-content">
@@ -272,8 +284,8 @@
 
         <section class="glass-card table-card">
           <div class="table-head">
-            <h2>أحدث الطلبات</h2>
-            <button id="refreshBtn" class="ghost-btn">تحديث</button>
+            <h2 id="dashboardTableTitle">أحدث الطلبات</h2>
+            <button id="refreshBtn" class="ghost-btn" type="button">تحديث</button>
           </div>
           <div class="table-scroll">
             <table>
@@ -305,6 +317,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260515-subjectrows-fix"></script>
+  <script src="app.js?v=20260515-v6-webmail-pdf"></script>
 </body>
 </html>
