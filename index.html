@@ -150,9 +150,9 @@
       <form id="newRequestForm" class="form-grid">
         <h3>بيانات الطالب/ـة</h3>
         <label>اسم الطالب/ـة<input name="studentName" required /></label>
-        <label>رقم الهوية<input name="nationalId" required inputmode="numeric" /></label>
+        <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
-        <label>رقم الجوال<input name="mobile" required inputmode="tel" /></label>
+        <label>رقم الجوال<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="10 أرقام تبدأ بـ 05" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
         <label>البريد الإلكتروني<input name="email" type="email" /></label>
 
         <h3>بيانات المدرسة والاختبار</h3>
@@ -160,8 +160,21 @@
         <label>الصف<input name="grade" required /></label>
         <label>اسم المدرسة<input name="schoolName" required /></label>
         <label>الرقم الوزاري<input name="schoolCode" required placeholder="مثال: 123456" /></label>
-        <label>المادة/المواد<input name="subjects" required /></label>
-        <label>تاريخ الاختبار<input name="examDate" type="date" required /></label>
+
+        <div class="subject-date-section">
+          <div class="subject-date-head">
+            <strong>المواد وتواريخ الاختبارات</strong>
+            <button class="ghost-btn compact-btn" id="addSubjectRow" type="button">إضافة مادة أخرى</button>
+          </div>
+          <div id="subjectDateRows" class="subject-date-rows">
+            <div class="subject-date-row">
+              <label>المادة/المواد<input data-subject required placeholder="مثال: الرياضيات" /></label>
+              <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
+              <button class="small-btn remove-subject-row" type="button" disabled>حذف</button>
+            </div>
+          </div>
+          <small class="hint-text">يمكن إضافة أكثر من مادة إذا كانت الاختبارات في أيام مختلفة.</small>
+        </div>
 
         <h3>بيانات العذر والمرفقات</h3>
         <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
