@@ -122,6 +122,51 @@ async function collectFiles(input) {
   return Promise.all(files.map(fileToBase64));
 }
 
+
+function collectSubjectDates(form) {
+  const rows = Array.from(form.querySelectorAll(".subject-date-row"));
+  const pairs = [];
+  rows.forEach((row, idx) => {
+    const subject = row.querySelector("[data-subject]")?.value.trim() || "";
+    const date = row.querySelector("[data-exam-date]")?.value || "";
+    if (subject || date) {
+      if (!subject || !date) throw new Error(`يرجى تعبئة المادة وتاريخ الاختبار في الصف رقم ${idx + 1}.`);
+      pairs.push({ subject, date });
+    }
+  });
+  if (!pairs.length) throw new Error("يرجى إضافة مادة واحدة على الأقل مع تاريخ الاختبار.");
+  return {
+    pairs,
+    subjects: pairs.map(x => x.subject).join(" | "),
+    examDate: pairs.map(x => `${x.subject}: ${x.date}`).join(" | "),
+  };
+}
+
+function resetSubjectRows() {
+  const holder = $("#subjectDateRows");
+  if (!holder) return;
+  holder.innerHTML = `
+    <div class="subject-date-row">
+      <label>المادة/المواد<input data-subject required placeholder="مثال: الرياضيات" /></label>
+      <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
+      <button class="small-btn remove-subject-row" type="button" disabled>حذف</button>
+    </div>
+  `;
+}
+
+function addSubjectRow() {
+  const holder = $("#subjectDateRows");
+  if (!holder) return;
+  const row = document.createElement("div");
+  row.className = "subject-date-row";
+  row.innerHTML = `
+    <label>المادة/المواد<input data-subject required placeholder="مثال: العلوم" /></label>
+    <label>تاريخ الاختبار<input data-exam-date type="date" required /></label>
+    <button class="small-btn remove-subject-row" type="button">حذف</button>
+  `;
+  holder.appendChild(row);
+}
+
 document.addEventListener("click", (e) => {
   const open = e.target.closest("[data-open]");
   if (open) showSection(open.dataset.open);
@@ -134,27 +179,51 @@ document.addEventListener("click", (e) => {
   }
 
   if (e.target.closest("[data-back-home]")) showSection("publicHome");
+
+  if (e.target.closest("#addSubjectRow")) addSubjectRow();
+
+  const removeSubject = e.target.closest(".remove-subject-row");
+  if (removeSubject && !removeSubject.disabled) {
+    removeSubject.closest(".subject-date-row")?.remove();
+  }
 });
 
 $("#newRequestForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const btn = e.submitter;
-  btn.disabled = true;
-  btn.textContent = "جاري إرسال الطلب...";
+  const form = e.currentTarget;
+  const btn = e.submitter || form.querySelector("button[type=submit]");
+  const originalText = btn?.textContent || "إرسال الطلب";
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add("loading");
+    btn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span><span>جاري إرسال الطلب...</span>`;
+  }
   try {
-    const request = formToObject(e.currentTarget);
-    const attachments = await collectFiles(e.currentTarget.elements.attachments);
+    const request = formToObject(form);
+    const subjectData = collectSubjectDates(form);
+    request.subjects = subjectData.subjects;
+    request.examDate = subjectData.examDate;
+    request.subjectDatesJson = JSON.stringify(subjectData.pairs);
+
+    if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
+    if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
+
+    const attachments = await collectFiles(form.elements.attachments);
     const result = await api("submitRequest", { request, attachments });
     showToast(`تم تقديم الطلب بنجاح. رقم الطلب: ${result.requestId}`);
-    e.currentTarget.reset();
+    form.reset();
+    resetSubjectRows();
     showSection("trackForm");
     $("#trackRequestForm [name=requestId]").value = result.requestId;
     $("#trackResult").innerHTML = `<b>رقم الطلب:</b> ${result.requestId}<br><span>احتفظ برقم الطلب لمتابعة الحالة.</span>`;
   } catch (err) {
     showToast(err.message, true);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "إرسال الطلب";
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove("loading");
+      btn.textContent = originalText;
+    }
   }
 });
 
@@ -285,7 +354,7 @@ function renderDetails(r) {
       <div class="info-box"><b>المدرسة</b><span>${escapeHtml(r.schoolName)}</span></div>
       <div class="info-box"><b>المرحلة / الصف</b><span>${escapeHtml(r.stage)} - ${escapeHtml(r.grade)}</span></div>
       <div class="info-box"><b>المواد</b><span>${escapeHtml(r.subjects)}</span></div>
-      <div class="info-box"><b>تاريخ الاختبار</b><span>${escapeHtml(r.examDate)}</span></div>
+      <div class="info-box"><b>تواريخ الاختبارات</b><span>${escapeHtml(r.examDate)}</span></div>
       <div class="info-box"><b>تصنيف الحالة</b><span>${escapeHtml(r.medicalCategory)}</span></div>
       <div class="info-box"><b>وصف الحالة</b><span>${escapeHtml(r.medicalDescription)}</span></div>
       <div class="info-box"><b>رابط التقرير الطبي</b><span>${linkOrDash(r.medicalReportUrl)}</span></div>
