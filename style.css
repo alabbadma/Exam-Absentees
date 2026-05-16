@@ -1255,3 +1255,164 @@ button.loading,
   .analytics-kpis { grid-template-columns: repeat(2, 1fr); }
   .analytics-grid { grid-template-columns: 1fr; }
 }
+
+/* V9: توحيد أيقونات الواجهة الرئيسية وإلغاء أي أثر لتكرار المتابعة */
+.clean-home-actions {
+  grid-template-columns: repeat(3, minmax(126px, 1fr)) !important;
+  align-items: stretch;
+  gap: 14px !important;
+}
+.home-action-card {
+  min-height: 138px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 7px !important;
+  border-top: 0 !important;
+  overflow: hidden !important;
+}
+.home-action-card .svg-icon {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 0 4px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(230,248,249,.96)) !important;
+  box-shadow: 0 12px 24px rgba(21,68,90,.14), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+.home-action-card.primary .svg-icon {
+  background: rgba(255,255,255,.18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 12px 24px rgba(0,0,0,.14) !important;
+}
+.home-action-card .svg-icon svg {
+  width: 25px !important;
+  height: 25px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2.25 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+.home-action-card b {
+  color: inherit !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+}
+.home-action-card small {
+  color: inherit !important;
+  opacity: .82 !important;
+  font-size: 10.5px !important;
+  line-height: 1.45 !important;
+}
+.action-card:nth-child(2), .action-card:nth-child(3), .action-card:nth-child(4) {
+  border-top: 0 !important;
+}
+@media (max-width: 780px) {
+  .clean-home-actions { grid-template-columns: 1fr !important; }
+  .home-action-card { min-height: 108px !important; }
+}
+
+/* V10: إزالة بطاقة المدير من الواجهات + تحسين التاريخ + ألوان الأزرار النشطة */
+.manager-card,
+.manager-badge {
+  display: none !important;
+}
+
+.site-header {
+  padding-left: 18px !important;
+  padding-right: 250px !important;
+}
+
+.date-widget {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 2px !important;
+  text-align: center !important;
+  letter-spacing: 0 !important;
+}
+.date-widget span,
+.date-widget strong,
+.date-widget small {
+  width: 100% !important;
+  display: block !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  font-weight: 800 !important;
+}
+
+.welcome-strip {
+  background: linear-gradient(135deg, #15445a 0%, #3d7eb9 48%, #0da9a6 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.28) !important;
+  box-shadow: 0 20px 46px rgba(21,68,90,.24), inset 0 1px 0 rgba(255,255,255,.32) !important;
+}
+.welcome-strip h2,
+.welcome-strip p,
+.welcome-strip #roleLabel {
+  color: #fff !important;
+}
+.welcome-strip p,
+.welcome-strip #roleLabel {
+  opacity: .94 !important;
+}
+
+button,
+.submit-btn,
+.ghost-btn,
+.small-btn,
+.action-card,
+.dash-sidebar button,
+.mail-actions a {
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease, background .16s ease, color .16s ease !important;
+}
+button:active,
+.submit-btn:active,
+.ghost-btn:active,
+.small-btn:active,
+.action-card:active,
+.dash-sidebar button:active,
+.mail-actions a:active {
+  transform: translateY(2px) scale(.985) !important;
+  filter: brightness(.92) saturate(1.08) !important;
+  box-shadow: 0 8px 18px rgba(21,68,90,.20), inset 0 3px 8px rgba(0,0,0,.13) !important;
+}
+
+.dash-sidebar button.active,
+.dash-sidebar button:hover,
+.dash-sidebar button:focus-visible {
+  background: linear-gradient(135deg, #351375 0%, #3d7eb9 52%, #0da9a6 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 28px rgba(53,19,117,.22), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+
+.submit-btn:hover,
+.ghost-btn:hover,
+.small-btn:hover,
+.mail-actions a:hover {
+  filter: brightness(1.04) saturate(1.08) !important;
+}
+
+.submit-btn.loading,
+.ghost-btn.loading,
+.small-btn.loading,
+.dash-sidebar button.loading {
+  background: linear-gradient(135deg, #15445a, #218caa, #07a869) !important;
+  color: #fff !important;
+}
+
+.status-pill {
+  color: #0f766e;
+}
+
+@media (max-width: 1050px) {
+  .site-header { padding: 150px 10px 28px !important; }
+  .date-widget { right: 50% !important; transform: translateX(50%) !important; }
+}
