@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260515-v10-kpi-ui-fix" />
+  <link rel="stylesheet" href="style.css?v=20260516-v12-smart-forms" />
 </head>
 
 <body>
@@ -144,13 +144,14 @@
         <label>اسم الطالب/ـة<input name="studentName" required /></label>
         <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
-        <label>الجنسية<input name="nationality" required placeholder="مثال: سعودي / يمني / مصري" /></label>
+        <label>الجنسية<select name="nationality" id="nationalitySelect" required></select></label>
+        <label id="otherNationalityWrap" class="hidden">اكتب الجنسية<input name="nationalityOther" id="nationalityOther" placeholder="اكتب الجنسية" /></label>
         <label>رقم الجوال<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="مثال: 05XXXXXXXX" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
         <label>البريد الإلكتروني<input name="email" type="email" /></label>
 
         <h3>بيانات المدرسة والاختبار</h3>
         <label>المرحلة<select name="stage"><option>الابتدائية</option><option>المتوسطة</option><option>الثانوية</option></select></label>
-        <label>الصف<input name="grade" required /></label>
+        <label>الصف<select name="grade" id="gradeSelect" required></select></label>
         <label>اسم المدرسة<input name="schoolName" required /></label>
         <label>الرقم الوزاري<input name="schoolCode" required placeholder="مثال: 123456" /></label>
         <label>بريد المدرسة الرسمي<input name="schoolEmail" type="email" required placeholder="example@moe.gov.sa" /></label>
@@ -173,6 +174,12 @@
               </select>
             </label>
           </div>
+          <label class="semester-label">الفصل الدراسي
+            <select name="semester" id="semesterSelect" required>
+              <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
+              <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
+            </select>
+          </label>
           <div id="subjectDateRows" class="subject-date-rows"></div>
           <small class="hint-text">اختر عدد مواد الغياب أولًا، وسيظهر لكل مادة حقل مستقل مع تاريخ اختبارها.</small>
         </div>
@@ -180,7 +187,6 @@
         <h3>بيانات العذر والمرفقات</h3>
         <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
         <label>تصنيف الحالة الصحية<select name="medicalCategory" required>
-          <option>تنويم في المستشفى</option>
           <option>أورام وعلاج كيماوي/إشعاعي</option>
           <option>كسور أو إصابات تمنع الحضور أو الكتابة</option>
           <option>أمراض معدية أو عزل طبي</option>
@@ -191,9 +197,30 @@
         </select></label>
         <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
 
+        <div class="hospital-section">
+          <h3>حالة التنويم</h3>
+          <label>حالة التنويم في المستشفى
+            <select name="hospitalizationStatus" id="hospitalizationStatus" required>
+              <option value="لا يوجد تنويم في المستشفى">لا يوجد تنويم في المستشفى</option>
+              <option value="تم التنويم ثم الخروج من المستشفى">تم التنويم ثم الخروج من المستشفى</option>
+              <option value="تم التنويم ولا يزال حتى تاريخه">تم التنويم ولا يزال حتى تاريخه</option>
+            </select>
+          </label>
+          <div id="hospitalDetails" class="hospital-details hidden">
+            <label>مدة التنويم بالأيام
+              <div class="number-stepper">
+                <button type="button" id="hospMinus">−</button>
+                <input name="hospitalDays" id="hospitalDays" type="number" min="1" max="999" value="1" />
+                <button type="button" id="hospPlus">+</button>
+              </div>
+            </label>
+            <label>تاريخ بداية التنويم<input name="hospitalFrom" id="hospitalFrom" type="date" /></label>
+            <label>تاريخ نهاية التنويم<input name="hospitalTo" id="hospitalTo" type="date" /></label>
+          </div>
+        </div>
+
         <div class="checks">
           <label><input type="checkbox" name="hasMedicalReport" checked /> يوجد تقرير طبي</label>
-          <label><input type="checkbox" name="isHospitalized" /> الطالب/ـة منوم</label>
           <label><input type="checkbox" name="preventsAttendance" /> الحالة تمنع الحضور</label>
           <label><input type="checkbox" name="preventsExamPerformance" /> الحالة تمنع أداء الاختبار</label>
           <label><input type="checkbox" name="canRemoteExam" /> يستطيع أداء اختبار عن بعد</label>
@@ -316,6 +343,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260515-v10-kpi-ui-fix"></script>
+  <script src="app.js?v=20260516-v12-smart-forms"></script>
 </body>
 </html>
