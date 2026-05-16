@@ -145,9 +145,21 @@ function formToObject(form) {
     obj[key] = value;
   }
 
-  ["hasMedicalReport","isHospitalized","preventsAttendance","preventsExamPerformance","canRemoteExam","needsHealingPlaceExam"].forEach(name => {
+  ["hasMedicalReport","preventsAttendance","preventsExamPerformance","canRemoteExam","needsHealingPlaceExam"].forEach(name => {
     obj[name] = form.elements[name]?.checked ? "نعم" : "لا";
   });
+
+  const natSelect = form.querySelector('[name="nationality"]');
+  const natOther = form.querySelector('[name="nationalityOther"]');
+  if (natSelect && natSelect.value === "أخرى") {
+    obj.nationality = (natOther?.value || "").trim();
+  }
+  const hosp = form.querySelector('[name="hospitalizationStatus"]')?.value || "لا يوجد تنويم في المستشفى";
+  obj.hospitalizationStatus = hosp;
+  obj.isHospitalized = hosp === "لا يوجد تنويم في المستشفى" ? "لا" : "نعم";
+  obj.hospitalDays = form.querySelector('[name="hospitalDays"]')?.value || "";
+  obj.hospitalFrom = form.querySelector('[name="hospitalFrom"]')?.value || "";
+  obj.hospitalTo = form.querySelector('[name="hospitalTo"]')?.value || "";
 
   return obj;
 }
@@ -224,6 +236,19 @@ async function collectFiles(input, onProgress) {
 
 
 const ARABIC_ORDINALS = ["الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة"];
+
+const NATIONALITIES = [
+  "المملكة العربية السعودية",
+  "الإمارات العربية المتحدة", "مملكة البحرين", "دولة الكويت", "سلطنة عمان", "دولة قطر",
+  "الجمهورية اليمنية", "جمهورية العراق", "المملكة الأردنية الهاشمية", "دولة فلسطين", "الجمهورية اللبنانية", "الجمهورية العربية السورية",
+  "جمهورية مصر العربية", "جمهورية السودان", "دولة ليبيا", "الجمهورية التونسية", "الجمهورية الجزائرية الديمقراطية الشعبية", "المملكة المغربية", "الجمهورية الإسلامية الموريتانية", "جمهورية الصومال", "جمهورية جيبوتي", "جزر القمر", "أخرى"
+];
+
+const GRADES_BY_STAGE = {
+  "الابتدائية": ["الصف الأول ابتدائي", "الصف الثاني ابتدائي", "الصف الثالث ابتدائي", "الصف الرابع ابتدائي", "الصف الخامس ابتدائي", "الصف السادس ابتدائي"],
+  "المتوسطة": ["الصف الأول متوسط", "الصف الثاني متوسط", "الصف الثالث متوسط"],
+  "الثانوية": ["الصف الأول ثانوي", "الصف الثاني ثانوي", "الصف الثالث ثانوي"],
+};
 
 function toEnglishDigits(value) {
   return String(value || "")
@@ -309,18 +334,86 @@ function collectSubjectDates(form) {
     pairs,
     subjects: pairs.map(x => x.subject).join(" | "),
     examDate: pairs.map(x => `${x.subject}: ${x.date}`).join(" | "),
+    semester: document.getElementById("semesterSelect")?.value || "",
   };
 }
 
 function resetSubjectRows() {
   const count = $("#absenceSubjectsCount");
   if (count) count.value = "1";
+  const semester = $("#semesterSelect");
+  if (semester) semester.value = "الفصل الدراسي الأول";
   renderSubjectRows(1);
+}
+
+
+function initNationalitySelect() {
+  const select = document.getElementById("nationalitySelect");
+  const wrap = document.getElementById("otherNationalityWrap");
+  const other = document.getElementById("nationalityOther");
+  if (!select) return;
+  if (!select.options.length) {
+    select.innerHTML = NATIONALITIES.map(n => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join("");
+  }
+  const sync = () => {
+    const isOther = select.value === "أخرى";
+    wrap?.classList.toggle("hidden", !isOther);
+    if (other) other.required = isOther;
+  };
+  select.addEventListener("change", sync);
+  sync();
+}
+
+function initStageGradeSelect() {
+  const stage = document.querySelector('[name="stage"]');
+  const grade = document.getElementById("gradeSelect");
+  if (!stage || !grade) return;
+  const sync = () => {
+    const current = grade.value;
+    const list = GRADES_BY_STAGE[stage.value] || [];
+    grade.innerHTML = list.map(g => `<option value="${escapeAttr(g)}">${escapeHtml(g)}</option>`).join("");
+    if (list.includes(current)) grade.value = current;
+  };
+  stage.addEventListener("change", sync);
+  sync();
+}
+
+function initHospitalizationFields() {
+  const status = document.getElementById("hospitalizationStatus");
+  const box = document.getElementById("hospitalDetails");
+  const days = document.getElementById("hospitalDays");
+  const from = document.getElementById("hospitalFrom");
+  const to = document.getElementById("hospitalTo");
+  const plus = document.getElementById("hospPlus");
+  const minus = document.getElementById("hospMinus");
+  if (!status || !box) return;
+  const clampDays = () => { if (days) days.value = String(Math.max(1, Math.min(999, Number(days.value || 1) || 1))); };
+  const sync = () => {
+    const hasHosp = status.value !== "لا يوجد تنويم في المستشفى";
+    box.classList.toggle("hidden", !hasHosp);
+    if (days) days.required = hasHosp;
+    if (from) from.required = hasHosp;
+    if (to) {
+      const still = status.value === "تم التنويم ولا يزال حتى تاريخه";
+      to.required = hasHosp && !still;
+      to.disabled = still;
+      if (still) to.value = "";
+    }
+  };
+  plus?.addEventListener("click", () => { if (days) { days.value = String(Math.min(999, (Number(days.value || 1) || 1) + 1)); }});
+  minus?.addEventListener("click", () => { if (days) { days.value = String(Math.max(1, (Number(days.value || 1) || 1) - 1)); }});
+  days?.addEventListener("input", clampDays);
+  status.addEventListener("change", sync);
+  clampDays();
+  sync();
 }
 
 function initFormGuards() {
   enforceDigits(document.querySelector('[name="nationalId"]'), 10);
   enforceDigits(document.querySelector('[name="mobile"]'), 10);
+  initNationalitySelect();
+  initStageGradeSelect();
+  initHospitalizationFields();
 
   const count = document.getElementById("absenceSubjectsCount");
   if (count) {
@@ -377,6 +470,14 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       request.subjects = subjectData.subjects;
       request.examDate = subjectData.examDate;
       request.subjectDatesJson = JSON.stringify(subjectData.pairs);
+      request.semester = subjectData.semester;
+
+      if (!request.nationality) throw new Error("فضلاً اختر الجنسية أو اكتبها عند اختيار أخرى.");
+      if (request.hospitalizationStatus !== "لا يوجد تنويم في المستشفى") {
+        if (!request.hospitalDays || Number(request.hospitalDays) < 1) throw new Error("مدة التنويم يجب أن تبدأ من 1 يوم على الأقل.");
+        if (!request.hospitalFrom) throw new Error("تاريخ بداية التنويم مطلوب عند وجود تنويم.");
+        if (request.hospitalizationStatus === "تم التنويم ثم الخروج من المستشفى" && !request.hospitalTo) throw new Error("تاريخ نهاية التنويم مطلوب عند الخروج من المستشفى.");
+      }
 
       if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
       if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
@@ -539,6 +640,12 @@ function renderAnalytics(a) {
       <article><b>${escapeHtml(a.schoolsCount || 0)}</b><span>عدد المدارس الرافعة</span></article>
       <article><b>${escapeHtml(a.totalAbsenceSubjects || 0)}</b><span>إجمالي مواد الغياب</span></article>
       <article><b>${escapeHtml(a.todayRequests || 0)}</b><span>طلبات اليوم</span></article>
+      <article><b>${escapeHtml(a.totalStudents || 0)}</b><span>إجمالي الطلاب</span></article>
+      <article><b>${escapeHtml(a.maleStudents || 0)}</b><span>طلاب</span></article>
+      <article><b>${escapeHtml(a.femaleStudents || 0)}</b><span>طالبات</span></article>
+      <article><b>${escapeHtml(a.primarySchools || 0)}</b><span>مدارس ابتدائية</span></article>
+      <article><b>${escapeHtml(a.middleSchools || 0)}</b><span>مدارس متوسطة</span></article>
+      <article><b>${escapeHtml(a.highSchools || 0)}</b><span>مدارس ثانوية</span></article>
     </div>
     <div class="analytics-grid">
       <section class="chart-box">
@@ -552,6 +659,14 @@ function renderAnalytics(a) {
       <section class="chart-box">
         <h3>أكثر المدارس رفعًا للطلبات</h3>
         ${renderBarList(topSchools, maxSchools)}
+      </section>
+      <section class="chart-box">
+        <h3>الطلاب حسب الجنس</h3>
+        ${renderBarList(a.byGender || [], Math.max(1, ...(a.byGender || []).map(x => Number(x.count || 0))))}
+      </section>
+      <section class="chart-box">
+        <h3>المدارس الرافعة حسب المرحلة</h3>
+        ${renderBarList(a.schoolsByStage || [], Math.max(1, ...(a.schoolsByStage || []).map(x => Number(x.count || 0))))}
       </section>
       <section class="chart-box">
         <h3>مؤشرات تنفيذ الطلبات</h3>
@@ -646,9 +761,13 @@ function renderDetails(r) {
       <div class="info-box"><b>رقم الهوية</b><span>${escapeHtml(r.nationalId)}</span></div>
       <div class="info-box"><b>المدرسة</b><span>${escapeHtml(r.schoolName)}</span></div>
       <div class="info-box"><b>المرحلة / الصف</b><span>${escapeHtml(r.stage)} - ${escapeHtml(r.grade)}</span></div>
+      <div class="info-box"><b>الجنس / الجنسية</b><span>${escapeHtml((r.gender || "") + " - " + (r.nationality || ""))}</span></div>
+      <div class="info-box"><b>الفصل الدراسي</b><span>${escapeHtml(r.semester || "")}</span></div>
       <div class="info-box"><b>المواد</b><span>${escapeHtml(r.subjects)}</span></div>
       <div class="info-box"><b>تواريخ الاختبارات</b><span>${escapeHtml(r.examDate)}</span></div>
       <div class="info-box"><b>تصنيف الحالة</b><span>${escapeHtml(r.medicalCategory)}</span></div>
+      <div class="info-box"><b>حالة التنويم</b><span>${escapeHtml(r.hospitalizationStatus || "")}</span></div>
+      <div class="info-box"><b>مدة التنويم</b><span>${escapeHtml(r.hospitalDays || "")}</span></div>
       <div class="info-box"><b>وصف الحالة</b><span>${escapeHtml(r.medicalDescription)}</span></div>
       <div class="info-box"><b>رابط التقرير الطبي</b><span>${linkOrDash(r.medicalReportUrl)}</span></div>
     </div>
