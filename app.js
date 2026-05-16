@@ -746,7 +746,6 @@ function renderDetails(r) {
       <textarea id="directorNote" placeholder="سبب التعديل أو ملاحظات المدير">${escapeHtml(r.directorNote || "")}</textarea>
       <input id="ccEmails" placeholder="CC اختياري - أكثر من بريد مفصول بفاصلة" />
       <button class="submit-btn" type="button" id="approveBtn">اعتماد القرار</button>
-      <button class="ghost-btn" type="button" id="pdfBtn">توليد PDF</button>
       <button class="ghost-btn" type="button" id="emlBtn">تجهيز البريد الرسمي</button>
     </div>
   ` : "";
@@ -787,20 +786,8 @@ function renderDetails(r) {
     }
   }));
 
-  $("#pdfBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري توليد PDF...", async () => {
-    try {
-      const result = await api("generatePdf", { session: SESSION, requestId: r.requestId });
-      const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
-      showToast("تم توليد ملف PDF، وبدأ تحميل الملف.");
-      if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
-    } catch (err) {
-      showToast(err.message, true);
-    }
-  }));
 
   $("#emlBtn")?.addEventListener("click", (e) => {
-    const emlWindow = window.open("about:blank", "_blank");
-    const mailWindow = window.open("about:blank", "_blank");
     return withButtonLoading(e.currentTarget, "جاري تجهيز البريد...", async () => {
       try {
         const result = await api("generateOutlookEml", {
@@ -808,14 +795,12 @@ function renderDetails(r) {
           requestId: r.requestId,
           cc: $("#ccEmails")?.value || ""
         });
-        showToast("تم تجهيز البريد الرسمي. تم تحميل PDF ونسخ نص الرسالة.");
-        if (emlWindow) emlWindow.location = result.pdfDownloadUrl || result.pdfUrl;
-        if (mailWindow) mailWindow.location = result.webmailUrl || CONFIG.WEBMAIL_URL;
+        const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
+        if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
         await copyPreparedText(result.body || "");
         showMailPreparationPanel(result);
+        showToast("تم تجهيز البريد الرسمي: تم تحميل PDF ونسخ نص الرسالة دون فتح صفحة جديدة.");
       } catch (err) {
-        if (emlWindow) emlWindow.close();
-        if (mailWindow) mailWindow.close();
         showToast(err.message, true);
       }
     });
@@ -842,7 +827,7 @@ function showMailPreparationPanel(result) {
   }
   box.innerHTML = `
     <h2>تم تجهيز البريد الرسمي</h2>
-    <p class="mail-note">تم توليد ملف PDF للمعاملة كاملة، وتمت محاولة تحميله ونسخ نص الرسالة. بعد الدخول على بريد الوزارة أنشئ رسالة جديدة ثم استخدم الأزرار التالية للنسخ والإرفاق.</p>
+    <p class="mail-note">تم تجهيز ملف PDF للمعاملة كاملة ونسخ نص الرسالة. افتح بريد الوزارة يدويًا، أنشئ رسالة جديدة، ثم انسخ بريد المدرسة والموضوع والصق نص الرسالة وأرفق ملف PDF الذي تم تحميله.</p>
     <div class="mail-grid">
       <label>إلى<input id="preparedTo" readonly value="${escapeAttr(result.to || "")}" /></label>
       <label>CC<input id="preparedCc" readonly value="${escapeAttr(result.cc || "")}" /></label>
@@ -855,8 +840,7 @@ function showMailPreparationPanel(result) {
       <button class="submit-btn" type="button" data-copy="preparedCc">نسخ CC</button>
       <button class="submit-btn" type="button" data-copy="preparedSubject">نسخ الموضوع</button>
       <button class="submit-btn" type="button" data-copy="preparedBody">نسخ نص الرسالة</button>
-      <a class="submit-btn link-button" href="${escapeAttr(result.pdfDownloadUrl || result.pdfUrl || "#")}" target="_blank" rel="noopener">تحميل PDF المعاملة</a>
-      <a class="submit-btn link-button" href="${escapeAttr(result.webmailUrl || CONFIG.WEBMAIL_URL)}" target="_blank" rel="noopener">فتح بريد الوزارة</a>
+      <button class="submit-btn" type="button" id="downloadPreparedPdf">تحميل PDF مرة أخرى</button>
     </div>
   `;
   box.querySelectorAll("[data-copy]").forEach(btn => {
@@ -865,6 +849,10 @@ function showMailPreparationPanel(result) {
       const ok = await copyPreparedText(el?.value || el?.textContent || "");
       showToast(ok ? "تم النسخ." : "لم يتم النسخ تلقائيًا، انسخ النص يدويًا.", !ok);
     });
+  });
+  box.querySelector("#downloadPreparedPdf")?.addEventListener("click", () => {
+    const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
+    if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
   });
 }
 
@@ -880,17 +868,26 @@ function escapeAttr(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
 
 
 function forceDownload(url, filename) {
+  if (!url) return;
   try {
     const a = document.createElement("a");
     a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener";
     if (filename) a.download = filename;
+    a.style.display = "none";
     document.body.appendChild(a);
     a.click();
     a.remove();
+
+    // احتياط: بعض روابط Google Drive تتجاهل download؛ نستخدم iframe مخفي حتى لا تُفتح صفحة جديدة.
+    setTimeout(() => {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      setTimeout(() => iframe.remove(), 8000);
+    }, 300);
   } catch (e) {
-    window.open(url, "_blank");
+    showToast("تعذر بدء التحميل تلقائيًا. استخدم زر تحميل PDF مرة أخرى.", true);
   }
 }
 
