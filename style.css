@@ -1416,3 +1416,122 @@ button:active,
   .site-header { padding: 150px 10px 28px !important; }
   .date-widget { right: 50% !important; transform: translateX(50%) !important; }
 }
+
+/* V11: تثبيت تمركز الشعار والعنوان في رأس الصفحة */
+.site-header {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+  padding: 34px 240px 32px !important;
+  min-height: 235px !important;
+  box-sizing: border-box !important;
+}
+
+.site-header .moe-logo-wrap {
+  width: 176px !important;
+  height: 124px !important;
+  margin: 0 auto 26px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+}
+
+.site-header .moe-logo {
+  width: 100% !important;
+  max-width: 176px !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
+.site-header h1,
+.site-header .subtitle {
+  width: 100% !important;
+  max-width: 780px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  align-self: center !important;
+}
+
+.site-header h1 {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+  font-size: clamp(18px, 1.8vw, 20px) !important;
+}
+
+.site-header .subtitle {
+  margin-top: 0 !important;
+  font-size: 13px !important;
+}
+
+.date-widget {
+  position: absolute !important;
+  top: 34px !important;
+  right: 24px !important;
+  z-index: 3 !important;
+}
+
+@media (max-width: 1050px) {
+  .site-header {
+    padding: 154px 18px 30px !important;
+    min-height: 330px !important;
+  }
+  .date-widget {
+    top: 24px !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+  }
+  .site-header .moe-logo-wrap {
+    width: 158px !important;
+    height: 112px !important;
+    margin-bottom: 22px !important;
+  }
+}
+
+/* V12 conditional fields */
+.semester-label,
+.hospital-section {
+  grid-column: 1 / -1;
+}
+.hospital-section {
+  padding: 14px;
+  border: 1px solid rgba(13,169,166,.22);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(239,252,251,.85));
+  box-shadow: 0 18px 35px rgba(21,68,90,.08), inset 0 1px 0 rgba(255,255,255,.7);
+}
+.hospital-section h3 { margin-top: 0; }
+.hospital-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.number-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.number-stepper input { text-align: center; }
+.number-stepper button {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(145deg, #3d7eb9, #0da9a6);
+  border: 0;
+  box-shadow: 0 12px 20px rgba(61,126,185,.22);
+  cursor: pointer;
+  font-weight: 800;
+}
+.hidden { display: none !important; }
+@media (max-width: 850px) {
+  .hospital-details { grid-template-columns: 1fr; }
+}
