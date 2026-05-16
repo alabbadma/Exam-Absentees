@@ -16,21 +16,27 @@ let CURRENT_REQUESTS = [];
 let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
+function toLatinDigits(value) {
+  return String(value ?? '')
+    .replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)])
+    .replace(/[۰-۹]/g, d => '0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]);
+}
+
 function formatDateParts() {
   const now = new Date();
-  const dayName = new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(now);
+  const dayName = new Intl.DateTimeFormat('ar-SA-u-nu-latn', { weekday: 'long' }).format(now);
   // مهم: ar-SA قد يعرض التاريخ هجريًا في بعض المتصفحات، لذلك نحدد التقويم الميلادي صراحة.
-  const greg = new Intl.DateTimeFormat('ar-SA-u-ca-gregory', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+  const greg = toLatinDigits(new Intl.DateTimeFormat('ar-SA-u-ca-gregory-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }).format(now));
   let hijri = '';
   try {
-    hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+    hijri = toLatinDigits(new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }).format(now));
   } catch (e) {
-    hijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+    hijri = toLatinDigits(new Intl.DateTimeFormat('ar-SA-u-ca-islamic-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }).format(now));
   }
   const dn = document.getElementById('todayName');
   const gd = document.getElementById('gregDate');
   const hd = document.getElementById('hijriDate');
-  if (dn) dn.textContent = dayName;
+  if (dn) dn.textContent = toLatinDigits(dayName);
   if (gd) gd.textContent = 'ميلادي: ' + greg;
   if (hd) hd.textContent = 'هجري: ' + hijri;
 }
@@ -452,11 +458,11 @@ async function loadDashboard() {
 }
 
 function renderKpis(kpis) {
-  $("#kpiNew").textContent = kpis.new || 0;
-  $("#kpiReview").textContent = kpis.review || 0;
-  $("#kpiComplete").textContent = kpis.complete || 0;
-  $("#kpiApproved").textContent = kpis.approved || 0;
-  $("#kpiRejected").textContent = kpis.rejected || 0;
+  $("#kpiNew").textContent = toLatinDigits(kpis.new || 0);
+  $("#kpiReview").textContent = toLatinDigits(kpis.review || 0);
+  $("#kpiComplete").textContent = toLatinDigits(kpis.complete || 0);
+  $("#kpiApproved").textContent = toLatinDigits(kpis.approved || 0);
+  $("#kpiRejected").textContent = toLatinDigits(kpis.rejected || 0);
 }
 
 
@@ -748,6 +754,6 @@ function linkOrDash(url) {
 }
 
 function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return toLatinDigits(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
