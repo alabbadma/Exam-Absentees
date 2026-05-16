@@ -790,8 +790,9 @@ function renderDetails(r) {
   $("#pdfBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري توليد PDF...", async () => {
     try {
       const result = await api("generatePdf", { session: SESSION, requestId: r.requestId });
-      showToast("تم توليد ملف PDF.");
-      if (result.pdfUrl) window.open(result.pdfUrl, "_blank");
+      const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
+      showToast("تم توليد ملف PDF، وبدأ تحميل الملف.");
+      if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
     } catch (err) {
       showToast(err.message, true);
     }
@@ -876,3 +877,20 @@ function escapeHtml(value) {
   return toLatinDigits(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(value) { return escapeHtml(value).replace(/"/g, "&quot;"); }
+
+
+function forceDownload(url, filename) {
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    if (filename) a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  } catch (e) {
+    window.open(url, "_blank");
+  }
+}
+
