@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260515-v8-smart-ux-performance" />
+  <link rel="stylesheet" href="style.css?v=20260515-v10-kpi-ui-fix" />
 </head>
 
 <body>
@@ -21,18 +21,6 @@
         <span id="todayName">اليوم</span>
         <strong id="gregDate">--/--/----</strong>
         <small id="hijriDate">--/--/----</small>
-      </div>
-
-      <div class="manager-card mini-3d">
-        <div class="avatar-3d" aria-hidden="true">
-          <div class="avatar-face"></div>
-          <div class="avatar-ghutra"></div>
-          <div class="avatar-body"></div>
-        </div>
-        <div>
-          <h3>أ. خالد العتيبي</h3>
-          <p>مدير إدارة تقويم الأداء المعرفي والمهاري</p>
-        </div>
       </div>
 
       <h1>منصة معالجة أعذار الغياب عن الاختبارات</h1>
@@ -51,19 +39,25 @@
             <h2>مرحبًا بك في منصة معالجة أعذار الغياب عن الاختبارات</h2>
             <p>حلول رقمية ذكية لإدارة الطلبات بدقة وموثوقية وسرعة، مع اعتماد القرار النهائي من صاحب الصلاحية.</p>
 
-            <div class="action-grid">
-              <button class="action-card primary" data-open="requestForm">
-                <span class="icon">＋</span>
+            <div class="action-grid clean-home-actions">
+              <button class="action-card primary home-action-card" data-open="requestForm" type="button">
+                <span class="icon svg-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
+                </span>
                 <b>تقديم طلب جديد</b>
                 <small>ابدأ طلب عذر جديد</small>
               </button>
-              <button class="action-card" data-open="trackForm">
-                <span class="icon">🏫</span>
+              <button class="action-card home-action-card" data-open="trackForm" type="button">
+                <span class="icon svg-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/><path d="M7 10h.01"/><path d="M17 10h.01"/><path d="M4 21h16"/></svg>
+                </span>
                 <b>متابعة المدرسة</b>
                 <small>برقم الطلب والرقم الوزاري</small>
               </button>
-              <button class="action-card" data-login="admin">
-                <span class="icon">☑</span>
+              <button class="action-card home-action-card" data-login="admin" type="button">
+                <span class="icon svg-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-5"/></svg>
+                </span>
                 <b>الدخول للإدارة</b>
                 <small>لوحة الاعتماد</small>
               </button>
@@ -266,7 +260,6 @@
             <h2>مرحبًا بكم في لوحة التحكم</h2>
             <p id="roleLabel">إدارة تقويم الأداء المعرفي والمهاري</p>
           </div>
-          <div class="manager-badge">أ. خالد العتيبي</div>
         </div>
 
         <div class="kpi-grid">
@@ -323,6 +316,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260515-v8-smart-ux-performance"></script>
+  <script src="app.js?v=20260515-v10-kpi-ui-fix"></script>
 </body>
 </html>
