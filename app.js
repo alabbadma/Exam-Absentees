@@ -1006,8 +1006,9 @@ function renderDetails(r) {
           cc: $("#ccEmails")?.value || ""
         });
         const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
-        if (pdfLink && !result._downloadedOnce) {
-          result._downloadedOnce = true;
+        const downloadKey = `mailPdfDownloaded_${result.requestId || r.requestId}`;
+        if (pdfLink && !sessionStorage.getItem(downloadKey)) {
+          sessionStorage.setItem(downloadKey, "1");
           forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
         }
         await copyPreparedText(result.body || "");
@@ -1106,15 +1107,6 @@ function forceDownload(url, filename) {
     document.body.appendChild(a);
     a.click();
     a.remove();
-
-    // احتياط: بعض روابط Google Drive تتجاهل download؛ نستخدم iframe مخفي حتى لا تُفتح صفحة جديدة.
-    setTimeout(() => {
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.src = url;
-      document.body.appendChild(iframe);
-      setTimeout(() => iframe.remove(), 8000);
-    }, 300);
   } catch (e) {
     showToast("تعذر بدء التحميل تلقائيًا. استخدم زر تحميل PDF مرة أخرى.", true);
   }
