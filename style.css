@@ -1733,3 +1733,30 @@ button,
 .small-btn {
   min-height: 38px;
 }
+
+
+/* V19 — تهذيب الأزرار والجداول وتثبيت خط Noto Kufi Arabic */
+:root { --btn-radius-v19: 12px; }
+body, button, input, select, textarea, table, th, td, label, small, b, span, p, h1, h2, h3 {
+  font-family: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif !important;
+}
+button, .submit-btn, .ghost-btn, .small-btn, .dash-sidebar button,
+.status-pill, .email-status-pill, .mail-actions button, .translation-actions button {
+  border-radius: var(--btn-radius-v19) !important;
+}
+.status-pill, .email-status-pill {
+  padding: 7px 12px !important;
+  min-width: 90px;
+  justify-content: center;
+}
+table th, table td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+.row-actions {
+  justify-content: center !important;
+  align-items: center !important;
+}
+.small-btn, .submit-btn, .ghost-btn {
+  min-height: 38px;
+}
