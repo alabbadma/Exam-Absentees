@@ -277,6 +277,20 @@ const GRADES_BY_STAGE = {
   "الثانوية": ["الصف الأول ثانوي", "الصف الثاني ثانوي", "الصف الثالث ثانوي"],
 };
 
+const SUBJECTS_BY_STAGE = {
+  "الابتدائية": ["القرآن الكريم", "التوحيد", "الفقه والسلوك", "الحديث والسيرة", "لغتي", "الرياضيات", "العلوم", "الدراسات الاجتماعية", "المهارات الرقمية", "اللغة الإنجليزية", "التربية الفنية", "التربية البدنية", "المهارات الحياتية والأسرية", "أخرى"],
+  "المتوسطة": ["القرآن الكريم", "التوحيد", "الفقه", "الحديث", "لغتي الخالدة", "الرياضيات", "العلوم", "الدراسات الاجتماعية", "المهارات الرقمية", "اللغة الإنجليزية", "التربية الفنية", "التربية البدنية", "التفكير الناقد", "أخرى"],
+  "الثانوية": ["الكفايات اللغوية", "اللغة الإنجليزية", "الرياضيات", "الأحياء", "الكيمياء", "الفيزياء", "علم البيئة", "الدراسات الإسلامية", "التاريخ", "الجغرافيا", "المهارات الرقمية", "التفكير الناقد", "إدارة الأعمال", "المهارات الحياتية", "التربية الصحية والبدنية", "أخرى"]
+};
+
+function getCurrentStage() {
+  return document.querySelector('[name="stage"]')?.value || "الابتدائية";
+}
+
+function getSubjectOptionsForCurrentStage() {
+  return SUBJECTS_BY_STAGE[getCurrentStage()] || SUBJECTS_BY_STAGE["الابتدائية"];
+}
+
 function toEnglishDigits(value) {
   return String(value || "")
     .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
@@ -298,27 +312,56 @@ function renderSubjectRows(count = 1) {
   if (!holder) return;
 
   const current = Array.from(holder.querySelectorAll(".subject-date-row")).map(row => ({
-    subject: row.querySelector("[data-subject]")?.value || "",
+    subject: row.querySelector("[data-subject]")?.value || row.querySelector("[data-subject-select]")?.value || "",
+    other: row.querySelector("[data-subject-other]")?.value || "",
     date: row.querySelector("[data-exam-date]")?.value || "",
   }));
 
   const n = Math.max(1, Math.min(10, Number(count) || 1));
+  const options = getSubjectOptionsForCurrentStage();
   holder.innerHTML = "";
 
   for (let i = 0; i < n; i++) {
+    const prevSubject = current[i]?.subject || "";
+    const prevOther = current[i]?.other || "";
+    const selected = options.includes(prevSubject) ? prevSubject : (prevSubject ? "أخرى" : options[0]);
+    const otherValue = selected === "أخرى" ? (prevOther || (options.includes(prevSubject) ? "" : prevSubject)) : "";
     const row = document.createElement("div");
     row.className = "subject-date-row";
     row.dataset.index = String(i + 1);
     row.innerHTML = `
       <label class="subject-field">المادة ${ARABIC_ORDINALS[i] || (i + 1)}
-        <input data-subject name="subject_${i + 1}" required placeholder="مثال: الرياضيات" value="${escapeAttr(current[i]?.subject || "")}" />
+        <select data-subject-select name="subject_${i + 1}_select" required>
+          ${options.map(opt => `<option value="${escapeAttr(opt)}" ${opt === selected ? 'selected' : ''}>${escapeHtml(opt)}</option>`).join("")}
+        </select>
+        <div class="subject-other-wrap ${selected === "أخرى" ? "" : "hidden"}">
+          <input data-subject-other name="subject_${i + 1}_other" placeholder="اكتب اسم المادة" value="${escapeAttr(otherValue)}" />
+        </div>
+        <input data-subject type="hidden" name="subject_${i + 1}" value="${escapeAttr(selected === "أخرى" ? otherValue : selected)}" />
       </label>
       <label class="date-field">تاريخ الغياب / الاختبار
         <input data-exam-date name="examDate_${i + 1}" type="date" required value="${escapeAttr(current[i]?.date || "")}" />
       </label>
     `;
     holder.appendChild(row);
+    syncSubjectRow(row);
   }
+}
+
+function syncSubjectRow(row) {
+  const sel = row.querySelector("[data-subject-select]");
+  const otherWrap = row.querySelector(".subject-other-wrap");
+  const other = row.querySelector("[data-subject-other]");
+  const hidden = row.querySelector("[data-subject]");
+  const sync = () => {
+    const isOther = sel?.value === "أخرى";
+    otherWrap?.classList.toggle("hidden", !isOther);
+    if (other) other.required = !!isOther;
+    if (hidden) hidden.value = isOther ? (other?.value || "").trim() : (sel?.value || "");
+  };
+  sel?.addEventListener("change", sync);
+  other?.addEventListener("input", sync);
+  sync();
 }
 
 function ensureSubjectRowsRendered() {
@@ -336,13 +379,12 @@ function collectSubjectDates(form) {
   const expectedCount = Number(document.getElementById("absenceSubjectsCount")?.value || rows.length || 1);
   const pairs = [];
 
-  if (!rows.length) {
-    renderSubjectRows(expectedCount);
-  }
+  if (!rows.length) renderSubjectRows(expectedCount);
 
   const finalRows = Array.from(form.querySelectorAll(".subject-date-row"));
   for (let idx = 0; idx < finalRows.length; idx++) {
     const row = finalRows[idx];
+    syncSubjectRow(row);
     const subjectInput = row.querySelector("[data-subject]");
     const dateInput = row.querySelector("[data-exam-date]");
     const subject = subjectInput ? subjectInput.value.trim() : "";
@@ -400,6 +442,7 @@ function initStageGradeSelect() {
     const list = GRADES_BY_STAGE[stage.value] || [];
     grade.innerHTML = list.map(g => `<option value="${escapeAttr(g)}">${escapeHtml(g)}</option>`).join("");
     if (list.includes(current)) grade.value = current;
+    renderSubjectRows(document.getElementById("absenceSubjectsCount")?.value || 1);
   };
   stage.addEventListener("change", sync);
   sync();
@@ -411,10 +454,25 @@ function initHospitalizationFields() {
   const days = document.getElementById("hospitalDays");
   const from = document.getElementById("hospitalFrom");
   const to = document.getElementById("hospitalTo");
-  const plus = document.getElementById("hospPlus");
-  const minus = document.getElementById("hospMinus");
+  const remote = document.querySelector('[name="canRemoteExam"]');
+  const healing = document.querySelector('[name="needsHealingPlaceExam"]');
   if (!status || !box) return;
-  const clampDays = () => { if (days) days.value = String(Math.max(1, Math.min(999, Number(days.value || 1) || 1))); };
+
+  const todayIso = () => new Date().toISOString().slice(0, 10);
+  const calcDays = () => {
+    if (!days) return;
+    const hasHosp = status.value !== "لا يوجد تنويم في المستشفى";
+    if (!hasHosp) { days.value = ""; return; }
+    const start = from?.value;
+    const end = status.value === "تم التنويم ولا يزال حتى تاريخه" ? todayIso() : (to?.value || "");
+    if (!start || !end) { days.value = ""; return; }
+    const sDate = new Date(start + "T00:00:00");
+    const eDate = new Date(end + "T00:00:00");
+    if (isNaN(sDate) || isNaN(eDate) || eDate < sDate) { days.value = ""; return; }
+    const diff = Math.floor((eDate - sDate) / 86400000) + 1;
+    days.value = String(Math.max(1, Math.min(999, diff)));
+  };
+
   const sync = () => {
     const hasHosp = status.value !== "لا يوجد تنويم في المستشفى";
     box.classList.toggle("hidden", !hasHosp);
@@ -424,14 +482,25 @@ function initHospitalizationFields() {
       const still = status.value === "تم التنويم ولا يزال حتى تاريخه";
       to.required = hasHosp && !still;
       to.disabled = still;
-      if (still) to.value = "";
+      if (still) to.value = todayIso();
+      if (!hasHosp) to.value = "";
     }
+    if (!hasHosp) {
+      if (from) from.value = "";
+    }
+    calcDays();
   };
-  plus?.addEventListener("click", () => { if (days) { days.value = String(Math.min(999, (Number(days.value || 1) || 1) + 1)); }});
-  minus?.addEventListener("click", () => { if (days) { days.value = String(Math.max(1, (Number(days.value || 1) || 1) - 1)); }});
-  days?.addEventListener("input", clampDays);
+
+  const enforceExclusive = (source) => {
+    if (source === remote && remote?.checked && healing) healing.checked = false;
+    if (source === healing && healing?.checked && remote) remote.checked = false;
+  };
+  remote?.addEventListener("change", () => enforceExclusive(remote));
+  healing?.addEventListener("change", () => enforceExclusive(healing));
+
+  from?.addEventListener("change", calcDays);
+  to?.addEventListener("change", calcDays);
   status.addEventListener("change", sync);
-  clampDays();
   sync();
 }
 
@@ -501,9 +570,12 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
 
       if (!request.nationality) throw new Error("فضلاً اختر الجنسية أو اكتبها عند اختيار أخرى.");
       if (request.hospitalizationStatus !== "لا يوجد تنويم في المستشفى") {
-        if (!request.hospitalDays || Number(request.hospitalDays) < 1) throw new Error("مدة التنويم يجب أن تبدأ من 1 يوم على الأقل.");
         if (!request.hospitalFrom) throw new Error("تاريخ بداية التنويم مطلوب عند وجود تنويم.");
         if (request.hospitalizationStatus === "تم التنويم ثم الخروج من المستشفى" && !request.hospitalTo) throw new Error("تاريخ نهاية التنويم مطلوب عند الخروج من المستشفى.");
+        if (!request.hospitalDays || Number(request.hospitalDays) < 1) throw new Error("تعذر احتساب مدة التنويم. فضلاً تحقق من تاريخ البداية والنهاية.");
+      }
+      if (request.canRemoteExam === "نعم" && request.needsHealingPlaceExam === "نعم") {
+        throw new Error("لا يمكن اختيار اختبار عن بعد واختبار في مكان الاستشفاء في نفس الوقت؛ اختر خيارًا واحدًا فقط.");
       }
 
       if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
@@ -934,7 +1006,10 @@ function renderDetails(r) {
           cc: $("#ccEmails")?.value || ""
         });
         const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
-        if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
+        if (pdfLink && !result._downloadedOnce) {
+          result._downloadedOnce = true;
+          forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
+        }
         await copyPreparedText(result.body || "");
         showMailPreparationPanel(result);
         showToast("تم تجهيز البريد الرسمي: تم تحميل PDF ونسخ نص الرسالة دون فتح صفحة جديدة.");
