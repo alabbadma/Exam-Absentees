@@ -691,11 +691,19 @@ function renderBarList(items, max) {
   }).join("")}</div>`;
 }
 
+function renderEmailStatus(status) {
+  const value = String(status || "لم يتم التجهيز");
+  let cls = "pending";
+  if (value.includes("تم إبلاغ") || value.includes("مرسل") || value.includes("تم الإرسال")) cls = "sent";
+  else if (value.includes("تجهيز") || value.includes("جاهز")) cls = "ready";
+  return `<span class="email-status-pill ${cls}">${escapeHtml(value)}</span>`;
+}
+
 function renderRequests(rows) {
   const tbody = $("#requestsTbody");
   tbody.innerHTML = "";
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="7">لا توجد طلبات حالياً.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8">لا توجد طلبات حالياً.</td></tr>`;
     return;
   }
 
@@ -708,6 +716,7 @@ function renderRequests(rows) {
       <td><span class="status-pill">${escapeHtml(row.status)}</span></td>
       <td>${SESSION.role === "admin" ? escapeHtml(row.systemDecision || "") : "لا يظهر قبل الاعتماد"}</td>
       <td>${escapeHtml(row.finalDecision || "")}</td>
+      <td>${renderEmailStatus(row.emailNotifyStatus || row.outlookStatus || "لم يتم التجهيز")}</td>
       <td class="row-actions">
         <button class="small-btn" data-view="${escapeAttr(row.requestId)}">عرض</button>
       </td>
@@ -739,6 +748,26 @@ function renderDetails(r) {
       <div class="info-box"><b>درجة الثقة</b><span>${escapeHtml(r.confidence || "")}</span></div>
       <div class="info-box"><b>مبررات القرار</b><span>${escapeHtml(r.systemReasons || "")}</span></div>
     </div>
+
+    <div class="translation-card">
+      <h2>إدارة ترجمة التقرير الطبي</h2>
+      <p class="translation-note">تظهر هنا الترجمة الآلية المساعدة للتقرير الطبي الإنجليزي. يمكن لصاحب الصلاحية تعديلها قبل حفظها أو اعتمادها، ولا تغني عن مراجعة التقرير الأصلي.</p>
+      <div class="translation-status"><b>حالة الترجمة:</b> <span id="translationStatusText">${escapeHtml(r.translationStatus || "غير مترجمة")}</span></div>
+      <div class="translation-actions">
+        <button class="ghost-btn" type="button" id="openOriginalReportBtn">فتح التقرير الأصلي</button>
+        <button class="submit-btn" type="button" id="translateReportBtn">ترجمة التقرير</button>
+        <button class="submit-btn" type="button" id="saveTranslationBtn">حفظ الترجمة</button>
+        <button class="submit-btn" type="button" id="approveTranslationBtn">اعتماد الترجمة</button>
+      </div>
+      <div class="translation-grid">
+        <label>النص الإنجليزي المستخرج
+          <textarea id="extractedEnglishText" placeholder="سيظهر النص الإنجليزي المستخرج من التقرير هنا...">${escapeHtml(r.extractedEnglishText || "")}</textarea>
+        </label>
+        <label>الترجمة العربية القابلة للتعديل
+          <textarea id="arabicTranslationText" placeholder="ستظهر الترجمة العربية هنا ويمكن تعديلها قبل الاعتماد.">${escapeHtml(r.arabicTranslation || "")}</textarea>
+        </label>
+      </div>
+    </div>
     <div class="decision-tools">
       <select id="finalDecisionSelect">
         ${["اختبار بديل","اختبار عن بعد","اختبار في مكان الاستشفاء","استكمال المستندات","رفض العذر","رفع للدراسة اليدوية"].map(d => `<option ${r.finalDecision===d?"selected":""}>${d}</option>`).join("")}
@@ -769,6 +798,7 @@ function renderDetails(r) {
       <div class="info-box"><b>مدة التنويم</b><span>${escapeHtml(r.hospitalDays || "")}</span></div>
       <div class="info-box"><b>وصف الحالة</b><span>${escapeHtml(r.medicalDescription)}</span></div>
       <div class="info-box"><b>رابط التقرير الطبي</b><span>${linkOrDash(r.medicalReportUrl)}</span></div>
+      <div class="info-box"><b>حالة الإبلاغ بالبريد</b><span>${renderEmailStatus(r.emailNotifyStatus || r.outlookStatus || "لم يتم التجهيز")}</span></div>
     </div>
     ${adminTools}
   `;
@@ -781,6 +811,61 @@ function renderDetails(r) {
       showToast(result.message);
       await openDetails(r.requestId);
       await loadDashboard();
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }));
+
+
+  $("#openOriginalReportBtn")?.addEventListener("click", () => {
+    if (r.medicalReportUrl) window.open(r.medicalReportUrl, "_blank", "noopener");
+    else showToast("لا يوجد تقرير طبي مرفوع لهذا الطلب.", true);
+  });
+
+  $("#translateReportBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري استخراج وترجمة التقرير...", async () => {
+    try {
+      const result = await api("translateMedicalReport", { session: SESSION, requestId: r.requestId });
+      const en = document.getElementById("extractedEnglishText");
+      const ar = document.getElementById("arabicTranslationText");
+      const st = document.getElementById("translationStatusText");
+      if (en) en.value = result.extractedText || "";
+      if (ar) ar.value = result.translation || "";
+      if (st) st.textContent = result.status || "تمت الترجمة آليًا";
+      showToast("تم استخراج وترجمة التقرير. راجع النص ثم احفظ أو اعتمد الترجمة.");
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }));
+
+  $("#saveTranslationBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري حفظ الترجمة...", async () => {
+    try {
+      const result = await api("saveTranslation", {
+        session: SESSION,
+        requestId: r.requestId,
+        extractedText: document.getElementById("extractedEnglishText")?.value || "",
+        translation: document.getElementById("arabicTranslationText")?.value || "",
+        approved: false
+      });
+      const st = document.getElementById("translationStatusText");
+      if (st) st.textContent = result.status || "محفوظة للمراجعة";
+      showToast("تم حفظ الترجمة.");
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }));
+
+  $("#approveTranslationBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري اعتماد الترجمة...", async () => {
+    try {
+      const result = await api("saveTranslation", {
+        session: SESSION,
+        requestId: r.requestId,
+        extractedText: document.getElementById("extractedEnglishText")?.value || "",
+        translation: document.getElementById("arabicTranslationText")?.value || "",
+        approved: true
+      });
+      const st = document.getElementById("translationStatusText");
+      if (st) st.textContent = result.status || "تم اعتماد الترجمة";
+      showToast("تم اعتماد الترجمة وإضافتها إلى ملف المعاملة عند تجهيز البريد.");
     } catch (err) {
       showToast(err.message, true);
     }
@@ -841,6 +926,8 @@ function showMailPreparationPanel(result) {
       <button class="submit-btn" type="button" data-copy="preparedSubject">نسخ الموضوع</button>
       <button class="submit-btn" type="button" data-copy="preparedBody">نسخ نص الرسالة</button>
       <button class="submit-btn" type="button" id="downloadPreparedPdf">تحميل PDF مرة أخرى</button>
+      <button class="submit-btn" type="button" id="openWebmailBtn">فتح صفحة الإيميل</button>
+      <button class="submit-btn" type="button" id="confirmEmailSentBtn">تأكيد إرسال البريد</button>
     </div>
   `;
   box.querySelectorAll("[data-copy]").forEach(btn => {
@@ -854,6 +941,18 @@ function showMailPreparationPanel(result) {
     const pdfLink = result.pdfDownloadUrl || result.pdfUrl;
     if (pdfLink) forceDownload(pdfLink, result.pdfFileName || "ملف_المعاملة.pdf");
   });
+  box.querySelector("#openWebmailBtn")?.addEventListener("click", () => {
+    window.open(result.webmailUrl || CONFIG.WEBMAIL_URL, "_blank", "noopener");
+  });
+  box.querySelector("#confirmEmailSentBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تأكيد الإرسال...", async () => {
+    try {
+      const result2 = await api("confirmEmailSent", { session: SESSION, requestId: result.requestId });
+      showToast(result2.message || "تم تأكيد إبلاغ المدرسة بالبريد.");
+      await loadDashboard();
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }));
 }
 
 function linkOrDash(url) {
