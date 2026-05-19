@@ -1699,3 +1699,37 @@ button, .submit-btn, .ghost-btn, .small-btn, .dash-sidebar button, .status-pill,
 .subject-date-row select[data-subject-select], .subject-date-row input[data-subject-other] { width: 100%; }
 .subject-date-row .subject-field { min-width: 0; }
 input[type="checkbox"] { accent-color: #0da9a6; }
+
+
+/* V18: مستطيلات أنيقة بدل الكبسولات الكاملة */
+button,
+.submit-btn,
+.ghost-btn,
+.small-btn,
+.dash-sidebar button,
+.mail-actions button,
+.decision-tools button,
+.translation-actions button,
+.row-actions button,
+.link-button,
+.status-pill,
+.email-status-pill,
+.badge,
+.manager-badge {
+  border-radius: 10px !important;
+}
+.email-status-pill,
+.status-pill {
+  border-radius: 9px !important;
+  min-width: 132px;
+  padding: 8px 13px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-sidebar button,
+.submit-btn,
+.ghost-btn,
+.small-btn {
+  min-height: 38px;
+}
