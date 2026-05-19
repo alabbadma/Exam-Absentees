@@ -16,8 +16,8 @@ let CURRENT_REQUESTS = [];
 let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
-const DASH_CACHE_KEY = "examAbsentees.dashboard.v16";
-const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v16";
+const DASH_CACHE_KEY = "examAbsentees.dashboard.v19";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v19";
 
 function readLocalCache(key) {
   try {
@@ -947,7 +947,7 @@ function renderDetails(r) {
     else showToast("لا يوجد تقرير طبي مرفوع لهذا الطلب.", true);
   });
 
-  $("#translateReportBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تشغيل OCR وترجمة التقرير...", async () => {
+  $("#translateReportBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري استخراج النص وترجمة التقرير...", async () => {
     try {
       const result = await api("translateMedicalReport", { session: SESSION, requestId: r.requestId });
       const en = document.getElementById("extractedEnglishText");
