@@ -10,8 +10,8 @@
   --shadow-soft: 0 14px 35px rgba(15, 76, 86, .10);
   --radius-xl: 30px;
   --radius-lg: 22px;
-  --font-title: "Cairo", system-ui, sans-serif;
-  --font-body: "Cairo", system-ui, sans-serif;
+  --font-title: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif;
+  --font-body: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -559,7 +559,7 @@ th { background: #0f766e; color: #fff; font-weight: 800; position: sticky; top: 
 
 
 /* تحديثات أبو عبدالعزيز: Cairo فقط + إطار خارجي + تخفيف الأحجام */
-body, button, input, select, textarea { font-family: "Cairo", system-ui, sans-serif !important; }
+body, button, input, select, textarea { font-family: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif !important; }
 .glass-card, .mini-3d, .panel, .dash-sidebar, .kpi-grid article { transform-style: preserve-3d; }
 .glass-card::before, .panel::before, .dash-sidebar::before {
   content: "";
@@ -1668,3 +1668,34 @@ button.active-click,
   height: 16px;
   border-width: 2px;
 }
+
+/* V17 — خط Noto Kufi Arabic + أزرار مستطيلة أنيقة */
+:root {
+  --font-title: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif;
+  --font-body: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif;
+}
+body, button, input, select, textarea, label, table, th, td, .status-pill, .email-status-pill, .small-btn, .submit-btn, .ghost-btn {
+  font-family: "Noto Kufi Arabic", "Cairo", system-ui, sans-serif !important;
+}
+button, .submit-btn, .ghost-btn, .small-btn, .dash-sidebar button, .status-pill, .email-status-pill,
+.action-card, .badge, .manager-badge, .mail-actions button, .decision-tools button {
+  border-radius: 12px !important;
+}
+.status-pill, .email-status-pill {
+  min-width: 118px;
+  justify-content: center;
+  padding: 7px 12px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 18px rgba(15, 76, 86, .08);
+}
+.row-actions, .mail-actions, .decision-tools { align-items: center; }
+.row-actions .small-btn { min-width: 78px; }
+.readonly-calculated {
+  background: #f5fbfa !important;
+  font-weight: 800;
+  color: #15445a;
+}
+.subject-other-wrap { margin-top: 8px; }
+.subject-date-row select[data-subject-select], .subject-date-row input[data-subject-other] { width: 100%; }
+.subject-date-row .subject-field { min-width: 0; }
+input[type="checkbox"] { accent-color: #0da9a6; }
