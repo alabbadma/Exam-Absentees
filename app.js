@@ -1051,7 +1051,6 @@ function showMailPreparationPanel(result) {
     </div>
     <div class="mail-actions">
       <button class="submit-btn" type="button" data-copy="preparedTo">نسخ بريد المدرسة</button>
-      <button class="submit-btn" type="button" data-copy="preparedCc">نسخ CC</button>
       <button class="submit-btn" type="button" data-copy="preparedSubject">نسخ الموضوع</button>
       <button class="submit-btn" type="button" data-copy="preparedBody">نسخ نص الرسالة</button>
       <button class="submit-btn" type="button" id="downloadPreparedPdf">تحميل PDF مرة أخرى</button>
