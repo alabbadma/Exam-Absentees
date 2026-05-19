@@ -16,6 +16,33 @@ let CURRENT_REQUESTS = [];
 let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
+const DASH_CACHE_KEY = "examAbsentees.dashboard.v16";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v16";
+
+function readLocalCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || !obj.time) return null;
+    return obj;
+  } catch (e) { return null; }
+}
+
+function writeLocalCache(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ time: Date.now(), data }));
+  } catch (e) {}
+}
+
+function cacheAgeLabel(cache) {
+  if (!cache || !cache.time) return "";
+  const sec = Math.max(0, Math.round((Date.now() - cache.time) / 1000));
+  if (sec < 60) return `آخر تحديث قبل ${sec} ثانية`;
+  const min = Math.round(sec / 60);
+  return `آخر تحديث قبل ${min} دقيقة`;
+}
+
 function toLatinDigits(value) {
   return String(value ?? '')
     .replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)])
@@ -533,7 +560,7 @@ $("#loginForm").addEventListener("submit", async (e) => {
       SESSION = result.session;
       $("#roleLabel").textContent = "إدارة تقويم الأداء المعرفي والمهاري";
       showSection("dashboard");
-      await loadDashboard();
+      loadDashboard({ useCache: true, background: false });
     } catch (err) {
       showToast(err.message, true);
     }
@@ -541,20 +568,34 @@ $("#loginForm").addEventListener("submit", async (e) => {
 });
 
 $("#logoutBtn").addEventListener("click", goHome);
-$("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري التحديث...", loadDashboard));
+$("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري التحديث...", () => loadDashboard({ useCache: false, background: false })));
 $("#refreshAnalyticsBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تحديث الإحصاءات...", () => loadAnalytics(true)));
 
-async function loadDashboard() {
+async function loadDashboard(options = {}) {
+  const useCache = options.useCache !== false;
+  const tbody = $("#requestsTbody");
+  const cached = useCache ? readLocalCache(DASH_CACHE_KEY) : null;
+
+  if (cached && cached.data) {
+    CURRENT_REQUESTS = cached.data.requests || [];
+    renderKpis(cached.data.kpis || {});
+    applyDashboardTab();
+    showToast(cacheAgeLabel(cached) + " — جاري تحديث البيانات في الخلفية...");
+  } else if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="7">جاري تحميل البيانات...</td></tr>`;
+  }
+
   try {
-    const tbody = $("#requestsTbody");
-    if (tbody) tbody.innerHTML = `<tr><td colspan="7">جاري تحميل البيانات...</td></tr>`;
     const result = await api("listRequests", { session: SESSION });
     CURRENT_REQUESTS = result.requests || [];
     CURRENT_ANALYTICS = null;
-    renderKpis(result.kpis || {});
+    const payload = { requests: CURRENT_REQUESTS, kpis: result.kpis || {} };
+    writeLocalCache(DASH_CACHE_KEY, payload);
+    renderKpis(payload.kpis);
     applyDashboardTab();
   } catch (err) {
-    showToast(err.message, true);
+    if (!cached) showToast(err.message, true);
+    else showToast("تعذر تحديث البيانات الآن، وتم عرض آخر نسخة محفوظة مؤقتًا.", true);
   }
 }
 
@@ -608,15 +649,24 @@ async function loadAnalytics(force = false) {
     renderAnalytics(CURRENT_ANALYTICS);
     return;
   }
+  const cached = !force ? readLocalCache(ANALYTICS_CACHE_KEY) : null;
   const content = $("#analyticsContent");
-  if (content) content.innerHTML = '<p class="muted">جاري تحميل الإحصاءات...</p>';
+  if (cached && cached.data) {
+    CURRENT_ANALYTICS = cached.data;
+    renderAnalytics(CURRENT_ANALYTICS);
+    showToast(cacheAgeLabel(cached) + " — جاري تحديث الإحصاءات في الخلفية...");
+  } else if (content) {
+    content.innerHTML = '<p class="muted">جاري تحميل الإحصاءات...</p>';
+  }
   ANALYTICS_LOADING = true;
   try {
     const result = await api("getAnalytics", { session: SESSION });
     CURRENT_ANALYTICS = result.analytics || {};
+    writeLocalCache(ANALYTICS_CACHE_KEY, CURRENT_ANALYTICS);
     renderAnalytics(CURRENT_ANALYTICS);
   } catch (err) {
-    if (content) content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+    if (content && !cached) content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
+    if (cached) showToast("تعذر تحديث الإحصاءات الآن، وتم عرض آخر نسخة محفوظة مؤقتًا.", true);
   } finally {
     ANALYTICS_LOADING = false;
   }
@@ -809,8 +859,11 @@ function renderDetails(r) {
       const directorNote = $("#directorNote").value;
       const result = await api("approveDecision", { session: SESSION, requestId: r.requestId, finalDecision, directorNote });
       showToast(result.message);
-      await openDetails(r.requestId);
-      await loadDashboard();
+      // تحديث بصري فوري ثم مزامنة الخلفية
+      const statusBox = Array.from(document.querySelectorAll(".info-box b")).find(b => b.textContent.includes("حالة الإبلاغ"))?.parentElement;
+      if (statusBox) statusBox.querySelector("span").innerHTML = renderEmailStatus("لم يتم التجهيز");
+      loadDashboard({ useCache: false, background: true });
+      openDetails(r.requestId).catch(()=>{});
     } catch (err) {
       showToast(err.message, true);
     }
@@ -822,7 +875,7 @@ function renderDetails(r) {
     else showToast("لا يوجد تقرير طبي مرفوع لهذا الطلب.", true);
   });
 
-  $("#translateReportBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري استخراج وترجمة التقرير...", async () => {
+  $("#translateReportBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تشغيل OCR وترجمة التقرير...", async () => {
     try {
       const result = await api("translateMedicalReport", { session: SESSION, requestId: r.requestId });
       const en = document.getElementById("extractedEnglishText");
@@ -948,7 +1001,9 @@ function showMailPreparationPanel(result) {
     try {
       const result2 = await api("confirmEmailSent", { session: SESSION, requestId: result.requestId });
       showToast(result2.message || "تم تأكيد إبلاغ المدرسة بالبريد.");
-      await loadDashboard();
+      const emailBoxes = document.querySelectorAll(".email-status-pill");
+      emailBoxes.forEach(el => { el.className = "email-status-pill sent"; el.textContent = "تم إبلاغ المدرسة بالبريد"; });
+      loadDashboard({ useCache: false, background: true });
     } catch (err) {
       showToast(err.message, true);
     }
