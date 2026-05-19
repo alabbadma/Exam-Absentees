@@ -1620,3 +1620,51 @@ button.active-click,
 @media (max-width: 800px) {
   .translation-grid { grid-template-columns: 1fr; }
 }
+
+
+/* V16: تحسين شكل حالة الإبلاغ وتقليل الإحساس بالبطء */
+.email-status-pill {
+  border-radius: 12px !important;
+  padding: 7px 14px !important;
+  min-width: 142px;
+  line-height: 1.35;
+  box-shadow: 0 8px 18px rgba(21, 68, 90, .08);
+}
+.status-pill {
+  border-radius: 12px !important;
+  padding: 7px 13px !important;
+}
+.email-status-pill.sent {
+  background: linear-gradient(135deg, rgba(7,168,105,.14), rgba(105,206,227,.18)) !important;
+  color: #057348 !important;
+  border-color: rgba(7,168,105,.28) !important;
+}
+.email-status-pill.ready {
+  background: linear-gradient(135deg, rgba(61,126,185,.14), rgba(105,206,227,.18)) !important;
+  color: #245f94 !important;
+  border-color: rgba(61,126,185,.28) !important;
+}
+.email-status-pill.pending {
+  background: linear-gradient(135deg, rgba(193,180,137,.22), rgba(255,247,237,.85)) !important;
+  color: #7a5a13 !important;
+  border-color: rgba(193,180,137,.35) !important;
+}
+.table-card table th,
+.table-card table td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+.table-card table td .row-actions,
+.row-actions {
+  justify-content: center !important;
+}
+.translation-actions .submit-btn,
+.translation-actions .ghost-btn,
+.mail-actions .submit-btn {
+  border-radius: 14px !important;
+}
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
