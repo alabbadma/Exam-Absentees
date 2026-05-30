@@ -141,7 +141,16 @@
 
       <form id="newRequestForm" class="form-grid">
         <h3>بيانات الطالب/ـة</h3>
-        <label>اسم الطالب/ـة رباعيًا<input name="studentName" required placeholder="اكتب الاسم الرباعي" /></label>
+        <div class="four-name-section">
+          <h4>الاسم الرباعي</h4>
+          <div class="four-name-grid">
+            <label>الاسم الأول<input name="studentFirstName" required placeholder="الاسم الأول" autocomplete="given-name" /></label>
+            <label>اسم الأب<input name="studentFatherName" required placeholder="اسم الأب" /></label>
+            <label>اسم الجد<input name="studentGrandFatherName" required placeholder="اسم الجد" /></label>
+            <label>اسم العائلة<input name="studentFamilyName" required placeholder="اسم العائلة" autocomplete="family-name" /></label>
+          </div>
+          <input type="hidden" name="studentName" id="studentNameCombined" />
+        </div>
         <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
         <label>الجنسية<select name="nationality" id="nationalitySelect" required></select></label>
@@ -352,6 +361,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260519-v17-form-translation"></script>
+  <script src="app.js?v=20260530-v24-four-name-fields"></script>
 </body>
 </html>
