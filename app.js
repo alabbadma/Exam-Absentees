@@ -299,6 +299,7 @@ function initSchoolReferenceControls() {
   const typeSelect = document.getElementById("schoolTypeFilter");
   const classSelect = document.getElementById("schoolClassificationFilter");
   const schoolSelect = document.getElementById("schoolSelect");
+  const schoolSearch = document.getElementById("schoolSearch");
   const codeField = document.getElementById("schoolCodeField");
   const emailField = document.getElementById("schoolEmailField");
   const stageField = document.getElementById("schoolInferredStageField");
@@ -333,8 +334,14 @@ function initSchoolReferenceControls() {
   const filteredSchools = () => {
     const t = typeSelect.value;
     const cl = classSelect.value;
+    const q = String(schoolSearch?.value || "").trim().toLowerCase();
     return SCHOOLS_REFERENCE
       .filter(s => (!t || inferSchoolType(s) === t) && (!cl || s.cl === cl))
+      .filter(s => {
+        if (!q) return true;
+        const haystack = `${s.n || ""} ${s.c || ""} ${s.e || ""}`.toLowerCase();
+        return haystack.includes(q);
+      })
       .sort((a, b) => String(a.n).localeCompare(String(b.n), "ar"));
   };
 
@@ -363,8 +370,9 @@ function initSchoolReferenceControls() {
     }
   };
 
-  typeSelect.addEventListener("change", renderSchools);
-  classSelect.addEventListener("change", renderSchools);
+  typeSelect.addEventListener("change", () => { if (schoolSearch) schoolSearch.value = ""; renderSchools(); });
+  classSelect.addEventListener("change", () => { if (schoolSearch) schoolSearch.value = ""; renderSchools(); });
+  schoolSearch?.addEventListener("input", renderSchools);
   schoolSelect.addEventListener("change", applySchool);
   renderSchools();
 }
@@ -603,19 +611,29 @@ function resetSubjectRows() {
 
 function initNationalitySelect() {
   const select = document.getElementById("nationalitySelect");
+  const search = document.getElementById("nationalitySearch");
   const wrap = document.getElementById("otherNationalityWrap");
   const other = document.getElementById("nationalityOther");
   if (!select) return;
-  if (!select.options.length) {
-    select.innerHTML = NATIONALITIES.map(n => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join("");
-  }
+
+  const renderNationalities = () => {
+    const previous = select.value;
+    const q = String(search?.value || "").trim().toLowerCase();
+    let list = NATIONALITIES.filter(n => !q || String(n).toLowerCase().includes(q));
+    if (!list.includes("أخرى")) list.push("أخرى");
+    select.innerHTML = list.map(n => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join("");
+    if (list.includes(previous)) select.value = previous;
+    sync();
+  };
+
   const sync = () => {
     const isOther = select.value === "أخرى";
     wrap?.classList.toggle("hidden", !isOther);
     if (other) other.required = isOther;
   };
   select.addEventListener("change", sync);
-  sync();
+  search?.addEventListener("input", renderNationalities);
+  renderNationalities();
 }
 
 function initStageGradeSelect() {
