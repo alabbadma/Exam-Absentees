@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-2-modern-ui" />
+  <link rel="stylesheet" href="style.css?v=20260531-v26-3-absher-mint-ui" />
 </head>
 
 <body>
@@ -153,7 +153,10 @@
         </div>
         <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
-        <label>الجنسية<select name="nationality" id="nationalitySelect" required></select></label>
+        <label class="searchable-select-label">الجنسية
+          <input type="search" id="nationalitySearch" class="select-search" placeholder="اكتب للبحث عن الجنسية" autocomplete="off" />
+          <select name="nationality" id="nationalitySelect" required></select>
+        </label>
         <label id="otherNationalityWrap" class="hidden">اكتب الجنسية<input name="nationalityOther" id="nationalityOther" placeholder="اكتب الجنسية" /></label>
         <label>رقم جوال ولي الأمر<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="مثال: 05XXXXXXXX" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
         <label>بريد ولي الأمر<input name="email" type="email" placeholder="اختياري" /></label>
@@ -178,7 +181,8 @@
                 <option value="تعليم مستمر">تعليم مستمر</option>
               </select>
             </label>
-            <label>اسم المدرسة
+            <label class="searchable-select-label">اسم المدرسة
+              <input type="search" id="schoolSearch" class="select-search" placeholder="اكتب جزءًا من اسم المدرسة للتصفية" autocomplete="off" />
               <select name="schoolName" id="schoolSelect" required>
                 <option value="">اختر نوع المدرسة وتصنيفها أولًا</option>
               </select>
@@ -213,6 +217,8 @@
         <div class="subject-date-section">
           <div class="subject-date-head">
             <strong>مواد الغياب وتواريخها</strong>
+          </div>
+          <div class="subject-controls-row">
             <label class="absence-count-label">عدد مواد الغياب
               <select id="absenceSubjectsCount" name="absenceSubjectsCount" required>
                 <option value="1">1</option>
@@ -227,15 +233,15 @@
                 <option value="10">10</option>
               </select>
             </label>
+            <label class="semester-label">الفصل الدراسي
+              <select name="semester" id="semesterSelect" required>
+                <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
+                <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
+              </select>
+            </label>
           </div>
-          <label class="semester-label">الفصل الدراسي
-            <select name="semester" id="semesterSelect" required>
-              <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
-              <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
-            </select>
-          </label>
           <div id="subjectDateRows" class="subject-date-rows"></div>
-          <small class="hint-text">اختر عدد مواد الغياب أولًا، وسيظهر لكل مادة حقل مستقل مع تاريخ اختبارها.</small>
+          <small class="hint-text">اختر عدد مواد الغياب، ثم اختر المادة وتاريخ الاختبار لكل مادة بشكل مستقل.</small>
         </div>
 
         <h3>بيانات الحالة والمرفقات</h3>
@@ -395,6 +401,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-2-modern-ui"></script>
+  <script src="app.js?v=20260531-v26-3-absher-mint-ui"></script>
 </body>
 </html>
