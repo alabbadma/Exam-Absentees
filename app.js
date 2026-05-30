@@ -1,4 +1,4 @@
-/* منصة معالجة أعذار الغياب عن الاختبارات
+/* منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة
    واجهة GitHub Pages - الربط مع Google Apps Script
    غيّر قيمة API_URL بعد نشر Web App في Google Apps Script.
 */
@@ -569,6 +569,10 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       request.semester = subjectData.semester;
 
       if (!request.nationality) throw new Error("فضلاً اختر الجنسية أو اكتبها عند اختيار أخرى.");
+      const nameParts = String(request.studentName || "").trim().split(/\s+/).filter(Boolean);
+      if (nameParts.length < 4) throw new Error("اسم الطالب/ـة يجب أن يكون رباعيًا على الأقل.");
+      if (!request.requestType) throw new Error("فضلاً اختر نوع الطلب.");
+      if (!request.academicYear) throw new Error("فضلاً اختر العام الدراسي.");
       if (request.hospitalizationStatus !== "لا يوجد تنويم في المستشفى") {
         if (!request.hospitalFrom) throw new Error("تاريخ بداية التنويم مطلوب عند وجود تنويم.");
         if (request.hospitalizationStatus === "تم التنويم ثم الخروج من المستشفى" && !request.hospitalTo) throw new Error("تاريخ نهاية التنويم مطلوب عند الخروج من المستشفى.");
@@ -579,7 +583,7 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       }
 
       if (!/^\d{10}$/.test(String(request.nationalId || ""))) throw new Error("رقم الهوية يجب أن يتكون من 10 أرقام فقط.");
-      if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
+      if (!/^05\d{8}$/.test(String(request.mobile || ""))) throw new Error("رقم جوال ولي الأمر يجب أن يتكون من 10 أرقام ويبدأ بـ 05.");
       if (!request.schoolEmail) throw new Error("بريد المدرسة الرسمي مطلوب لإشعار المدرسة بالقرار بعد اعتماده.");
 
       const attachments = await collectFiles(form.elements.attachments, progress);
