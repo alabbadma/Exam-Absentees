@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>منصة معالجة أعذار الغياب عن الاختبارات</title>
+  <title>منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260519-v18-ocr-pdf-buttons" />
+  <link rel="stylesheet" href="style.css?v=20260530-v23-phase1" />
 </head>
 
 <body>
@@ -23,8 +23,8 @@
         <small id="hijriDate">--/--/----</small>
       </div>
 
-      <h1>منصة معالجة أعذار الغياب عن الاختبارات</h1>
-      <p class="subtitle">منصة رقمية لتنظيم طلبات أعذار الغياب، التحقق من المستندات الطبية، وتسريع اتخاذ القرار.</p>
+      <h1>منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة</h1>
+      <p class="subtitle">منصة رقمية لتنظيم ومعالجة حالات الطلاب الذين منعتهم ظروفهم من أداء الاختبار في المدرسة، مع توثيق المستندات وتسريع اعتماد القرار.</p>
     </header>
 
     <main id="publicHome" class="home-grid">
@@ -36,8 +36,8 @@
         <div class="hero-content">
           <div class="hero-copy">
             <span class="badge">الواجهة الرئيسية</span>
-            <h2>مرحبًا بك في منصة معالجة أعذار الغياب عن الاختبارات</h2>
-            <p>حلول رقمية ذكية لإدارة الطلبات بدقة وموثوقية وسرعة، مع اعتماد القرار النهائي من صاحب الصلاحية.</p>
+            <h2>مرحبًا بك في منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة</h2>
+            <p>حلول رقمية ذكية لاستقبال الحالات، توثيقها، ومراجعتها وفق الدليل، مع اعتماد القرار النهائي من صاحب الصلاحية.</p>
 
             <div class="action-grid clean-home-actions">
               <button class="action-card primary home-action-card" data-open="requestForm" type="button">
@@ -79,7 +79,7 @@
             <article>
               <span>📄</span>
               <b>استقبال الطلبات</b>
-              <small>استقبال طلبات أعذار الغياب بسهولة وأمان.</small>
+              <small>استقبال حالات الطلاب وتوثيق بياناتها بسهولة وأمان.</small>
             </article>
             <article>
               <span>☁</span>
@@ -105,7 +105,7 @@
             <article>
               <i>1</i>
               <b>تقديم الطلب</b>
-              <small>إرفاق البيانات والمستندات</small>
+              <small>تسجيل الحالة وإرفاق المستندات</small>
             </article>
             <span class="arrow">←</span>
             <article>
@@ -132,7 +132,7 @@
 
     <section id="requestForm" class="panel hidden">
       <div class="panel-head">
-        <h2>تقديم طلب عذر غياب عن اختبار</h2>
+        <h2>تسجيل حالة طالب منعته ظروفه من أداء الاختبار في المدرسة</h2>
         <div class="panel-actions">
           <button class="ghost-btn" type="button" data-back-home>عودة</button>
           <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
@@ -141,13 +141,13 @@
 
       <form id="newRequestForm" class="form-grid">
         <h3>بيانات الطالب/ـة</h3>
-        <label>اسم الطالب/ـة<input name="studentName" required /></label>
+        <label>اسم الطالب/ـة رباعيًا<input name="studentName" required placeholder="اكتب الاسم الرباعي" /></label>
         <label>رقم الهوية<input name="nationalId" required inputmode="numeric" maxlength="10" minlength="10" pattern="\d{10}" placeholder="10 أرقام فقط" title="رقم الهوية يجب أن يتكون من 10 أرقام" /></label>
         <label>الجنس<select name="gender"><option>طالب</option><option>طالبة</option></select></label>
         <label>الجنسية<select name="nationality" id="nationalitySelect" required></select></label>
         <label id="otherNationalityWrap" class="hidden">اكتب الجنسية<input name="nationalityOther" id="nationalityOther" placeholder="اكتب الجنسية" /></label>
-        <label>رقم الجوال<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="مثال: 05XXXXXXXX" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
-        <label>البريد الإلكتروني<input name="email" type="email" /></label>
+        <label>رقم جوال ولي الأمر<input name="mobile" required inputmode="tel" maxlength="10" minlength="10" pattern="05\d{8}" placeholder="مثال: 05XXXXXXXX" title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05" /></label>
+        <label>بريد ولي الأمر<input name="email" type="email" placeholder="اختياري" /></label>
 
         <h3>بيانات المدرسة والاختبار</h3>
         <label>المرحلة<select name="stage"><option>الابتدائية</option><option>المتوسطة</option><option>الثانوية</option></select></label>
@@ -155,6 +155,17 @@
         <label>اسم المدرسة<input name="schoolName" required /></label>
         <label>الرقم الوزاري<input name="schoolCode" required placeholder="مثال: 123456" /></label>
         <label>بريد المدرسة الرسمي<input name="schoolEmail" type="email" required placeholder="example@moe.gov.sa" /></label>
+        <label>نوع الطلب<select name="requestType" required>
+          <option value="معالجة الاختبار الختامي">معالجة الاختبار الختامي</option>
+          <option value="معالجة التقويم التكويني">معالجة التقويم التكويني</option>
+          <option value="معالجة التقويم التكويني والاختبار الختامي">معالجة التقويم التكويني والاختبار الختامي</option>
+        </select></label>
+        <label>العام الدراسي<select name="academicYear" id="academicYearSelect" required>
+          <option value="1447هـ">1447هـ</option>
+          <option value="1448هـ">1448هـ</option>
+          <option value="1449هـ">1449هـ</option>
+          <option value="1450هـ">1450هـ</option>
+        </select></label>
 
         <div class="subject-date-section">
           <div class="subject-date-head">
@@ -184,15 +195,15 @@
           <small class="hint-text">اختر عدد مواد الغياب أولًا، وسيظهر لكل مادة حقل مستقل مع تاريخ اختبارها.</small>
         </div>
 
-        <h3>بيانات العذر والمرفقات</h3>
+        <h3>بيانات الحالة والمرفقات</h3>
         <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
-        <label>تصنيف الحالة الصحية<select name="medicalCategory" required>
+        <label>تصنيف الحالة<select name="medicalCategory" required>
           <option>أورام وعلاج كيماوي/إشعاعي</option>
-          <option>كسور أو إصابات تمنع الحضور أو الكتابة</option>
+          <option>كسور أو إصابات تمنع الحضور للمدرسة</option>
           <option>أمراض معدية أو عزل طبي</option>
-          <option>إعاقة مؤقتة أو دائمة تؤثر على أداء الاختبار</option>
+          <option>إعاقة مؤقتة أو دائمة</option>
           <option>حالة نفسية أو صحية شديدة موثقة</option>
-          <option>مستندات غير مكتملة</option>
+          <option>حالة أمنية أو ظرف استثنائي موثق</option>
           <option>أخرى</option>
         </select></label>
         <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
@@ -224,7 +235,7 @@
           <label><input type="checkbox" name="needsHealingPlaceExam" /> يحتاج اختبار في مكان الاستشفاء</label>
         </div>
 
-        <label class="file-label">التقرير الطبي / المرفقات
+        <label class="file-label">التقرير الطبي / المرفقات الداعمة
           <input name="attachments" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
         </label>
 
