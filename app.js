@@ -315,11 +315,25 @@ function initSchoolReferenceControls() {
     if (mobileField) mobileField.value = "";
   };
 
+  const inferSchoolType = (s) => {
+    const name = String(s?.n || "");
+    const email = String(s?.e || "").toLowerCase();
+    const explicit = String(s?.t || "").trim();
+    if (name.includes("الطفولة المبكرة")) return "بنات";
+    if (explicit === "بنين" || explicit === "بنات") return explicit;
+    if (name.includes("بنات")) return "بنات";
+    if (name.includes("بنين")) return "بنين";
+    // في ملف المدارس المرفوع غالبًا estg للبنات و estb للبنين.
+    if (email.includes("@estg.")) return "بنات";
+    if (email.includes("@estb.")) return "بنين";
+    return explicit;
+  };
+
   const filteredSchools = () => {
     const t = typeSelect.value;
     const cl = classSelect.value;
     return SCHOOLS_REFERENCE
-      .filter(s => (!t || s.t === t) && (!cl || s.cl === cl))
+      .filter(s => (!t || inferSchoolType(s) === t) && (!cl || s.cl === cl))
       .sort((a, b) => String(a.n).localeCompare(String(b.n), "ar"));
   };
 
@@ -329,7 +343,7 @@ function initSchoolReferenceControls() {
       ? "اختر نوع المدرسة وتصنيفها أولًا"
       : (list.length ? "اختر المدرسة" : "لا توجد مدارس مطابقة");
     schoolSelect.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` +
-      list.map(s => `<option value="${escapeAttr(s.n)}" data-code="${escapeAttr(s.c)}" data-email="${escapeAttr(s.e)}" data-stage="${escapeAttr(s.st)}" data-principal="${escapeAttr(s.p || "")}" data-mobile="${escapeAttr(s.m || "")}">${escapeHtml(s.n)}</option>`).join("");
+      list.map(s => `<option value="${escapeAttr(s.n)}" data-code="${escapeAttr(s.c)}" data-email="${escapeAttr(s.e)}" data-stage="${escapeAttr(s.st)}" data-type="${escapeAttr(inferSchoolType(s))}" data-principal="${escapeAttr(s.p || "")}" data-mobile="${escapeAttr(s.m || "")}">${escapeHtml(s.n)}</option>`).join("");
     clearSchoolFields();
   };
 
