@@ -172,6 +172,18 @@ function formToObject(form) {
     obj[key] = value;
   }
 
+  const nameParts = [
+    obj.studentFirstName,
+    obj.studentFatherName,
+    obj.studentGrandFatherName,
+    obj.studentFamilyName,
+  ].map(v => String(v || "").trim()).filter(Boolean);
+  if (nameParts.length === 4) {
+    obj.studentName = nameParts.join(" ");
+    const hiddenName = form.querySelector('[name="studentName"]');
+    if (hiddenName) hiddenName.value = obj.studentName;
+  }
+
   ["hasMedicalReport","preventsAttendance","preventsExamPerformance","canRemoteExam","needsHealingPlaceExam"].forEach(name => {
     obj[name] = form.elements[name]?.checked ? "نعم" : "لا";
   });
@@ -569,8 +581,10 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       request.semester = subjectData.semester;
 
       if (!request.nationality) throw new Error("فضلاً اختر الجنسية أو اكتبها عند اختيار أخرى.");
-      const nameParts = String(request.studentName || "").trim().split(/\s+/).filter(Boolean);
-      if (nameParts.length < 4) throw new Error("اسم الطالب/ـة يجب أن يكون رباعيًا على الأقل.");
+      const nameParts = [request.studentFirstName, request.studentFatherName, request.studentGrandFatherName, request.studentFamilyName]
+        .map(v => String(v || "").trim());
+      if (nameParts.some(v => !v)) throw new Error("فضلاً أكمل حقول الاسم الرباعي: الاسم الأول، اسم الأب، اسم الجد، اسم العائلة.");
+      request.studentName = nameParts.join(" ");
       if (!request.requestType) throw new Error("فضلاً اختر نوع الطلب.");
       if (!request.academicYear) throw new Error("فضلاً اختر العام الدراسي.");
       if (request.hospitalizationStatus !== "لا يوجد تنويم في المستشفى") {
