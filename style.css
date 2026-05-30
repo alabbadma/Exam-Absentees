@@ -1535,3 +1535,39 @@ button:active,
 @media (max-width: 850px) {
   .hospital-details { grid-template-columns: 1fr; }
 }
+
+
+/* V24 - تقسيم الاسم الرباعي إلى أربعة حقول دون كسر تنسيق الصفحة */
+.four-name-section {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(236,253,245,.72));
+  border: 1px solid rgba(15, 118, 110, .14);
+  box-shadow: 0 14px 34px rgba(15, 76, 86, .08);
+}
+.four-name-section h4 {
+  margin: 0;
+  justify-self: start;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--moe-blue-core, #3d7eb9), var(--moe-turquoise-core, #0da9a6));
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 800;
+}
+.four-name-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+}
+.four-name-grid label { min-width: 0; }
+.four-name-grid input { width: 100%; }
+@media (max-width: 950px) {
+  .four-name-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+}
+@media (max-width: 560px) {
+  .four-name-grid { grid-template-columns: 1fr; }
+}
