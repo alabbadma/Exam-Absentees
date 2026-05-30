@@ -16,8 +16,8 @@ let CURRENT_REQUESTS = [];
 let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
-const DASH_CACHE_KEY = "examAbsentees.dashboard.v19";
-const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v19";
+const DASH_CACHE_KEY = "examAbsentees.dashboard.v25_2";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v25_2";
 
 function readLocalCache(key) {
   try {
@@ -304,13 +304,14 @@ function initSchoolReferenceControls() {
   const stageField = document.getElementById("schoolInferredStageField");
   const principalField = document.getElementById("schoolPrincipalField");
   const mobileField = document.getElementById("schoolPrincipalMobileField");
-  const stageSelect = document.querySelector('[name="stage"]');
+  const stageSelect = document.getElementById("stageHiddenField") || document.querySelector('[name="stage"]');
   if (!typeSelect || !classSelect || !schoolSelect) return;
 
   const clearSchoolFields = () => {
     if (codeField) codeField.value = "";
     if (emailField) emailField.value = "";
     if (stageField) stageField.value = "";
+    if (stageSelect) { stageSelect.value = ""; stageSelect.dispatchEvent(new Event("change", { bubbles: true })); }
     if (principalField) principalField.value = "";
     if (mobileField) mobileField.value = "";
   };
@@ -352,12 +353,12 @@ function initSchoolReferenceControls() {
     if (!opt || !schoolSelect.value) { clearSchoolFields(); return; }
     if (codeField) codeField.value = opt.dataset.code || "";
     if (emailField) emailField.value = opt.dataset.email || "";
-    if (stageField) stageField.value = opt.dataset.stage || "";
+    if (stageField) stageField.value = schoolStageToPlatformStage(opt.dataset.stage || "") || opt.dataset.stage || "";
     if (principalField && !principalField.value) principalField.value = opt.dataset.principal || "";
     if (mobileField && !mobileField.value) mobileField.value = opt.dataset.mobile || "";
     const platformStage = schoolStageToPlatformStage(opt.dataset.stage || "");
-    if (stageSelect && platformStage) {
-      stageSelect.value = platformStage;
+    if (stageSelect) {
+      stageSelect.value = platformStage || "";
       stageSelect.dispatchEvent(new Event("change", { bubbles: true }));
     }
   };
@@ -381,7 +382,7 @@ const SUBJECTS_BY_STAGE = {
 };
 
 function getCurrentStage() {
-  return document.querySelector('[name="stage"]')?.value || "الابتدائية";
+  return (document.getElementById("stageHiddenField") || document.querySelector('[name="stage"]'))?.value || "الابتدائية";
 }
 
 function getSubjectOptionsForCurrentStage() {
@@ -531,13 +532,13 @@ function initNationalitySelect() {
 }
 
 function initStageGradeSelect() {
-  const stage = document.querySelector('[name="stage"]');
+  const stage = document.getElementById("stageHiddenField") || document.querySelector('[name="stage"]');
   const grade = document.getElementById("gradeSelect");
   if (!stage || !grade) return;
   const sync = () => {
     const current = grade.value;
     const list = GRADES_BY_STAGE[stage.value] || [];
-    grade.innerHTML = list.map(g => `<option value="${escapeAttr(g)}">${escapeHtml(g)}</option>`).join("");
+    grade.innerHTML = list.length ? list.map(g => `<option value="${escapeAttr(g)}">${escapeHtml(g)}</option>`).join("") : `<option value="">اختر المدرسة أولًا لتحديد المرحلة</option>`;
     if (list.includes(current)) grade.value = current;
     renderSubjectRows(document.getElementById("absenceSubjectsCount")?.value || 1);
   };
