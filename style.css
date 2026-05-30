@@ -1948,3 +1948,346 @@ table td {
     width: 100%;
   }
 }
+
+/* V26.3 — منطق بصري جديد للنموذج الداخلي: ثيم أخضر نعناعي قريب من أبشر */
+:root {
+  --absher-mint: #00a77f;
+  --absher-mint-2: #00b894;
+  --absher-deep: #006c5b;
+  --absher-dark: #0b3f3a;
+  --absher-soft: #eefbf7;
+  --absher-line: rgba(0, 167, 127, .18);
+  --absher-shadow: 0 14px 34px rgba(0, 108, 91, .10);
+  --absher-shadow-strong: 0 20px 46px rgba(0, 108, 91, .16);
+}
+
+/* تضييق الإطار الخارجي وتخفيف الفراغ العام */
+.app-shell {
+  width: min(1040px, calc(100% - 54px)) !important;
+  padding: 16px 16px 100px !important;
+  border-radius: 28px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,252,249,.94)),
+    radial-gradient(circle at 14% 18%, rgba(0,184,148,.08), transparent 34%),
+    radial-gradient(circle at 86% 72%, rgba(0,167,127,.08), transparent 36%) !important;
+  box-shadow: 0 26px 70px rgba(0,108,91,.12), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+/* رأس الصفحة: عنوان بخلفية وفي سطر واحد قدر الإمكان */
+.site-header {
+  min-height: 178px !important;
+  padding: 24px 230px 24px 26px !important;
+}
+.site-header .moe-logo-wrap {
+  width: 148px !important;
+  height: 98px !important;
+  margin-bottom: 16px !important;
+}
+.site-header h1 {
+  max-width: 650px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  padding: 8px 18px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, var(--absher-deep), var(--absher-mint)) !important;
+  color: #fff !important;
+  box-shadow: var(--absher-shadow) !important;
+  font-size: clamp(13px, 1.15vw, 16px) !important;
+  line-height: 1.55 !important;
+}
+.site-header .subtitle {
+  max-width: 620px !important;
+  font-size: 11px !important;
+  line-height: 1.65 !important;
+  margin-top: 8px !important;
+}
+.date-widget {
+  width: 190px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #064f45, #008f72, #00a77f) !important;
+  padding: 12px 14px !important;
+}
+.date-widget span,
+.date-widget strong,
+.date-widget small {
+  text-align: center !important;
+  display: block !important;
+  line-height: 1.7 !important;
+  font-size: 11px !important;
+  letter-spacing: 0 !important;
+}
+.date-widget strong,
+.date-widget small { direction: rtl !important; }
+
+/* لوحة النموذج الداخلية */
+.panel {
+  max-width: 880px !important;
+  padding: 18px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,252,250,.96)) !important;
+  box-shadow: 0 20px 48px rgba(0,108,91,.12) !important;
+}
+.panel-head {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  margin-bottom: 18px !important;
+  direction: rtl !important;
+}
+.panel-actions {
+  order: -1 !important;
+  display: flex !important;
+  gap: 8px !important;
+  margin-inline-start: 0 !important;
+}
+.panel-head h2 {
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+  text-align: center !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  background: linear-gradient(135deg, var(--absher-deep), var(--absher-mint)) !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  box-shadow: var(--absher-shadow) !important;
+}
+
+/* الأزرار مستطيلة أنيقة وليست كبسولة */
+.ghost-btn,
+.submit-btn,
+.small-btn,
+.dash-sidebar button,
+.mail-actions a,
+.link-button {
+  border-radius: 9px !important;
+  padding: 10px 15px !important;
+  background: linear-gradient(135deg, var(--absher-deep), var(--absher-mint)) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 22px rgba(0,108,91,.14) !important;
+  font-weight: 800 !important;
+}
+.submit-btn:hover,
+.ghost-btn:hover,
+.small-btn:hover {
+  transform: translateY(-1px) !important;
+  filter: saturate(1.08) brightness(1.02) !important;
+}
+
+/* بطاقة النموذج العامة */
+#requestForm .form-grid {
+  max-width: 820px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+#requestForm .form-grid > h3 {
+  width: auto !important;
+  justify-self: start !important;
+  margin: 16px 0 2px !important;
+  padding: 9px 16px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, var(--absher-deep), var(--absher-mint)) !important;
+  color: #fff !important;
+  box-shadow: var(--absher-shadow) !important;
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
+}
+#requestForm .form-grid > h3::after { display: none !important; }
+
+/* الحقول: توزيع أوضح وفراغات أقل */
+#requestForm label,
+#trackRequestForm label,
+#loginForm label {
+  font-size: 11px !important;
+  color: #0b3f3a !important;
+  gap: 5px !important;
+}
+#requestForm .form-grid > label:not(.file-label):not(.semester-label):not(.absence-count-label),
+#trackRequestForm > label,
+#loginForm > label,
+.school-reference-grid > label,
+.four-name-grid > label,
+.subject-date-row > label,
+.hospital-details > label,
+.absence-count-label,
+.semester-label {
+  padding: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #ffffff, #f8fffc) !important;
+  border: 1px solid rgba(0,167,127,.12) !important;
+  box-shadow: 0 8px 18px rgba(0,108,91,.055) !important;
+}
+#requestForm input,
+#requestForm select,
+#requestForm textarea,
+#trackRequestForm input,
+#loginForm input {
+  min-height: 42px !important;
+  border-radius: 9px !important;
+  border: 1px solid rgba(0,167,127,.18) !important;
+  background: #fff !important;
+  font-size: 11.5px !important;
+  padding: 9px 11px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+#requestForm textarea { min-height: 86px !important; }
+#requestForm input:focus,
+#requestForm select:focus,
+#requestForm textarea:focus {
+  border-color: var(--absher-mint) !important;
+  box-shadow: 0 0 0 3px rgba(0,167,127,.10) !important;
+}
+
+/* البحث داخل القوائم */
+.searchable-select-label .select-search {
+  margin-bottom: 6px !important;
+  background: linear-gradient(180deg, #f3fffb, #ffffff) !important;
+  border-style: solid !important;
+}
+.searchable-select-label .select-search::placeholder { color: #7a918d !important; }
+
+/* بطاقات الأقسام: عناوين داخلية منطقية ومسافات مناسبة */
+.four-name-section,
+.school-reference-section,
+.subject-date-section,
+.hospital-section,
+.checks,
+.file-label {
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #ffffff, #f5fffb) !important;
+  border: 1px solid rgba(0,167,127,.16) !important;
+  box-shadow: var(--absher-shadow) !important;
+  margin-top: 8px !important;
+}
+.four-name-section h4,
+.school-reference-section h4,
+.subject-date-head strong {
+  display: inline-flex !important;
+  width: auto !important;
+  margin: 0 0 12px !important;
+  padding: 9px 16px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, var(--absher-deep), var(--absher-mint)) !important;
+  color: #fff !important;
+  box-shadow: var(--absher-shadow) !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+.four-name-grid,
+.school-reference-grid,
+.hospital-details {
+  gap: 10px !important;
+}
+
+/* مواد الغياب: العنوان أولًا ثم عناصر التحكم ثم الصفوف */
+.subject-date-section { padding: 16px !important; }
+.subject-date-head {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+}
+.subject-controls-row {
+  display: grid !important;
+  grid-template-columns: minmax(180px, .45fr) minmax(220px, .75fr) !important;
+  gap: 10px !important;
+  align-items: end !important;
+  margin-bottom: 12px !important;
+}
+.absence-count-label,
+.semester-label {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+.subject-date-row {
+  grid-template-columns: minmax(250px, 1fr) minmax(210px, .72fr) !important;
+  gap: 10px !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 20px rgba(0,108,91,.06) !important;
+}
+.hint-text { font-size: 10px !important; color: #5e7772 !important; }
+
+/* حقول التاريخ: شكل عصري للحقل، أما نافذة التقويم نفسها فهي من المتصفح */
+#requestForm input[type="date"] {
+  position: relative;
+  color: #0b3f3a !important;
+  background:
+    linear-gradient(180deg, #ffffff, #f7fffc) !important;
+  border-color: rgba(0,167,127,.20) !important;
+}
+#requestForm input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .9 !important;
+  cursor: pointer !important;
+  padding: 5px !important;
+  border-radius: 8px !important;
+  background-color: rgba(0,167,127,.10) !important;
+  filter: saturate(1.2) hue-rotate(110deg) !important;
+}
+
+/* الاختيارات */
+.checks {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  padding: 12px !important;
+}
+.checks label {
+  border-radius: 9px !important;
+  min-height: 42px !important;
+  background: #fff !important;
+}
+.checks label:has(input:checked) {
+  background: linear-gradient(180deg, rgba(0,167,127,.13), rgba(0,184,148,.08)) !important;
+  border-color: rgba(0,167,127,.35) !important;
+}
+.checks input[type="checkbox"] { accent-color: var(--absher-mint) !important; }
+
+/* رفع الملفات */
+.file-label {
+  border-style: dashed !important;
+  border-color: rgba(0,167,127,.28) !important;
+}
+.file-label input[type="file"] {
+  border-radius: 9px !important;
+  min-height: 40px !important;
+}
+
+/* الفوتر أهدأ */
+.site-footer {
+  background: linear-gradient(90deg, #006c5b, #00a77f) !important;
+}
+
+@media (max-width: 900px) {
+  .app-shell { width: min(100% - 22px, 1040px) !important; }
+  .site-header {
+    padding: 140px 14px 22px !important;
+  }
+  .site-header h1 {
+    white-space: normal !important;
+    max-width: 100% !important;
+  }
+  .panel-head {
+    flex-wrap: wrap !important;
+  }
+  .panel-head h2 {
+    white-space: normal !important;
+    text-align: right !important;
+  }
+  #requestForm .form-grid,
+  .school-reference-grid,
+  .four-name-grid,
+  .hospital-details,
+  .checks,
+  .subject-controls-row {
+    grid-template-columns: 1fr !important;
+  }
+}
