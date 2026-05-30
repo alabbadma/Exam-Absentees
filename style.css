@@ -2624,3 +2624,315 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .subject-date-row,
   .checks { grid-template-columns: 1fr !important; }
 }
+
+
+/* V26.5 — تصحيح الهيدر والنموذج بعد ملاحظات أبو عبدالعزيز */
+:root {
+  --absher-mint: #008a73;
+  --absher-mint-2: #00a88f;
+  --absher-mint-soft: #eefaf7;
+  --absher-ink: #123f44;
+  --absher-line: rgba(0, 138, 115, .16);
+  --absher-shadow: 0 14px 28px rgba(18, 63, 68, .08);
+  --absher-shadow-soft: 0 8px 18px rgba(18, 63, 68, .055);
+}
+
+/* الإطار الخارجي أضيق وأنظف */
+.app-shell {
+  width: min(1040px, calc(100% - 56px)) !important;
+  padding: 18px 18px 98px !important;
+  border-radius: 24px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,253,252,.94)) !important;
+}
+
+/* التاريخ نص يميني وليس زر */
+.site-header {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-height: 210px !important;
+  padding: 48px 42px 26px !important;
+  text-align: center !important;
+}
+.date-widget {
+  position: absolute !important;
+  top: 18px !important;
+  right: 22px !important;
+  width: 150px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  display: grid !important;
+  gap: 2px !important;
+  justify-items: stretch !important;
+  text-align: right !important;
+  color: var(--absher-ink) !important;
+}
+.date-widget span,
+.date-widget strong,
+.date-widget small {
+  display: block !important;
+  width: 100% !important;
+  color: var(--absher-ink) !important;
+  text-align: right !important;
+  line-height: 1.45 !important;
+  font-family: "Noto Kufi Arabic", system-ui, sans-serif !important;
+  white-space: nowrap !important;
+  letter-spacing: 0 !important;
+}
+.date-widget span { font-size: 9.5px !important; font-weight: 800 !important; }
+.date-widget strong,
+.date-widget small { font-size: 9px !important; font-weight: 700 !important; }
+
+.site-header .moe-logo-wrap {
+  width: 132px !important;
+  height: 78px !important;
+  margin: 22px auto 24px !important;
+}
+.site-header .moe-logo { max-width: 132px !important; }
+
+.site-header h1 {
+  width: min(760px, 100%) !important;
+  max-width: 760px !important;
+  margin: 0 auto 12px !important;
+  padding: 9px 18px !important;
+  border-radius: 9px !important;
+  background: linear-gradient(90deg, #007b67, #00a88f) !important;
+  color: #fff !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  font-size: clamp(10px, 1.08vw, 13px) !important;
+  line-height: 1.55 !important;
+  box-shadow: 0 10px 22px rgba(0, 138, 115, .15) !important;
+}
+.site-header .subtitle {
+  max-width: 720px !important;
+  margin: 0 auto !important;
+  font-size: 10.5px !important;
+  line-height: 1.8 !important;
+  color: #55706d !important;
+}
+
+/* رأس النموذج: الأزرار خارج بطاقات الحقول ويمين الإطار */
+.panel {
+  max-width: 880px !important;
+  padding: 20px 28px 26px !important;
+  border-radius: 22px !important;
+}
+.panel-head {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 22px !important;
+}
+.panel-actions {
+  order: 1 !important;
+  justify-self: start !important;
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+.panel-head h2 {
+  order: 2 !important;
+  justify-self: end !important;
+  width: fit-content !important;
+  max-width: 520px !important;
+  margin: 0 !important;
+  padding: 9px 16px !important;
+  border-radius: 9px !important;
+  white-space: nowrap !important;
+  font-size: 11.5px !important;
+  background: linear-gradient(90deg, #007b67, #00a88f) !important;
+  box-shadow: var(--absher-shadow-soft) !important;
+}
+
+/* أزرار مستطيلة أنيقة وليست كبسولات */
+.ghost-btn,
+.submit-btn,
+.small-btn,
+.dash-sidebar button,
+.mail-actions a,
+.link-button {
+  border-radius: 8px !important;
+  min-height: 34px !important;
+  padding: 8px 14px !important;
+  background: linear-gradient(90deg, #007b67, #00a88f) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(0, 138, 115, .14) !important;
+  font-family: "Noto Kufi Arabic", system-ui, sans-serif !important;
+}
+
+/* العناوين الفرعية يمين البطاقة */
+#requestForm .form-grid > h3,
+.form-grid h3,
+.hospital-section h3,
+.subject-date-head strong,
+.four-name-section h4,
+.school-reference-section h4 {
+  justify-self: start !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
+  text-align: right !important;
+  border-radius: 8px !important;
+  background: linear-gradient(90deg, #008a73, #00a88f) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(0, 138, 115, .12) !important;
+}
+
+/* تقليل الفراغات وتوحيد البطاقات */
+#requestForm .form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  max-width: 800px !important;
+}
+#requestForm .form-grid > h3 {
+  grid-column: 1 / -1 !important;
+  width: fit-content !important;
+  padding: 8px 14px !important;
+  margin-top: 8px !important;
+  margin-bottom: -2px !important;
+  font-size: 12px !important;
+}
+#requestForm .form-grid > h3::after { display: none !important; }
+
+.four-name-section,
+.school-reference-section,
+.subject-date-section,
+.hospital-section,
+.checks,
+.file-label {
+  border-radius: 14px !important;
+  border: 1px solid var(--absher-line) !important;
+  background: linear-gradient(180deg, #ffffff, #f7fcfb) !important;
+  box-shadow: var(--absher-shadow) !important;
+  padding: 14px !important;
+}
+
+.four-name-grid,
+.school-reference-grid,
+.hospital-details {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+.four-name-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+
+#requestForm .form-grid > label:not(.file-label):not(.semester-label):not(.absence-count-label),
+.school-reference-grid > label,
+.four-name-grid > label,
+.subject-date-row > label,
+.hospital-details > label {
+  min-height: 78px !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #ffffff, #fbfffe) !important;
+  box-shadow: 0 7px 15px rgba(18,63,68,.045) !important;
+  border: 1px solid rgba(0,138,115,.11) !important;
+}
+
+#requestForm label,
+#requestForm input,
+#requestForm select,
+#requestForm textarea,
+#requestForm option,
+#trackRequestForm input,
+#loginForm input {
+  font-family: "Noto Kufi Arabic", system-ui, sans-serif !important;
+}
+#requestForm input,
+#requestForm select,
+#requestForm textarea {
+  min-height: 40px !important;
+  border-radius: 9px !important;
+  font-size: 11px !important;
+  border-color: rgba(0,138,115,.14) !important;
+}
+#requestForm textarea { min-height: 86px !important; }
+
+/* بيانات المدرسة: حذف أي عنوان داخلي زائد إن وجد */
+.school-reference-section > h4 { display: none !important; }
+
+/* مواد الغياب: الفصل الدراسي بجوار عدد المواد مباشرة تحت العنوان */
+.subject-date-section { display: grid !important; gap: 12px !important; }
+.subject-date-head {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+.subject-date-head strong {
+  width: fit-content !important;
+  padding: 8px 14px !important;
+  font-size: 12px !important;
+}
+.subject-controls-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+}
+.semester-label,
+.absence-count-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 78px !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #ffffff, #fbfffe) !important;
+  box-shadow: 0 7px 15px rgba(18,63,68,.045) !important;
+  border: 1px solid rgba(0,138,115,.11) !important;
+}
+.subject-date-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 7px 15px rgba(18,63,68,.045) !important;
+}
+
+/* بيانات الحالة والمرفقات: توحيد أحجام الحقول قدر الإمكان */
+.checks {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+.checks label {
+  min-height: 42px !important;
+  border-radius: 8px !important;
+}
+
+/* حقل التاريخ بشكل أنظف */
+input[type="date"] {
+  color: var(--absher-ink) !important;
+  background: linear-gradient(180deg, #ffffff, #f8fffd) !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .92 !important;
+  cursor: pointer !important;
+  filter: sepia(.2) saturate(1.8) hue-rotate(110deg) brightness(.8) !important;
+}
+
+@media (max-width: 900px) {
+  .app-shell { width: min(100% - 22px, 1040px) !important; }
+  .site-header { padding: 76px 18px 24px !important; }
+  .date-widget { top: 16px !important; right: 18px !important; }
+  .panel-head { grid-template-columns: 1fr !important; }
+  .panel-actions, .panel-head h2 { justify-self: start !important; }
+  #requestForm .form-grid,
+  .school-reference-grid,
+  .hospital-details,
+  .four-name-grid,
+  .checks,
+  .subject-controls-row,
+  .subject-date-row {
+    grid-template-columns: 1fr !important;
+  }
+  .site-header h1 { white-space: normal !important; }
+}
