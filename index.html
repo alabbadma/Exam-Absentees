@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260530-v25-2-stage-fix" />
+  <link rel="stylesheet" href="style.css?v=20260530-v26-1-continuing-education" />
 </head>
 
 <body>
@@ -193,6 +193,11 @@
           <small class="hint-text">تعتمد القائمة على ملف المدارس المرجعي. عند اختيار المدرسة تظهر بياناتها تلقائيًا لتقليل أخطاء الإدخال.</small>
         </div>
         <label>الصف<select name="grade" id="gradeSelect" required><option value="">اختر المدرسة أولًا لتحديد المرحلة</option></select></label>
+        <label id="secondaryPathWrap" class="hidden">المسار / البرنامج
+          <select name="secondaryPath" id="secondaryPathSelect">
+            <option value="">يظهر عند اختيار المرحلة الثانوية</option>
+          </select>
+        </label>
         <label>نوع الطلب<select name="requestType" required>
           <option value="معالجة الاختبار الختامي">معالجة الاختبار الختامي</option>
           <option value="معالجة التقويم التكويني">معالجة التقويم التكويني</option>
@@ -390,6 +395,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260530-v25-2-stage-fix"></script>
+  <script src="app.js?v=20260530-v26-1-continuing-education"></script>
 </body>
 </html>
