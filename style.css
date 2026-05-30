@@ -1606,3 +1606,6 @@ button:active,
 @media (max-width: 900px) {
   .school-reference-grid { grid-template-columns: 1fr; }
 }
+
+/* V26: حقل المسار/البرنامج للثانوية */
+#secondaryPathWrap { align-self: end; }
