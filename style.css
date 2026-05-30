@@ -1609,3 +1609,342 @@ button:active,
 
 /* V26: حقل المسار/البرنامج للثانوية */
 #secondaryPathWrap { align-self: end; }
+
+
+/* V26.2 — تحسين بصري داخلي حديث للنماذج دون المساس بالمنطق */
+:root {
+  --font-title: "Noto Kufi Arabic", system-ui, sans-serif;
+  --font-body: "Noto Kufi Arabic", system-ui, sans-serif;
+  --ui-surface: #ffffff;
+  --ui-surface-soft: #f7fcfb;
+  --ui-surface-soft-2: #f2fbfb;
+  --ui-border: rgba(21, 68, 90, .10);
+  --ui-border-strong: rgba(13, 169, 166, .22);
+  --ui-shadow-sm: 0 10px 24px rgba(21, 68, 90, .08);
+  --ui-shadow-md: 0 18px 40px rgba(21, 68, 90, .10);
+  --ui-focus: 0 0 0 4px rgba(13, 169, 166, .10);
+}
+
+body, button, input, select, textarea, option {
+  font-family: var(--font-body) !important;
+}
+
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(247,252,251,.94)) !important;
+}
+
+#requestForm .form-grid {
+  gap: 16px !important;
+  align-items: start;
+}
+
+#requestForm .form-grid > h3 {
+  justify-self: stretch;
+  width: fit-content;
+  margin: 10px 0 0 !important;
+  padding: 10px 18px !important;
+  border-radius: 18px !important;
+  font-size: 14px !important;
+  position: relative;
+}
+#requestForm .form-grid > h3::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 14px;
+  inset-inline-end: 14px;
+  bottom: -10px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(13,169,166,0), rgba(13,169,166,.32), rgba(13,169,166,0));
+}
+
+/* بطاقات الحقول */
+#requestForm .form-grid > label:not(.file-label):not(.semester-label):not(.absence-count-label),
+#trackRequestForm > label,
+#loginForm > label,
+.school-reference-grid > label,
+.four-name-grid > label,
+.subject-date-row > label,
+.hospital-details > label {
+  position: relative;
+  padding: 12px 12px 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,252,251,.94));
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow-sm);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+
+#requestForm .form-grid > label:not(.file-label):not(.semester-label):not(.absence-count-label):hover,
+#trackRequestForm > label:hover,
+#loginForm > label:hover,
+.school-reference-grid > label:hover,
+.four-name-grid > label:hover,
+.subject-date-row > label:hover,
+.hospital-details > label:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--ui-shadow-md);
+  border-color: rgba(13, 169, 166, .18);
+}
+
+#requestForm label,
+#trackRequestForm label,
+#loginForm label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #17485d !important;
+}
+
+#requestForm input,
+#requestForm select,
+#requestForm textarea,
+#trackRequestForm input,
+#loginForm input,
+.mail-grid input,
+.mail-grid textarea {
+  min-height: 48px;
+  margin-top: 2px;
+  border-radius: 14px !important;
+  border: 1px solid rgba(21,68,90,.10) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fbffff 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92), inset 0 -2px 7px rgba(21,68,90,.025);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+}
+
+#requestForm textarea {
+  min-height: 108px;
+  line-height: 1.85;
+}
+
+#requestForm input:focus,
+#requestForm select:focus,
+#requestForm textarea:focus,
+#trackRequestForm input:focus,
+#loginForm input:focus,
+.mail-grid input:focus,
+.mail-grid textarea:focus {
+  border-color: var(--moe-turquoise-core) !important;
+  box-shadow: var(--ui-focus), inset 0 1px 0 rgba(255,255,255,.94) !important;
+  background: #fff !important;
+  transform: translateY(-1px);
+}
+
+#requestForm input[readonly],
+.school-reference-grid input[readonly],
+.readonly-calculated {
+  background: linear-gradient(180deg, #eef7fb, #f8fcff) !important;
+  color: #15445a !important;
+  font-weight: 700;
+}
+
+/* قوائم منسدلة حديثة */
+#requestForm select,
+#trackRequestForm select,
+#loginForm select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-inline-start: 14px !important;
+  padding-inline-end: 42px !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #218caa 50%),
+    linear-gradient(135deg, #218caa 50%, transparent 50%),
+    linear-gradient(180deg, #ffffff, #fbfffe);
+  background-position:
+    calc(18px) calc(50% - 3px),
+    calc(10px) calc(50% - 3px),
+    0 0;
+  background-size: 8px 8px, 8px 8px, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* التاريخ والملفات */
+#requestForm input[type="date"],
+.subject-date-row input[type="date"] {
+  padding-inline-end: 14px !important;
+  color: #15445a;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .88;
+  filter: hue-rotate(142deg) saturate(1.2);
+}
+
+.file-label {
+  grid-column: 1 / -1;
+  padding: 16px !important;
+  border: 1px dashed rgba(61,126,185,.24) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(240,250,250,.92)) !important;
+  box-shadow: var(--ui-shadow-sm);
+}
+.file-label input[type="file"] {
+  padding: 12px !important;
+  border: 1px dashed rgba(13,169,166,.26) !important;
+  background: linear-gradient(180deg, #fff, #f7fcfd) !important;
+}
+
+/* تحسين البلوكات الداخلية */
+.four-name-section,
+.school-reference-section,
+.subject-date-section,
+.hospital-section {
+  border-radius: 22px !important;
+  border: 1px solid rgba(13,169,166,.16) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(244,251,250,.94)) !important;
+  box-shadow: 0 20px 42px rgba(21,68,90,.08), inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+.four-name-section h4,
+.school-reference-section h4,
+.subject-date-head strong {
+  border-radius: 16px !important;
+  box-shadow: 0 10px 22px rgba(21,68,90,.14) !important;
+}
+
+.school-reference-section .hint-text,
+.subject-date-section .hint-text,
+.hospital-section .hint-text,
+.four-name-section .hint-text {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #5f787a;
+}
+
+.subject-date-section {
+  padding: 18px !important;
+}
+.subject-date-head {
+  align-items: end !important;
+  gap: 14px !important;
+}
+.absence-count-label {
+  margin: 0 !important;
+  padding: 10px 12px 12px !important;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,252,251,.94));
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow-sm);
+}
+.semester-label {
+  max-width: 270px;
+  padding: 10px 12px 12px !important;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(245,252,251,.94));
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow-sm);
+}
+.subject-date-row {
+  border-radius: 20px !important;
+  padding: 12px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,251,255,.94)) !important;
+  border: 1px solid rgba(61,126,185,.14) !important;
+}
+
+.hospital-details {
+  margin-top: 14px !important;
+}
+
+.checks {
+  grid-column: 1 / -1;
+  padding: 14px !important;
+  border: 1px solid rgba(13,169,166,.12);
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, rgba(248,254,253,.96), rgba(238,249,249,.94)) !important;
+  box-shadow: var(--ui-shadow-sm);
+}
+.checks label {
+  min-height: 46px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(13,169,166,.10) !important;
+  box-shadow: none !important;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
+}
+.checks label:hover {
+  transform: translateY(-1px);
+  border-color: rgba(13,169,166,.22) !important;
+  box-shadow: 0 10px 18px rgba(21,68,90,.06) !important;
+}
+.checks label:has(input:checked) {
+  background: linear-gradient(180deg, rgba(7,168,105,.10), rgba(61,126,185,.08)) !important;
+  border-color: rgba(13,169,166,.26) !important;
+  color: #15445a !important;
+}
+
+/* تحسين النماذج المختصرة */
+#trackRequestForm,
+#loginForm {
+  max-width: 920px;
+  margin-inline: auto;
+  padding: 4px 0;
+}
+#trackForm .result-card,
+#requestDetails,
+.table-card,
+.analytics-card,
+.welcome-strip {
+  border-radius: 24px !important;
+}
+
+/* الأزرار بشكل أكثر عصرية */
+.submit-btn,
+.ghost-btn,
+.small-btn,
+.dash-sidebar button {
+  border-radius: 15px !important;
+  padding: 11px 16px !important;
+  letter-spacing: 0;
+}
+
+/* الجداول والنصوص الداخلية */
+table th,
+table td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* تحسين لوحة التحكم داخليًا */
+.table-scroll {
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,252,252,.94));
+}
+.table-card,
+.details-card,
+.analytics-card {
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(246,252,251,.93)) !important;
+}
+
+/* استجابة للجوال دون تغيير المنطق */
+@media (max-width: 960px) {
+  #requestForm .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .school-reference-grid,
+  .hospital-details,
+  .four-name-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .checks {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  #requestForm .form-grid,
+  .school-reference-grid,
+  .hospital-details,
+  .four-name-grid,
+  .checks,
+  #trackRequestForm,
+  #loginForm {
+    grid-template-columns: 1fr !important;
+  }
+  .subject-date-head {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .semester-label,
+  .absence-count-label {
+    max-width: none;
+    width: 100%;
+  }
+}
