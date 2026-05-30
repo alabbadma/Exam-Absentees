@@ -298,17 +298,18 @@ function schoolStageToPlatformStage(stage) {
 function initSchoolReferenceControls() {
   const typeSelect = document.getElementById("schoolTypeFilter");
   const classSelect = document.getElementById("schoolClassificationFilter");
-  const schoolSelect = document.getElementById("schoolSelect");
-  const schoolSearch = document.getElementById("schoolSearch");
+  const schoolInput = document.getElementById("schoolSelect");
+  const schoolOptions = document.getElementById("schoolOptions");
   const codeField = document.getElementById("schoolCodeField");
   const emailField = document.getElementById("schoolEmailField");
   const stageField = document.getElementById("schoolInferredStageField");
   const principalField = document.getElementById("schoolPrincipalField");
   const mobileField = document.getElementById("schoolPrincipalMobileField");
   const stageSelect = document.getElementById("stageHiddenField") || document.querySelector('[name="stage"]');
-  if (!typeSelect || !classSelect || !schoolSelect) return;
+  if (!typeSelect || !classSelect || !schoolInput) return;
 
-  const clearSchoolFields = () => {
+  const clearSchoolFields = (clearName = false) => {
+    if (clearName) schoolInput.value = "";
     if (codeField) codeField.value = "";
     if (emailField) emailField.value = "";
     if (stageField) stageField.value = "";
@@ -325,7 +326,6 @@ function initSchoolReferenceControls() {
     if (explicit === "بنين" || explicit === "بنات") return explicit;
     if (name.includes("بنات")) return "بنات";
     if (name.includes("بنين")) return "بنين";
-    // في ملف المدارس المرفوع غالبًا estg للبنات و estb للبنين.
     if (email.includes("@estg.")) return "بنات";
     if (email.includes("@estb.")) return "بنين";
     return explicit;
@@ -334,7 +334,7 @@ function initSchoolReferenceControls() {
   const filteredSchools = () => {
     const t = typeSelect.value;
     const cl = classSelect.value;
-    const q = String(schoolSearch?.value || "").trim().toLowerCase();
+    const q = String(schoolInput?.value || "").trim().toLowerCase();
     return SCHOOLS_REFERENCE
       .filter(s => (!t || inferSchoolType(s) === t) && (!cl || s.cl === cl))
       .filter(s => {
@@ -347,33 +347,36 @@ function initSchoolReferenceControls() {
 
   const renderSchools = () => {
     const list = filteredSchools();
-    const placeholder = (!typeSelect.value || !classSelect.value)
-      ? "اختر نوع المدرسة وتصنيفها أولًا"
-      : (list.length ? "اختر المدرسة" : "لا توجد مدارس مطابقة");
-    schoolSelect.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` +
-      list.map(s => `<option value="${escapeAttr(s.n)}" data-code="${escapeAttr(s.c)}" data-email="${escapeAttr(s.e)}" data-stage="${escapeAttr(s.st)}" data-type="${escapeAttr(inferSchoolType(s))}" data-principal="${escapeAttr(s.p || "")}" data-mobile="${escapeAttr(s.m || "")}">${escapeHtml(s.n)}</option>`).join("");
-    clearSchoolFields();
+    if (schoolOptions) {
+      schoolOptions.innerHTML = list.map(s => `<option value="${escapeAttr(s.n)}"></option>`).join("");
+    }
+  };
+
+  const findExactSchool = () => {
+    const name = String(schoolInput.value || "").trim();
+    if (!name) return null;
+    return SCHOOLS_REFERENCE.find(s => String(s.n || "").trim() === name) || null;
   };
 
   const applySchool = () => {
-    const opt = schoolSelect.selectedOptions[0];
-    if (!opt || !schoolSelect.value) { clearSchoolFields(); return; }
-    if (codeField) codeField.value = opt.dataset.code || "";
-    if (emailField) emailField.value = opt.dataset.email || "";
-    if (stageField) stageField.value = schoolStageToPlatformStage(opt.dataset.stage || "") || opt.dataset.stage || "";
-    if (principalField && !principalField.value) principalField.value = opt.dataset.principal || "";
-    if (mobileField && !mobileField.value) mobileField.value = opt.dataset.mobile || "";
-    const platformStage = schoolStageToPlatformStage(opt.dataset.stage || "");
+    const s = findExactSchool();
+    if (!s) { clearSchoolFields(false); renderSchools(); return; }
+    if (codeField) codeField.value = s.c || "";
+    if (emailField) emailField.value = s.e || "";
+    if (stageField) stageField.value = schoolStageToPlatformStage(s.st || "") || s.st || "";
+    if (principalField && !principalField.value) principalField.value = s.p || "";
+    if (mobileField && !mobileField.value) mobileField.value = s.m || "";
+    const platformStage = schoolStageToPlatformStage(s.st || "");
     if (stageSelect) {
       stageSelect.value = platformStage || "";
       stageSelect.dispatchEvent(new Event("change", { bubbles: true }));
     }
   };
 
-  typeSelect.addEventListener("change", () => { if (schoolSearch) schoolSearch.value = ""; renderSchools(); });
-  classSelect.addEventListener("change", () => { if (schoolSearch) schoolSearch.value = ""; renderSchools(); });
-  schoolSearch?.addEventListener("input", renderSchools);
-  schoolSelect.addEventListener("change", applySchool);
+  typeSelect.addEventListener("change", () => { clearSchoolFields(true); renderSchools(); });
+  classSelect.addEventListener("change", () => { clearSchoolFields(true); renderSchools(); });
+  schoolInput.addEventListener("input", () => { renderSchools(); applySchool(); });
+  schoolInput.addEventListener("change", applySchool);
   renderSchools();
 }
 
@@ -610,29 +613,29 @@ function resetSubjectRows() {
 
 
 function initNationalitySelect() {
-  const select = document.getElementById("nationalitySelect");
-  const search = document.getElementById("nationalitySearch");
+  const input = document.getElementById("nationalitySelect");
+  const options = document.getElementById("nationalityOptions");
   const wrap = document.getElementById("otherNationalityWrap");
   const other = document.getElementById("nationalityOther");
-  if (!select) return;
+  if (!input) return;
 
   const renderNationalities = () => {
-    const previous = select.value;
-    const q = String(search?.value || "").trim().toLowerCase();
-    let list = NATIONALITIES.filter(n => !q || String(n).toLowerCase().includes(q));
-    if (!list.includes("أخرى")) list.push("أخرى");
-    select.innerHTML = list.map(n => `<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join("");
-    if (list.includes(previous)) select.value = previous;
+    const q = String(input.value || "").trim().toLowerCase();
+    const list = NATIONALITIES.filter(n => !q || String(n).toLowerCase().includes(q));
+    const finalList = list.includes("أخرى") ? list : [...list, "أخرى"];
+    if (options) options.innerHTML = finalList.map(n => `<option value="${escapeAttr(n)}"></option>`).join("");
     sync();
   };
 
   const sync = () => {
-    const isOther = select.value === "أخرى";
+    const isOther = input.value === "أخرى";
     wrap?.classList.toggle("hidden", !isOther);
     if (other) other.required = isOther;
   };
-  select.addEventListener("change", sync);
-  search?.addEventListener("input", renderNationalities);
+
+  input.addEventListener("input", renderNationalities);
+  input.addEventListener("change", sync);
+  if (!input.value) input.value = "المملكة العربية السعودية";
   renderNationalities();
 }
 
