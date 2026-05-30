@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260530-v23-phase1" />
+  <link rel="stylesheet" href="style.css?v=20260530-v25-schools-reference" />
 </head>
 
 <body>
@@ -159,11 +159,40 @@
         <label>بريد ولي الأمر<input name="email" type="email" placeholder="اختياري" /></label>
 
         <h3>بيانات المدرسة والاختبار</h3>
+        <div class="school-reference-section">
+          <h4>بيانات المدرسة من القائمة المرجعية</h4>
+          <div class="school-reference-grid">
+            <label>نوع المدرسة
+              <select name="schoolType" id="schoolTypeFilter" required>
+                <option value="">اختر نوع المدرسة</option>
+                <option value="بنين">بنين</option>
+                <option value="بنات">بنات</option>
+              </select>
+            </label>
+            <label>تصنيف المدرسة
+              <select name="schoolClassification" id="schoolClassificationFilter" required>
+                <option value="">اختر تصنيف المدرسة</option>
+                <option value="تعليم عام">تعليم عام</option>
+                <option value="تحفيظ قرآن كريم">تحفيظ قرآن كريم</option>
+                <option value="خاص">خاص</option>
+                <option value="تعليم مستمر">تعليم مستمر</option>
+              </select>
+            </label>
+            <label>اسم المدرسة
+              <select name="schoolName" id="schoolSelect" required>
+                <option value="">اختر نوع المدرسة وتصنيفها أولًا</option>
+              </select>
+            </label>
+            <label>الرقم الوزاري<input name="schoolCode" id="schoolCodeField" required readonly placeholder="يتعبأ تلقائيًا" /></label>
+            <label>بريد المدرسة الرسمي<input name="schoolEmail" id="schoolEmailField" type="email" required readonly placeholder="يتعبأ تلقائيًا" /></label>
+            <label>المرحلة المستنتجة<input name="schoolInferredStage" id="schoolInferredStageField" readonly placeholder="يتعبأ تلقائيًا" /></label>
+            <label>اسم مدير/ة المدرسة<input name="schoolPrincipal" id="schoolPrincipalField" placeholder="غير متوفر في الملف الحالي" /></label>
+            <label>جوال مدير/ة المدرسة<input name="schoolPrincipalMobile" id="schoolPrincipalMobileField" inputmode="tel" placeholder="غير متوفر في الملف الحالي" /></label>
+          </div>
+          <small class="hint-text">تعتمد القائمة على ملف المدارس المرجعي. عند اختيار المدرسة تظهر بياناتها تلقائيًا لتقليل أخطاء الإدخال.</small>
+        </div>
         <label>المرحلة<select name="stage"><option>الابتدائية</option><option>المتوسطة</option><option>الثانوية</option></select></label>
         <label>الصف<select name="grade" id="gradeSelect" required></select></label>
-        <label>اسم المدرسة<input name="schoolName" required /></label>
-        <label>الرقم الوزاري<input name="schoolCode" required placeholder="مثال: 123456" /></label>
-        <label>بريد المدرسة الرسمي<input name="schoolEmail" type="email" required placeholder="example@moe.gov.sa" /></label>
         <label>نوع الطلب<select name="requestType" required>
           <option value="معالجة الاختبار الختامي">معالجة الاختبار الختامي</option>
           <option value="معالجة التقويم التكويني">معالجة التقويم التكويني</option>
