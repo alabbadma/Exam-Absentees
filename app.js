@@ -17,7 +17,7 @@ let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
 const DASH_CACHE_KEY = "examAbsentees.dashboard.v25_2";
-const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v25_2";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v27_2";
 
 function readLocalCache(key) {
   try {
@@ -216,13 +216,18 @@ function formToObject(form) {
   obj.hospitalFrom = form.querySelector('[name="hospitalFrom"]')?.value || "";
   obj.hospitalTo = form.querySelector('[name="hospitalTo"]')?.value || "";
 
-  // V27.1: بعد دمج الحقول المتكررة، نُبقي الحقول القديمة المطلوبة داخليًا متوافقة مع البيانات الجديدة.
-  if (!String(obj.medicalDescription || "").trim()) {
-    obj.medicalDescription = String(obj.barrierNotes || obj.absenceReason || "").trim();
-  }
-  if (!String(obj.medicalCategory || "").trim()) {
-    obj.medicalCategory = String(obj.barrierType || "").trim();
-  }
+  // V27.2: نُبقي الحقول الداخلية القديمة متوافقة دون إظهار حقول متكررة للمستخدم.
+  const barrierSummaryParts = [
+    obj.barrierType,
+    obj.barrierProofType,
+    obj.barrierProofSource,
+    obj.barrierRelation ? ("صلة القرابة: " + obj.barrierRelation) : "",
+    obj.barrierCommitteeOpinion ? ("رأي لجنة التوجيه الطلابي: " + obj.barrierCommitteeOpinion) : ""
+  ].map(v => String(v || "").trim()).filter(Boolean);
+  if (!String(obj.absenceReason || "").trim()) obj.absenceReason = barrierSummaryParts.join(" - ");
+  if (!String(obj.medicalDescription || "").trim()) obj.medicalDescription = obj.absenceReason;
+  if (!String(obj.medicalCategory || "").trim()) obj.medicalCategory = String(obj.barrierType || "").trim();
+  obj.barrierNotes = "";
 
   return obj;
 }
@@ -765,7 +770,6 @@ function getBarrierKey(value) {
 function initBarrierFields() {
   const select = document.getElementById("barrierTypeSelect");
   const proof = document.getElementById("barrierProofTypeSelect");
-  const nature = document.getElementById("barrierNatureSelect");
   const fields = Array.from(document.querySelectorAll("[data-barrier-field]"));
   const hint = document.getElementById("barrierHint");
   const hospitalCard = document.getElementById("hospitalizationSection");
@@ -775,7 +779,7 @@ function initBarrierFields() {
   const autoPerformance = document.getElementById("preventsExamPerformanceAuto");
   const autoRemote = document.getElementById("canRemoteExamAuto");
   const autoHealing = document.getElementById("needsHealingPlaceExamAuto");
-  if (!select || !fields.length) return;
+  if (!select) return;
 
   const proofByKey = {
     medical: "تقرير طبي معتمد",
@@ -794,48 +798,21 @@ function initBarrierFields() {
     other: "أخرى"
   };
 
-  const natureByKey = {
-    medical: ["مرض موثق بتقرير طبي", "مرض معدٍ أو عزل طبي", "حالة نفسية أو صحية شديدة موثقة", "إعاقة مؤقتة", "أخرى"],
-    hospital: ["تنويم في المستشفى", "تنويم ثم خروج", "تنويم مستمر حتى تاريخه"],
-    home: ["استشفاء منزلي موصى به طبيًا", "إقامة طويلة في المنزل", "منع طبي من الحضور"],
-    oncology: ["أورام", "علاج كيماوي", "علاج إشعاعي", "متابعة علاجية طويلة"],
-    fracture: ["كسر أو إصابة تمنع الحضور", "كسر أو إصابة تمنع الكتابة", "إصابة مؤقتة"],
-    writing: ["عجز مؤقت عن الكتابة", "إصابة في اليد", "حالة صحية تعوق الكتابة"],
-    incident: ["عارض صحي أثناء الاختبار", "خروج للعلاج أثناء الاختبار", "عدم إكمال الاختبار لعارض صحي"],
-    companion: ["مرافقة مريض منوم"],
-    death: ["وفاة قريب من الدرجة الأولى", "وفاة قريب"],
-    accident: ["حادث مروري", "مراجعة جهة أمنية", "إفادة رسمية من جهة مختصة"],
-    detention: ["موقوف", "إصلاحية", "جهة احتجاز رسمية"],
-    border: ["مرابط على الحدود", "مهمة رسمية مرتبطة بالحدود"],
-    exception: ["حالة استثنائية تقدرها لجنة التوجيه الطلابي", "ظرف طارئ موثق"],
-    other: ["أخرى"]
-  };
-
   const hints = {
-    medical: "مرض موثق بتقرير طبي: أرفق التقرير وحدد الجهة والتواريخ المرتبطة بالعذر.",
-    hospital: "تنويم في المستشفى: تظهر تفاصيل التنويم لتحديد البداية والنهاية ومدة التنويم.",
-    home: "إقامة طويلة في المنزل: حدّد مدة الاستشفاء المنزلي والجهة الطبية التي أوصت بذلك.",
-    oncology: "الأورام أو العلاج الكيماوي/الإشعاعي: يفضل تحديد جهة العلاج وفترة تأثير الحالة.",
-    fracture: "الكسور أو الإصابات: وضّح أثر الإصابة على الحضور أو الكتابة في ملخص الحالة.",
-    writing: "حالة تمنع الكتابة فقط: حدّد طبيعة الإصابة والحاجة التعليمية في ملخص الحالة.",
-    incident: "عارض صحي أثناء الاختبار: اكتب وقت العارض وما إذا كان الطالب/ـة أكمل الاختبار أم لا.",
-    companion: "مرافقة مريض منوم: تظهر صلة القرابة وتفاصيل التنويم عند الحاجة.",
-    death: "وفاة أحد أفراد العائلة: تظهر صلة القرابة ويُكتفى بالمرفق الداعم وملخص الحالة.",
-    accident: "حادث أو مراجعة جهة أمنية: حدّد الجهة الرسمية وتاريخ الواقعة.",
-    detention: "موقوف أو إصلاحية: حدّد الجهة والموقع المقترح للاختبار إن توفر.",
-    border: "مرابط على الحدود: أرفق المشهد الرسمي وحدّد جهة المرابطة وفترة التأثر.",
-    exception: "حالة استثنائية: يفضل إدخال رأي لجنة التوجيه الطلابي أو مختصر التوصية.",
-    other: "أخرى: اكتب التفاصيل في ملخص الحالة وأرفق ما يثبتها."
-  };
-
-  const setNatureOptions = (key) => {
-    if (!nature) return;
-    const current = nature.value;
-    const list = natureByKey[key] || [];
-    nature.innerHTML = list.length
-      ? `<option value="">اختر طبيعة الحالة / الواقعة</option>` + list.map(x => `<option value="${escapeAttr(x)}">${escapeHtml(x)}</option>`).join("")
-      : `<option value="">اختر نوع المانع أولًا</option>`;
-    if (list.includes(current)) nature.value = current;
+    medical: "مرض موثق بتقرير طبي: أرفق التقرير وحدد اسم الجهة الصادر منها الإثبات.",
+    hospital: "تنويم في المستشفى: ستظهر بطاقة تفاصيل التنويم فقط لهذه الحالة.",
+    home: "إقامة طويلة في المنزل: يكتفى ببيان نوع المانع ومصدر الإثبات والجهة الصادر منها.",
+    oncology: "الأورام أو العلاج الكيماوي/الإشعاعي: اختر مصدر الإثبات والجهة العلاجية.",
+    fracture: "الكسور أو الإصابات: اختر مصدر الإثبات والجهة الصادر منها التقرير.",
+    writing: "حالة تمنع الكتابة فقط: يوضح أثرها في رأي لجنة التوجيه الطلابي أو قرار الإدارة لاحقًا.",
+    incident: "عارض صحي أثناء الاختبار: اختر مصدر الإثبات والجهة الصادر منها.",
+    companion: "مرافقة مريض منوم: تظهر صلة القرابة فقط في هذه الحالة.",
+    death: "وفاة أحد أفراد العائلة: تظهر صلة القرابة فقط في هذه الحالة.",
+    accident: "حادث أو مراجعة جهة أمنية: اختر مصدر الإثبات والجهة الرسمية.",
+    detention: "موقوف أو إصلاحية: اختر الخطاب الرسمي والجهة الصادر منها.",
+    border: "مرابط على الحدود: اختر المشهد الرسمي والجهة الصادر منها.",
+    exception: "حالة استثنائية: يفضل كتابة رأي لجنة التوجيه الطلابي.",
+    other: "أخرى: اختر مصدر الإثبات والجهة الصادر منها، ويمكن لمتخذ القرار تدوين الحيثيات لاحقًا."
   };
 
   const setAutoFlags = (key) => {
@@ -843,37 +820,44 @@ function initBarrierFields() {
     if (autoAttendance) autoAttendance.checked = ["hospital","home","oncology","detention","border"].includes(key);
     if (autoPerformance) autoPerformance.checked = ["medical","hospital","home","oncology","fracture","writing","incident"].includes(key);
     if (autoRemote) autoRemote.checked = false;
-    if (autoHealing) autoHealing.checked = ["hospital","home"].includes(key);
+    if (autoHealing) autoHealing.checked = key === "hospital";
+  };
+
+  const toggleHospitalInputs = (visible) => {
+    if (!hospitalCard) return;
+    hospitalCard.classList.toggle("hidden", !visible);
+    hospitalCard.querySelectorAll("input,select,textarea,button").forEach(el => {
+      el.disabled = !visible;
+      if (!visible) {
+        if (el.tagName === "SELECT") el.value = "لا يوجد تنويم في المستشفى";
+        else if (el.id === "hospitalDays") el.value = "1";
+        else el.value = "";
+      }
+    });
+    if (!visible && hospitalStatus) hospitalStatus.dispatchEvent(new Event("change"));
   };
 
   const sync = () => {
     const key = getBarrierKey(select.value);
-    if (proof && key && !proof.value) proof.value = proofByKey[key] || "";
-    setNatureOptions(key);
+    if (proof && key) proof.value = proofByKey[key] || proof.value || "";
     setAutoFlags(key);
 
-    const showHospital = ["hospital", "home", "companion"].includes(key);
-    if (hospitalCard) hospitalCard.classList.toggle("hidden", !showHospital);
-    if (!showHospital && hospitalStatus) {
-      hospitalStatus.value = "لا يوجد تنويم في المستشفى";
-      hospitalStatus.dispatchEvent(new Event("change"));
-    }
+    toggleHospitalInputs(key === "hospital");
 
     fields.forEach(label => {
       const allowed = String(label.dataset.barrierField || "").split(",").map(x => x.trim());
-      const visible = !!key && (allowed.includes("all") || allowed.includes(key));
+      const visible = !!key && allowed.includes(key);
       label.classList.toggle("hidden", !visible);
       label.querySelectorAll("input,select,textarea").forEach(el => {
         el.disabled = !visible;
         if (!visible) el.value = "";
       });
     });
-    if (hint) hint.textContent = key ? (hints[key] || "اختر الحقول المناسبة لنوع المانع.") : "اختر نوع المانع لتظهر الحقول المناسبة له. هذه المرحلة لا تغيّر القرار الآلي الحالي، لكنها تنظم بيانات الحالة حسب اللائحة.";
+    if (hint) hint.textContent = key ? (hints[key] || "اختر الحقول المناسبة لنوع المانع.") : "اختر نوع المانع لتظهر الحقول المناسبة له دون إظهار حقول غير مرتبطة بالحالة.";
   };
   select.addEventListener("change", sync);
   sync();
 }
-
 function initFormGuards() {
   enforceDigits(document.querySelector('[name="nationalId"]'), 10);
   enforceDigits(document.querySelector('[name="mobile"]'), 10);
@@ -1026,6 +1010,8 @@ $("#loginForm").addEventListener("submit", async (e) => {
 $("#logoutBtn").addEventListener("click", goHome);
 $("#refreshBtn").addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري التحديث...", () => loadDashboard({ useCache: false, background: false })));
 $("#refreshAnalyticsBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تحديث الإحصاءات...", () => loadAnalytics(true)));
+$("#applyAnalyticsFiltersBtn")?.addEventListener("click", (e) => withButtonLoading(e.currentTarget, "جاري تطبيق الإحصاء...", () => loadAnalytics(true)));
+$("#exportAnalyticsBtn")?.addEventListener("click", () => exportAnalyticsToExcel());
 
 async function loadDashboard(options = {}) {
   const useCache = options.useCache !== false;
@@ -1096,13 +1082,29 @@ function applyDashboardTab() {
   renderRequests(rows);
 }
 
+
+function getAnalyticsFilters() {
+  return {
+    academicYear: String(document.getElementById("analyticsAcademicYear")?.value || "").trim(),
+    semester: String(document.getElementById("analyticsSemester")?.value || "").trim(),
+    dateFrom: String(document.getElementById("analyticsDateFrom")?.value || "").trim(),
+    dateTo: String(document.getElementById("analyticsDateTo")?.value || "").trim(),
+  };
+}
+
+function analyticsFilterCacheKey() {
+  const f = getAnalyticsFilters();
+  return ANALYTICS_CACHE_KEY + "." + btoa(unescape(encodeURIComponent(JSON.stringify(f)))).replace(/=+$/g, "");
+}
+
 async function loadAnalytics(force = false) {
   if (ANALYTICS_LOADING) return;
   if (CURRENT_ANALYTICS && !force) {
     renderAnalytics(CURRENT_ANALYTICS);
     return;
   }
-  const cached = !force ? readLocalCache(ANALYTICS_CACHE_KEY) : null;
+  const cacheKey = analyticsFilterCacheKey();
+  const cached = !force ? readLocalCache(cacheKey) : null;
   const content = $("#analyticsContent");
   if (cached && cached.data) {
     CURRENT_ANALYTICS = cached.data;
@@ -1113,9 +1115,9 @@ async function loadAnalytics(force = false) {
   }
   ANALYTICS_LOADING = true;
   try {
-    const result = await api("getAnalytics", { session: SESSION });
+    const result = await api("getAnalytics", { session: SESSION, filters: getAnalyticsFilters() });
     CURRENT_ANALYTICS = result.analytics || {};
-    writeLocalCache(ANALYTICS_CACHE_KEY, CURRENT_ANALYTICS);
+    writeLocalCache(cacheKey, CURRENT_ANALYTICS);
     renderAnalytics(CURRENT_ANALYTICS);
   } catch (err) {
     if (content && !cached) content.innerHTML = `<p class="error">${escapeHtml(err.message)}</p>`;
@@ -1131,11 +1133,16 @@ function renderAnalytics(a) {
   const byDecision = a.byDecision || [];
   const byStage = a.byStage || [];
   const topSchools = a.topSchools || [];
+  const byBarrier = a.byBarrierType || [];
+  const byDisease = a.byMedicalCategory || [];
   const maxDecision = Math.max(1, ...byDecision.map(x => Number(x.count || 0)));
   const maxStage = Math.max(1, ...byStage.map(x => Number(x.count || 0)));
   const maxSchools = Math.max(1, ...topSchools.map(x => Number(x.count || 0)));
+  const maxBarrier = Math.max(1, ...byBarrier.map(x => Number(x.count || 0)));
+  const maxDisease = Math.max(1, ...byDisease.map(x => Number(x.count || 0)));
 
   content.innerHTML = `
+    <div class="analytics-scope-note">${escapeHtml(a.scopeLabel || "الإحصاء الحالي")}</div>
     <div class="analytics-kpis">
       <article><b>${escapeHtml(a.totalRequests || 0)}</b><span>إجمالي الطلبات</span></article>
       <article><b>${escapeHtml(a.executed || 0)}</b><span>طلبات منفذة / معتمدة</span></article>
@@ -1151,37 +1158,14 @@ function renderAnalytics(a) {
       <article><b>${escapeHtml(a.highSchools || 0)}</b><span>مدارس ثانوية</span></article>
     </div>
     <div class="analytics-grid">
-      <section class="chart-box">
-        <h3>القرارات المعتمدة حسب النوع</h3>
-        ${renderBarList(byDecision, maxDecision)}
-      </section>
-      <section class="chart-box">
-        <h3>الطلبات حسب المرحلة</h3>
-        ${renderBarList(byStage, maxStage)}
-      </section>
-      <section class="chart-box">
-        <h3>أكثر المدارس رفعًا للطلبات</h3>
-        ${renderBarList(topSchools, maxSchools)}
-      </section>
-      <section class="chart-box">
-        <h3>الطلاب حسب الجنس</h3>
-        ${renderBarList(a.byGender || [], Math.max(1, ...(a.byGender || []).map(x => Number(x.count || 0))))}
-      </section>
-      <section class="chart-box">
-        <h3>المدارس الرافعة حسب المرحلة</h3>
-        ${renderBarList(a.schoolsByStage || [], Math.max(1, ...(a.schoolsByStage || []).map(x => Number(x.count || 0))))}
-      </section>
-      <section class="chart-box">
-        <h3>مؤشرات تنفيذ الطلبات</h3>
-        <div class="donut-wrap">
-          <div class="donut" style="--done:${Number(a.executionPercent || 0)}"><span>${escapeHtml(a.executionPercent || 0)}%</span></div>
-          <div class="legend-mini">
-            <span>منفذة: ${escapeHtml(a.executed || 0)}</span>
-            <span>لم تنفذ: ${escapeHtml(a.pending || 0)}</span>
-            <span>آخر تحديث: ${escapeHtml(a.generatedAt || "")}</span>
-          </div>
-        </div>
-      </section>
+      <section class="chart-box"><h3>أنواع المانع</h3>${renderBarList(byBarrier, maxBarrier)}</section>
+      <section class="chart-box"><h3>الأمراض / طبيعة الحالة</h3>${renderBarList(byDisease, maxDisease)}</section>
+      <section class="chart-box"><h3>القرارات المعتمدة حسب النوع</h3>${renderBarList(byDecision, maxDecision)}</section>
+      <section class="chart-box"><h3>الطلبات حسب المرحلة</h3>${renderBarList(byStage, maxStage)}</section>
+      <section class="chart-box"><h3>أكثر المدارس رفعًا للطلبات</h3>${renderBarList(topSchools, maxSchools)}</section>
+      <section class="chart-box"><h3>الطلاب حسب الجنس</h3>${renderBarList(a.byGender || [], Math.max(1, ...(a.byGender || []).map(x => Number(x.count || 0))))}</section>
+      <section class="chart-box"><h3>المدارس الرافعة حسب المرحلة</h3>${renderBarList(a.schoolsByStage || [], Math.max(1, ...(a.schoolsByStage || []).map(x => Number(x.count || 0))))}</section>
+      <section class="chart-box"><h3>مؤشرات تنفيذ الطلبات</h3><div class="donut-wrap"><div class="donut" style="--done:${Number(a.executionPercent || 0)}"><span>${escapeHtml(a.executionPercent || 0)}%</span></div><div class="legend-mini"><span>منفذة: ${escapeHtml(a.executed || 0)}</span><span>لم تنفذ: ${escapeHtml(a.pending || 0)}</span><span>آخر تحديث: ${escapeHtml(a.generatedAt || "")}</span></div></div></section>
     </div>
   `;
 }
@@ -1191,6 +1175,49 @@ function renderBarList(items, max) {
   return `<div class="bar-list stat-list-clean">${items.map(item => {
     return `<div class="bar-row stat-row-clean"><span>${escapeHtml(item.label || "غير محدد")}</span><b>${escapeHtml(item.count || 0)}</b></div>`;
   }).join("")}</div>`;
+}
+
+
+function exportAnalyticsToExcel() {
+  const a = CURRENT_ANALYTICS || {};
+  const rows = [];
+  const addSection = (title, items) => {
+    rows.push([title, "", ""]);
+    rows.push(["البند", "العدد", "النطاق"]);
+    (items || []).forEach(x => rows.push([x.label || "غير محدد", x.count || 0, a.scopeLabel || ""]));
+    rows.push(["", "", ""]);
+  };
+  rows.push(["تقرير إحصاءات منصة معالجة حالات الطلاب", "", ""]);
+  rows.push(["النطاق", a.scopeLabel || "كل البيانات", ""]);
+  rows.push(["تاريخ التوليد", a.generatedAt || "", ""]);
+  rows.push(["", "", ""]);
+  rows.push(["المؤشر", "القيمة", ""]);
+  [
+    ["إجمالي الطلبات", a.totalRequests || 0],
+    ["طلبات منفذة / معتمدة", a.executed || 0],
+    ["لم تنفذ بعد", a.pending || 0],
+    ["عدد المدارس الرافعة", a.schoolsCount || 0],
+    ["إجمالي مواد الغياب", a.totalAbsenceSubjects || 0],
+    ["إجمالي الطلاب", a.totalStudents || 0],
+    ["طلاب", a.maleStudents || 0],
+    ["طالبات", a.femaleStudents || 0]
+  ].forEach(r => rows.push([r[0], r[1], ""]));
+  rows.push(["", "", ""]);
+  addSection("أنواع المانع", a.byBarrierType || []);
+  addSection("الأمراض / طبيعة الحالة", a.byMedicalCategory || []);
+  addSection("القرارات", a.byDecision || []);
+  addSection("المراحل", a.byStage || []);
+  addSection("أكثر المدارس رفعًا", a.topSchools || []);
+  const csv = rows.map(row => row.map(cell => '"' + String(cell ?? "").replace(/"/g, '""') + '"').join(",")).join("\n");
+  const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const aEl = document.createElement("a");
+  aEl.href = url;
+  aEl.download = "exam_absentees_analytics.csv";
+  document.body.appendChild(aEl);
+  aEl.click();
+  aEl.remove();
+  URL.revokeObjectURL(url);
 }
 
 function renderEmailStatus(status) {
