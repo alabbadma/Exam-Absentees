@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-16-equal-home-cards" />
+  <link rel="stylesheet" href="style.css?v=20260531-v27-0-barrier-fields" />
 </head>
 
 <body>
@@ -236,6 +236,71 @@
           <small class="hint-text">اختر عدد مواد الغياب، ثم اختر المادة وتاريخ الاختبار لكل مادة بشكل مستقل.</small>
         </div>
 
+
+        <h3>نوع المانع والمتطلبات النظامية</h3>
+        <div class="barrier-section">
+          <div class="barrier-primary-grid">
+            <label>نوع المانع
+              <select name="barrierType" id="barrierTypeSelect" required>
+                <option value="">اختر نوع المانع</option>
+                <option value="مرض موثق بتقرير طبي">مرض موثق بتقرير طبي</option>
+                <option value="تنويم في المستشفى">تنويم في المستشفى</option>
+                <option value="إقامة طويلة في المنزل بسبب حالة صحية">إقامة طويلة في المنزل بسبب حالة صحية</option>
+                <option value="أورام أو علاج كيماوي/إشعاعي">أورام أو علاج كيماوي/إشعاعي</option>
+                <option value="كسور أو إصابة تمنع الحضور أو الكتابة">كسور أو إصابة تمنع الحضور أو الكتابة</option>
+                <option value="حالة تمنع الكتابة فقط">حالة تمنع الكتابة فقط</option>
+                <option value="عارض صحي أثناء الاختبار">عارض صحي أثناء الاختبار</option>
+                <option value="مرافق لمريض منوم">مرافق لمريض منوم</option>
+                <option value="وفاة أحد أفراد العائلة">وفاة أحد أفراد العائلة</option>
+                <option value="حادث مروري أو مراجعة جهة أمنية">حادث مروري أو مراجعة جهة أمنية</option>
+                <option value="موقوف/إصلاحية">موقوف/إصلاحية</option>
+                <option value="مرابط على الحدود">مرابط على الحدود</option>
+                <option value="حالة استثنائية تقدرها لجنة التوجيه الطلابي">حالة استثنائية تقدرها لجنة التوجيه الطلابي</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </label>
+            <label>مصدر إثبات المانع
+              <select name="barrierProofType" id="barrierProofTypeSelect">
+                <option value="">اختر مصدر الإثبات</option>
+                <option>تقرير طبي معتمد</option>
+                <option>خطاب رسمي من جهة مختصة</option>
+                <option>إفادة لجنة التوجيه الطلابي</option>
+                <option>إفادة ولي الأمر</option>
+                <option>مشهد رسمي</option>
+                <option>أخرى</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="barrierDynamicFields" class="barrier-dynamic-grid">
+            <label data-barrier-field="all">جهة الإثبات / مصدر الخطاب
+              <input name="barrierProofSource" placeholder="مثال: مستشفى، جهة أمنية، لجنة التوجيه الطلابي" />
+            </label>
+            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">المنشأة أو الجهة المرتبطة بالمانع
+              <input name="barrierInstitution" placeholder="اسم المستشفى أو الجهة أو المدرسة" />
+            </label>
+            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">تاريخ بداية تأثير المانع
+              <input name="barrierStartDate" type="date" />
+            </label>
+            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">تاريخ نهاية تأثير المانع
+              <input name="barrierEndDate" type="date" />
+            </label>
+            <label data-barrier-field="companion,death">صلة القرابة / صفة العلاقة
+              <input name="barrierRelation" placeholder="مثال: والد، والدة، أخ، أخت" />
+            </label>
+            <label data-barrier-field="hospital,home,detention,border,accident,exception,other">موقع الطالب أو مكان الاختبار المقترح
+              <input name="barrierLocation" placeholder="مثال: المستشفى، المنزل، الإصلاحية، جهة المرابطة" />
+            </label>
+            <label data-barrier-field="exception,medical,home,incident" class="barrier-wide-field">رأي لجنة التوجيه الطلابي إن وجد
+              <textarea name="barrierCommitteeOpinion" placeholder="يكتب رأي اللجنة أو مختصر التوصية عند توفرها"></textarea>
+            </label>
+            <label data-barrier-field="all" class="barrier-wide-field">ملاحظات نوع المانع
+              <textarea name="barrierNotes" placeholder="أي تفاصيل مختصرة تساعد صاحب الصلاحية على فهم نوع المانع"></textarea>
+            </label>
+          </div>
+          <small id="barrierHint" class="hint-text">اختر نوع المانع لتظهر الحقول المناسبة له. هذه المرحلة لا تغيّر القرار الآلي الحالي، لكنها تنظم بيانات الحالة حسب اللائحة.</small>
+        </div>
+
         <h3>بيانات الحالة والمرفقات</h3>
         <div class="case-main-grid">
           <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
@@ -382,6 +447,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-16-equal-home-cards"></script>
+  <script src="app.js?v=20260531-v27-0-barrier-fields"></script>
 </body>
 </html>
