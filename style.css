@@ -3121,3 +3121,96 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     margin-bottom: 14px !important;
   }
 }
+
+
+/* V26.7 — تعديل محدد فقط حسب طلب أبو عبدالعزيز: صفوف متجاورة دون المساس بباقي التنسيقات */
+#requestForm .subject-date-section .subject-controls-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+#requestForm .subject-date-section .semester-label,
+#requestForm .subject-date-section .absence-count-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  min-height: 76px !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  align-items: stretch !important;
+}
+
+#requestForm .subject-date-section .semester-label select,
+#requestForm .subject-date-section .absence-count-label select {
+  height: 42px !important;
+  min-height: 42px !important;
+}
+
+#requestForm .case-main-grid {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+
+#requestForm .case-main-grid > label {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 132px !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  align-items: stretch !important;
+}
+
+#requestForm .case-main-grid textarea,
+#requestForm .case-main-grid select {
+  width: 100% !important;
+  height: 86px !important;
+  min-height: 86px !important;
+}
+
+#requestForm .attachment-notes-grid {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+
+#requestForm .attachment-notes-grid .file-label,
+#requestForm .attachment-notes-grid .parent-notes-label {
+  grid-column: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 112px !important;
+  height: 100% !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  align-items: stretch !important;
+}
+
+#requestForm .attachment-notes-grid .file-label input[type="file"],
+#requestForm .attachment-notes-grid .parent-notes-label textarea {
+  width: 100% !important;
+  min-height: 72px !important;
+  height: 72px !important;
+}
+
+@media (max-width: 560px) {
+  #requestForm .subject-date-section .subject-controls-row,
+  #requestForm .case-main-grid,
+  #requestForm .attachment-notes-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
