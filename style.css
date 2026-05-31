@@ -2936,3 +2936,188 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
   .site-header h1 { white-space: normal !important; }
 }
+
+
+/* V26.6 — تصحيح ترتيب النموذج الداخلي بعد الملاحظات */
+:root {
+  --absher-mint: #00a88f;
+  --absher-mint-dark: #007b67;
+  --absher-ink: #123f44;
+  --absher-line: rgba(0, 138, 115, .15);
+}
+
+/* أزرار العودة خارج مساحة بطاقة النموذج */
+#requestForm {
+  position: relative !important;
+  overflow: visible !important;
+  padding-top: 26px !important;
+}
+#requestForm .request-nav-head,
+#requestForm .panel-head {
+  position: static !important;
+  display: block !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+#requestForm .panel-head h2 { display: none !important; }
+#requestForm .request-floating-actions,
+#requestForm .panel-actions {
+  position: absolute !important;
+  top: -48px !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 10 !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+}
+#requestForm .request-floating-actions .ghost-btn,
+#requestForm .panel-actions .ghost-btn {
+  border-radius: 7px !important;
+  min-height: 34px !important;
+  padding: 8px 15px !important;
+  background: linear-gradient(90deg, var(--absher-mint-dark), var(--absher-mint)) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(0, 138, 115, .14) !important;
+}
+
+/* إلغاء زر عنوان النموذج غير الضروري */
+#requestForm > .panel-head::before,
+#requestForm > .panel-head::after { display: none !important; }
+
+/* العناوين الفرعية في أقصى اليمين وبحجم متزن */
+#requestForm .form-grid > h3,
+#requestForm .hospital-section > h3,
+#requestForm .subject-date-head strong {
+  justify-self: start !important;
+  align-self: start !important;
+  margin: 8px 0 10px auto !important;
+  padding: 8px 14px !important;
+  border-radius: 7px !important;
+  min-height: 34px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  background: linear-gradient(90deg, var(--absher-mint-dark), var(--absher-mint)) !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  text-align: right !important;
+  box-shadow: 0 8px 16px rgba(0, 138, 115, .12) !important;
+}
+
+/* بطاقة مواد الغياب: الحقول متجاورة إجبارياً */
+#requestForm .subject-date-section {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+  padding: 14px !important;
+}
+#requestForm .subject-date-head {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  margin: 0 !important;
+  grid-column: 1 / -1 !important;
+}
+#requestForm .subject-controls-row {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+#requestForm .subject-controls-row .semester-label,
+#requestForm .subject-controls-row .absence-count-label {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 80px !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  display: grid !important;
+  align-content: start !important;
+}
+#requestForm .subject-date-rows {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+#requestForm .subject-date-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+#requestForm .subject-date-row > label {
+  width: 100% !important;
+  min-height: 80px !important;
+}
+
+/* بيانات الحالة والمرفقات: ثلاثة حقول بنفس العرض والحجم */
+#requestForm .case-main-grid {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+#requestForm .case-main-grid > label {
+  min-height: 142px !important;
+  height: 100% !important;
+  padding: 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #ffffff, #fbfffe) !important;
+  box-shadow: 0 7px 15px rgba(18,63,68,.045) !important;
+  border: 1px solid rgba(0,138,115,.11) !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+}
+#requestForm .case-main-grid textarea,
+#requestForm .case-main-grid select {
+  height: 86px !important;
+  min-height: 86px !important;
+  width: 100% !important;
+}
+
+/* توحيد خط القوائم والقيم داخلها */
+#requestForm select,
+#requestForm option,
+#requestForm input,
+#requestForm textarea,
+#requestForm datalist,
+#requestForm button {
+  font-family: "Noto Kufi Arabic", system-ui, sans-serif !important;
+}
+
+/* توحيد عرض الحقول داخل البطاقات */
+#requestForm .school-reference-grid > label,
+#requestForm .four-name-grid > label,
+#requestForm .hospital-details > label,
+#requestForm .form-grid > label:not(.file-label):not(.semester-label):not(.absence-count-label) {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+#requestForm input,
+#requestForm select,
+#requestForm textarea {
+  width: 100% !important;
+}
+
+@media (max-width: 900px) {
+  #requestForm .subject-controls-row,
+  #requestForm .subject-date-row,
+  #requestForm .case-main-grid {
+    grid-template-columns: 1fr !important;
+  }
+  #requestForm .request-floating-actions,
+  #requestForm .panel-actions {
+    position: static !important;
+    margin-bottom: 14px !important;
+  }
+}
