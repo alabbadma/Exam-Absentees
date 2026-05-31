@@ -3831,3 +3831,194 @@ button[data-view] {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* V26.12 — تحسين شكلي بسيط للواجهة الرئيسية ولوحة التحكم دون تغيير المنطق */
+:root {
+  --v26-12-mint: #00a88f;
+  --v26-12-mint-dark: #007f68;
+  --v26-12-mint-soft: rgba(0, 168, 143, .055);
+  --v26-12-line: rgba(0, 168, 143, .14);
+}
+
+/* خلفية رسمية ناعمة غير زخرفية */
+body {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 168, 143, .10), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgba(61, 126, 185, .08), transparent 28%),
+    linear-gradient(135deg, rgba(0, 168, 143, .030) 0 1px, transparent 1px 100%),
+    linear-gradient(45deg, rgba(61, 126, 185, .025) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, #ffffff 0%, #f4fffb 100%) !important;
+  background-size: auto, auto, 74px 74px, 96px 96px, auto !important;
+}
+body::before {
+  width: 420px !important;
+  height: 420px !important;
+  border-radius: 46% !important;
+  background: radial-gradient(circle, rgba(0,168,143,.08), transparent 62%) !important;
+  top: -210px !important;
+  right: -130px !important;
+  transform: none !important;
+}
+body::after {
+  width: 520px !important;
+  height: 520px !important;
+  border-radius: 46% !important;
+  background: radial-gradient(circle, rgba(61,126,185,.07), transparent 60%) !important;
+  bottom: -250px !important;
+  left: -190px !important;
+  transform: none !important;
+}
+
+/* إعادة توزيع الواجهة الرئيسية بعد حذف النصوص الطويلة */
+#publicHome.home-grid {
+  grid-template-columns: minmax(0, 1.12fr) minmax(310px, .88fr) !important;
+  gap: 20px !important;
+  align-items: stretch !important;
+}
+#publicHome .hero-screen {
+  min-height: 430px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+#publicHome .browser-bar {
+  height: 32px !important;
+  flex: 0 0 auto !important;
+}
+#publicHome .hero-content {
+  flex: 1 1 auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 260px !important;
+  gap: 18px !important;
+  min-height: 390px !important;
+  padding: 28px !important;
+}
+#publicHome .hero-copy {
+  min-height: 0 !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+}
+#publicHome .badge {
+  align-self: flex-start !important;
+  margin-bottom: 2px !important;
+}
+#publicHome .clean-home-actions {
+  grid-template-columns: repeat(3, minmax(128px, 1fr)) !important;
+  gap: 14px !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+#publicHome .home-action-card {
+  min-height: 165px !important;
+  border-radius: 20px !important;
+  padding: 18px 14px !important;
+}
+#publicHome .home-action-card .svg-icon {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 16px !important;
+}
+#publicHome .home-action-card b {
+  font-size: 14px !important;
+}
+#publicHome .home-action-card small {
+  font-size: 11px !important;
+}
+#publicHome .hero-illustration {
+  transform: scale(.78) translateX(-2px) !important;
+  opacity: .70 !important;
+}
+#publicHome .right-panels {
+  gap: 18px !important;
+  grid-template-rows: auto 1fr !important;
+}
+#publicHome .feature-card,
+#publicHome .journey-card {
+  padding: 20px !important;
+  min-height: 0 !important;
+}
+#publicHome .features-grid {
+  gap: 12px !important;
+}
+#publicHome .features-grid article {
+  min-height: 122px !important;
+  border: 1px solid var(--v26-12-line) !important;
+}
+
+/* رحلة الطلب بالتسميات الجديدة وبشكل أكثر أناقة */
+#publicHome .journey-steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+#publicHome .journey-steps .arrow {
+  display: none !important;
+}
+#publicHome .journey-steps article {
+  min-height: 142px !important;
+  padding: 14px 10px !important;
+  display: grid !important;
+  align-content: start !important;
+  gap: 6px !important;
+  border: 1px solid var(--v26-12-line) !important;
+  background: linear-gradient(180deg, #ffffff, rgba(240, 255, 250, .92)) !important;
+}
+#publicHome .journey-steps i {
+  margin-bottom: 5px !important;
+  background: linear-gradient(135deg, var(--v26-12-mint-dark), var(--v26-12-mint)) !important;
+}
+#publicHome .journey-steps b {
+  min-height: 40px !important;
+  line-height: 1.55 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+#publicHome .journey-steps small {
+  line-height: 1.7 !important;
+  min-height: 42px !important;
+}
+
+/* تناسق مسافات أزرار القائمة اليمنى في لوحة التحكم مع البطاقة الطولية */
+.dash-sidebar {
+  gap: 9px !important;
+  padding: 16px 12px !important;
+  justify-content: flex-start !important;
+}
+.dash-sidebar .dash-logo {
+  margin-bottom: 16px !important;
+}
+.dash-sidebar button {
+  width: 100% !important;
+  min-height: 38px !important;
+  padding: 9px 11px !important;
+  border-radius: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.dash-sidebar .logout {
+  margin-top: auto !important;
+}
+
+@media (max-width: 1050px) {
+  #publicHome.home-grid {
+    grid-template-columns: 1fr !important;
+  }
+  #publicHome .hero-content {
+    grid-template-columns: 1fr !important;
+  }
+  #publicHome .hero-illustration {
+    display: none !important;
+  }
+}
+@media (max-width: 760px) {
+  #publicHome .clean-home-actions,
+  #publicHome .journey-steps {
+    grid-template-columns: 1fr !important;
+  }
+  #publicHome .home-action-card,
+  #publicHome .journey-steps article {
+    min-height: 112px !important;
+  }
+}
