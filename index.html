@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-9-layout-polish" />
+  <link rel="stylesheet" href="style.css?v=20260531-v26-10-fixes" />
 </head>
 
 <body>
@@ -55,7 +55,7 @@
                 <span class="icon svg-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/><path d="M7 10h.01"/><path d="M17 10h.01"/><path d="M4 21h16"/></svg>
                 </span>
-                <b>متابعة المدرسة</b>
+                <b>متابعة الطلب</b>
                 <small>برقم الطلب والرقم الوزاري</small>
               </button>
               <button class="action-card home-action-card" data-login="admin" type="button">
@@ -290,9 +290,7 @@
     </section>
 
     <section id="trackForm" class="panel hidden">
-      <div class="panel-head simple-panel-title">
-        <h2>متابعة الطلب</h2>
-      </div>
+      <div class="panel-head simple-panel-title track-title-removed" aria-hidden="true"></div>
       <form id="trackRequestForm" class="inline-form">
         <label>رقم الطلب<input name="requestId" required placeholder="مثال: REQ-2026-00001" /></label>
         <label>الرقم الوزاري<input name="schoolCode" required placeholder="الرقم الوزاري للمدرسة" /></label>
@@ -386,6 +384,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-9-layout-polish"></script>
+  <script src="app.js?v=20260531-v26-10-fixes"></script>
 </body>
 </html>
