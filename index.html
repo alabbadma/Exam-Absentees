@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-7-precise-grid-fix" />
+  <link rel="stylesheet" href="style.css?v=20260531-v26-9-layout-polish" />
 </head>
 
 <body>
@@ -22,9 +22,13 @@
         <strong id="gregDate">--/--/----</strong>
         <small id="hijriDate">--/--/----</small>
       </div>
+      <div class="top-inline-nav" aria-label="أزرار التنقل">
+        <button class="ghost-btn" type="button" data-back-home>للخلف</button>
+        <button class="ghost-btn" type="button" data-home>الرئيسية</button>
+      </div>
 
       <h1>منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة</h1>
-      <p class="subtitle">منصة رقمية لتنظيم ومعالجة حالات الطلاب الذين منعتهم ظروفهم من أداء الاختبار في المدرسة، مع توثيق المستندات وتسريع اعتماد القرار.</p>
+      <p class="subtitle removed-subtitle" aria-hidden="true"></p>
     </header>
 
     <main id="publicHome" class="home-grid">
@@ -131,13 +135,6 @@
     </main>
 
     <section id="requestForm" class="panel hidden">
-      <div class="panel-head request-nav-head">
-        <div class="panel-actions request-floating-actions">
-          <button class="ghost-btn" type="button" data-back-home>عودة</button>
-          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
-        </div>
-      </div>
-
       <form id="newRequestForm" class="form-grid">
         <h3>بيانات الطالب/ـة</h3>
         <div class="four-name-section">
@@ -293,12 +290,8 @@
     </section>
 
     <section id="trackForm" class="panel hidden">
-      <div class="panel-head">
-        <h2>متابعة طلب المدرسة</h2>
-        <div class="panel-actions">
-          <button class="ghost-btn" type="button" data-back-home>عودة</button>
-          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
-        </div>
+      <div class="panel-head simple-panel-title">
+        <h2>متابعة الطلب</h2>
       </div>
       <form id="trackRequestForm" class="inline-form">
         <label>رقم الطلب<input name="requestId" required placeholder="مثال: REQ-2026-00001" /></label>
@@ -309,13 +302,6 @@
     </section>
 
     <section id="loginPanel" class="panel hidden">
-      <div class="panel-head">
-        <h2 id="loginTitle">دخول إدارة تقويم الأداء المعرفي والمهاري</h2>
-        <div class="panel-actions">
-          <button class="ghost-btn" type="button" data-back-home>عودة</button>
-          <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
-        </div>
-      </div>
       <form id="loginForm" class="inline-form login-form-labeled">
         <input type="hidden" name="role" value="admin" />
         <label>اسم المستخدم<input name="code" required placeholder="اسم المستخدم" /></label>
@@ -400,6 +386,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-7-precise-grid-fix"></script>
+  <script src="app.js?v=20260531-v26-9-layout-polish"></script>
 </body>
 </html>
