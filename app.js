@@ -216,6 +216,14 @@ function formToObject(form) {
   obj.hospitalFrom = form.querySelector('[name="hospitalFrom"]')?.value || "";
   obj.hospitalTo = form.querySelector('[name="hospitalTo"]')?.value || "";
 
+  // V27.1: بعد دمج الحقول المتكررة، نُبقي الحقول القديمة المطلوبة داخليًا متوافقة مع البيانات الجديدة.
+  if (!String(obj.medicalDescription || "").trim()) {
+    obj.medicalDescription = String(obj.barrierNotes || obj.absenceReason || "").trim();
+  }
+  if (!String(obj.medicalCategory || "").trim()) {
+    obj.medicalCategory = String(obj.barrierType || "").trim();
+  }
+
   return obj;
 }
 
@@ -757,8 +765,16 @@ function getBarrierKey(value) {
 function initBarrierFields() {
   const select = document.getElementById("barrierTypeSelect");
   const proof = document.getElementById("barrierProofTypeSelect");
+  const nature = document.getElementById("barrierNatureSelect");
   const fields = Array.from(document.querySelectorAll("[data-barrier-field]"));
   const hint = document.getElementById("barrierHint");
+  const hospitalCard = document.getElementById("hospitalizationSection");
+  const hospitalStatus = document.getElementById("hospitalizationStatus");
+  const autoMedical = document.getElementById("hasMedicalReportAuto");
+  const autoAttendance = document.getElementById("preventsAttendanceAuto");
+  const autoPerformance = document.getElementById("preventsExamPerformanceAuto");
+  const autoRemote = document.getElementById("canRemoteExamAuto");
+  const autoHealing = document.getElementById("needsHealingPlaceExamAuto");
   if (!select || !fields.length) return;
 
   const proofByKey = {
@@ -778,26 +794,71 @@ function initBarrierFields() {
     other: "أخرى"
   };
 
+  const natureByKey = {
+    medical: ["مرض موثق بتقرير طبي", "مرض معدٍ أو عزل طبي", "حالة نفسية أو صحية شديدة موثقة", "إعاقة مؤقتة", "أخرى"],
+    hospital: ["تنويم في المستشفى", "تنويم ثم خروج", "تنويم مستمر حتى تاريخه"],
+    home: ["استشفاء منزلي موصى به طبيًا", "إقامة طويلة في المنزل", "منع طبي من الحضور"],
+    oncology: ["أورام", "علاج كيماوي", "علاج إشعاعي", "متابعة علاجية طويلة"],
+    fracture: ["كسر أو إصابة تمنع الحضور", "كسر أو إصابة تمنع الكتابة", "إصابة مؤقتة"],
+    writing: ["عجز مؤقت عن الكتابة", "إصابة في اليد", "حالة صحية تعوق الكتابة"],
+    incident: ["عارض صحي أثناء الاختبار", "خروج للعلاج أثناء الاختبار", "عدم إكمال الاختبار لعارض صحي"],
+    companion: ["مرافقة مريض منوم"],
+    death: ["وفاة قريب من الدرجة الأولى", "وفاة قريب"],
+    accident: ["حادث مروري", "مراجعة جهة أمنية", "إفادة رسمية من جهة مختصة"],
+    detention: ["موقوف", "إصلاحية", "جهة احتجاز رسمية"],
+    border: ["مرابط على الحدود", "مهمة رسمية مرتبطة بالحدود"],
+    exception: ["حالة استثنائية تقدرها لجنة التوجيه الطلابي", "ظرف طارئ موثق"],
+    other: ["أخرى"]
+  };
+
   const hints = {
     medical: "مرض موثق بتقرير طبي: أرفق التقرير وحدد الجهة والتواريخ المرتبطة بالعذر.",
-    hospital: "تنويم في المستشفى: استخدم أيضًا بطاقة حالة التنويم أدناه لتحديد البداية والنهاية ومدة التنويم.",
+    hospital: "تنويم في المستشفى: تظهر تفاصيل التنويم لتحديد البداية والنهاية ومدة التنويم.",
     home: "إقامة طويلة في المنزل: حدّد مدة الاستشفاء المنزلي والجهة الطبية التي أوصت بذلك.",
     oncology: "الأورام أو العلاج الكيماوي/الإشعاعي: يفضل تحديد جهة العلاج وفترة تأثير الحالة.",
-    fracture: "الكسور أو الإصابات: وضّح هل الإصابة تمنع الحضور أو تمنع الكتابة فقط.",
-    writing: "حالة تمنع الكتابة فقط: حدّد طبيعة الإصابة والحاجة إلى من يكتب عن الطالب/ـة.",
+    fracture: "الكسور أو الإصابات: وضّح أثر الإصابة على الحضور أو الكتابة في ملخص الحالة.",
+    writing: "حالة تمنع الكتابة فقط: حدّد طبيعة الإصابة والحاجة التعليمية في ملخص الحالة.",
     incident: "عارض صحي أثناء الاختبار: اكتب وقت العارض وما إذا كان الطالب/ـة أكمل الاختبار أم لا.",
-    companion: "مرافقة مريض منوم: حدّد صلة القرابة وبيانات جهة التنويم.",
-    death: "وفاة أحد أفراد العائلة: حدّد صلة القرابة وتاريخ الواقعة إن توفر.",
+    companion: "مرافقة مريض منوم: تظهر صلة القرابة وتفاصيل التنويم عند الحاجة.",
+    death: "وفاة أحد أفراد العائلة: تظهر صلة القرابة ويُكتفى بالمرفق الداعم وملخص الحالة.",
     accident: "حادث أو مراجعة جهة أمنية: حدّد الجهة الرسمية وتاريخ الواقعة.",
     detention: "موقوف أو إصلاحية: حدّد الجهة والموقع المقترح للاختبار إن توفر.",
     border: "مرابط على الحدود: أرفق المشهد الرسمي وحدّد جهة المرابطة وفترة التأثر.",
     exception: "حالة استثنائية: يفضل إدخال رأي لجنة التوجيه الطلابي أو مختصر التوصية.",
-    other: "أخرى: اكتب التفاصيل في ملاحظات نوع المانع وأرفق ما يثبت الحالة."
+    other: "أخرى: اكتب التفاصيل في ملخص الحالة وأرفق ما يثبتها."
+  };
+
+  const setNatureOptions = (key) => {
+    if (!nature) return;
+    const current = nature.value;
+    const list = natureByKey[key] || [];
+    nature.innerHTML = list.length
+      ? `<option value="">اختر طبيعة الحالة / الواقعة</option>` + list.map(x => `<option value="${escapeAttr(x)}">${escapeHtml(x)}</option>`).join("")
+      : `<option value="">اختر نوع المانع أولًا</option>`;
+    if (list.includes(current)) nature.value = current;
+  };
+
+  const setAutoFlags = (key) => {
+    if (autoMedical) autoMedical.checked = ["medical","hospital","home","oncology","fracture","writing","incident","companion"].includes(key);
+    if (autoAttendance) autoAttendance.checked = ["hospital","home","oncology","detention","border"].includes(key);
+    if (autoPerformance) autoPerformance.checked = ["medical","hospital","home","oncology","fracture","writing","incident"].includes(key);
+    if (autoRemote) autoRemote.checked = false;
+    if (autoHealing) autoHealing.checked = ["hospital","home"].includes(key);
   };
 
   const sync = () => {
     const key = getBarrierKey(select.value);
     if (proof && key && !proof.value) proof.value = proofByKey[key] || "";
+    setNatureOptions(key);
+    setAutoFlags(key);
+
+    const showHospital = ["hospital", "home", "companion"].includes(key);
+    if (hospitalCard) hospitalCard.classList.toggle("hidden", !showHospital);
+    if (!showHospital && hospitalStatus) {
+      hospitalStatus.value = "لا يوجد تنويم في المستشفى";
+      hospitalStatus.dispatchEvent(new Event("change"));
+    }
+
     fields.forEach(label => {
       const allowed = String(label.dataset.barrierField || "").split(",").map(x => x.trim());
       const visible = !!key && (allowed.includes("all") || allowed.includes(key));
