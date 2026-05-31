@@ -131,9 +131,8 @@
     </main>
 
     <section id="requestForm" class="panel hidden">
-      <div class="panel-head">
-        <h2>تسجيل حالة طالب منعته ظروفه من أداء الاختبار في المدرسة</h2>
-        <div class="panel-actions">
+      <div class="panel-head request-nav-head">
+        <div class="panel-actions request-floating-actions">
           <button class="ghost-btn" type="button" data-back-home>عودة</button>
           <button class="ghost-btn" type="button" data-home>الصفحة الرئيسية</button>
         </div>
@@ -241,17 +240,19 @@
         </div>
 
         <h3>بيانات الحالة والمرفقات</h3>
-        <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
-        <label>تصنيف الحالة<select name="medicalCategory" required>
-          <option>أورام وعلاج كيماوي/إشعاعي</option>
-          <option>كسور أو إصابات تمنع الحضور للمدرسة</option>
-          <option>أمراض معدية أو عزل طبي</option>
-          <option>إعاقة مؤقتة أو دائمة</option>
-          <option>حالة نفسية أو صحية شديدة موثقة</option>
-          <option>حالة أمنية أو ظرف استثنائي موثق</option>
-          <option>أخرى</option>
-        </select></label>
-        <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
+        <div class="case-main-grid">
+          <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
+          <label>تصنيف الحالة<select name="medicalCategory" required>
+            <option>أورام وعلاج كيماوي/إشعاعي</option>
+            <option>كسور أو إصابات تمنع الحضور للمدرسة</option>
+            <option>أمراض معدية أو عزل طبي</option>
+            <option>إعاقة مؤقتة أو دائمة</option>
+            <option>حالة نفسية أو صحية شديدة موثقة</option>
+            <option>حالة أمنية أو ظرف استثنائي موثق</option>
+            <option>أخرى</option>
+          </select></label>
+          <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
+        </div>
 
         <div class="hospital-section">
           <h3>حالة التنويم</h3>
