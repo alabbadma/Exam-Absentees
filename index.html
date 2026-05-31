@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v27-0-barrier-fields" />
+  <link rel="stylesheet" href="style.css?v=20260531-v27-1-barrier-restructure" />
 </head>
 
 <body>
@@ -238,7 +238,7 @@
 
 
         <h3>نوع المانع والمتطلبات النظامية</h3>
-        <div class="barrier-section">
+        <div class="barrier-section barrier-v27-1">
           <div class="barrier-primary-grid">
             <label>نوع المانع
               <select name="barrierType" id="barrierTypeSelect" required>
@@ -259,6 +259,13 @@
                 <option value="أخرى">أخرى</option>
               </select>
             </label>
+
+            <label>طبيعة الحالة / الواقعة
+              <select name="medicalCategory" id="barrierNatureSelect" required>
+                <option value="">اختر نوع المانع أولًا</option>
+              </select>
+            </label>
+
             <label>مصدر إثبات المانع
               <select name="barrierProofType" id="barrierProofTypeSelect">
                 <option value="">اختر مصدر الإثبات</option>
@@ -270,54 +277,61 @@
                 <option>أخرى</option>
               </select>
             </label>
+
+            <label>جهة الإثبات / مصدر الخطاب
+              <input name="barrierProofSource" placeholder="مثال: مستشفى، جهة أمنية، لجنة التوجيه الطلابي" />
+            </label>
           </div>
 
           <div id="barrierDynamicFields" class="barrier-dynamic-grid">
-            <label data-barrier-field="all">جهة الإثبات / مصدر الخطاب
-              <input name="barrierProofSource" placeholder="مثال: مستشفى، جهة أمنية، لجنة التوجيه الطلابي" />
-            </label>
             <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">المنشأة أو الجهة المرتبطة بالمانع
               <input name="barrierInstitution" placeholder="اسم المستشفى أو الجهة أو المدرسة" />
             </label>
-            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">تاريخ بداية تأثير المانع
-              <input name="barrierStartDate" type="date" />
-            </label>
-            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,accident,detention,border,exception,other">تاريخ نهاية تأثير المانع
-              <input name="barrierEndDate" type="date" />
-            </label>
-            <label data-barrier-field="companion,death">صلة القرابة / صفة العلاقة
-              <input name="barrierRelation" placeholder="مثال: والد، والدة، أخ، أخت" />
-            </label>
+
             <label data-barrier-field="hospital,home,detention,border,accident,exception,other">موقع الطالب أو مكان الاختبار المقترح
               <input name="barrierLocation" placeholder="مثال: المستشفى، المنزل، الإصلاحية، جهة المرابطة" />
             </label>
+
+            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,death,accident,detention,border,exception,other">تاريخ بداية تأثير المانع
+              <input name="barrierStartDate" type="date" />
+            </label>
+
+            <label data-barrier-field="medical,hospital,home,oncology,fracture,writing,incident,companion,death,accident,detention,border,exception,other">تاريخ نهاية تأثير المانع
+              <input name="barrierEndDate" type="date" />
+            </label>
+
+            <label data-barrier-field="companion,death">صلة القرابة
+              <select name="barrierRelation">
+                <option value="">اختر صلة القرابة</option>
+                <option>الأب</option>
+                <option>الأم</option>
+                <option>الأخ</option>
+                <option>الأخت</option>
+                <option>الجد</option>
+                <option>الجدة</option>
+                <option>الابن</option>
+                <option>الابنة</option>
+                <option>أخرى</option>
+              </select>
+            </label>
+
             <label data-barrier-field="exception,medical,home,incident" class="barrier-wide-field">رأي لجنة التوجيه الطلابي إن وجد
               <textarea name="barrierCommitteeOpinion" placeholder="يكتب رأي اللجنة أو مختصر التوصية عند توفرها"></textarea>
             </label>
-            <label data-barrier-field="all" class="barrier-wide-field">ملاحظات نوع المانع
+
+            <label data-barrier-field="all" class="barrier-wide-field">ملخص الحالة / سبب الطلب
+              <textarea name="absenceReason" required placeholder="اكتب ملخصًا واضحًا للحالة دون تكرار بيانات الحقول السابقة"></textarea>
+            </label>
+
+            <label data-barrier-field="all" class="barrier-wide-field">ملاحظات إضافية عن المانع
               <textarea name="barrierNotes" placeholder="أي تفاصيل مختصرة تساعد صاحب الصلاحية على فهم نوع المانع"></textarea>
             </label>
           </div>
           <small id="barrierHint" class="hint-text">اختر نوع المانع لتظهر الحقول المناسبة له. هذه المرحلة لا تغيّر القرار الآلي الحالي، لكنها تنظم بيانات الحالة حسب اللائحة.</small>
         </div>
 
-        <h3>بيانات الحالة والمرفقات</h3>
-        <div class="case-main-grid">
-          <label>سبب الغياب<textarea name="absenceReason" required></textarea></label>
-          <label>تصنيف الحالة<select name="medicalCategory" required>
-            <option>أورام وعلاج كيماوي/إشعاعي</option>
-            <option>كسور أو إصابات تمنع الحضور للمدرسة</option>
-            <option>أمراض معدية أو عزل طبي</option>
-            <option>إعاقة مؤقتة أو دائمة</option>
-            <option>حالة نفسية أو صحية شديدة موثقة</option>
-            <option>حالة أمنية أو ظرف استثنائي موثق</option>
-            <option>أخرى</option>
-          </select></label>
-          <label>وصف الحالة<textarea name="medicalDescription"></textarea></label>
-        </div>
-
-        <div class="hospital-section">
-          <h3>حالة التنويم</h3>
+        <div id="hospitalizationSection" class="hospital-section hidden">
+          <h3>تفاصيل التنويم والاستشفاء</h3>
           <label>حالة التنويم في المستشفى
             <select name="hospitalizationStatus" id="hospitalizationStatus" required>
               <option value="لا يوجد تنويم في المستشفى">لا يوجد تنويم في المستشفى</option>
@@ -335,14 +349,7 @@
           </div>
         </div>
 
-        <div class="checks">
-          <label><input type="checkbox" name="hasMedicalReport" checked /> يوجد تقرير طبي</label>
-          <label><input type="checkbox" name="preventsAttendance" /> الحالة تمنع الحضور</label>
-          <label><input type="checkbox" name="preventsExamPerformance" /> الحالة تمنع أداء الاختبار</label>
-          <label><input type="checkbox" name="canRemoteExam" /> يستطيع أداء اختبار عن بعد</label>
-          <label><input type="checkbox" name="needsHealingPlaceExam" /> يحتاج اختبار في مكان الاستشفاء</label>
-        </div>
-
+        <h3>المرفقات والملاحظات</h3>
         <div class="attachment-notes-grid">
           <label class="file-label">التقرير الطبي / المرفقات الداعمة
             <input name="attachments" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
@@ -350,6 +357,16 @@
 
           <label class="parent-notes-label">ملاحظات ولي الأمر<textarea name="parentNotes"></textarea></label>
         </div>
+
+        <div class="hidden" aria-hidden="true">
+          <input type="checkbox" name="hasMedicalReport" id="hasMedicalReportAuto" checked />
+          <input type="checkbox" name="preventsAttendance" id="preventsAttendanceAuto" />
+          <input type="checkbox" name="preventsExamPerformance" id="preventsExamPerformanceAuto" />
+          <input type="checkbox" name="canRemoteExam" id="canRemoteExamAuto" />
+          <input type="checkbox" name="needsHealingPlaceExam" id="needsHealingPlaceExamAuto" />
+          <textarea name="medicalDescription" id="medicalDescriptionAuto"></textarea>
+        </div>
+
         <button class="submit-btn" type="submit">إرسال الطلب</button>
       </form>
     </section>
@@ -447,6 +464,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v27-0-barrier-fields"></script>
+  <script src="app.js?v=20260531-v27-1-barrier-restructure"></script>
 </body>
 </html>
