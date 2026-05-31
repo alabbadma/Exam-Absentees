@@ -4654,3 +4654,81 @@ body::after {
   #publicHome .hero-content { padding: 22px !important; }
   #publicHome .hero-illustration { transform: scale(.78) !important; }
 }
+
+
+/* =========================================================
+   V26.16 — توحيد حجم مستطيلات "ماذا تقدم المنصة" مع "رحلة الطلب" فقط
+   ========================================================= */
+#publicHome .features-grid,
+#publicHome .journey-steps {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+}
+
+#publicHome .features-grid article,
+#publicHome .journey-steps article {
+  min-height: 116px !important;
+  height: 116px !important;
+  padding: 14px 12px !important;
+  border-radius: 22px !important;
+  box-sizing: border-box !important;
+}
+
+#publicHome .features-grid article {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  grid-template-rows: auto auto !important;
+  grid-template-areas:
+    "ico title"
+    "ico hint" !important;
+  align-items: start !important;
+  justify-items: start !important;
+  gap: 4px 10px !important;
+  text-align: right !important;
+}
+
+#publicHome .features-grid article span {
+  grid-area: ico !important;
+  width: 34px !important;
+  height: 34px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(229,250,245,.96)) !important;
+  box-shadow: 0 10px 18px rgba(0,168,143,.14), inset 0 1px 0 rgba(255,255,255,.95) !important;
+  font-size: 15px !important;
+}
+
+#publicHome .features-grid article b {
+  grid-area: title !important;
+  display: block !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#publicHome .features-grid article small {
+  grid-area: hint !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  line-height: 1.55 !important;
+  font-size: 10px !important;
+}
+
+@media (max-width: 760px) {
+  #publicHome .features-grid article,
+  #publicHome .journey-steps article {
+    height: auto !important;
+    min-height: 118px !important;
+  }
+}
