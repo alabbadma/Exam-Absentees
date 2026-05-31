@@ -752,7 +752,8 @@ document.addEventListener("click", (e) => {
   const login = e.target.closest("[data-login]");
   if (login) {
     // لا توجد صلاحيات دخول للمدرسة. الدخول محصور على إدارة تقويم الأداء المعرفي والمهاري.
-    $("#loginTitle").textContent = "دخول إدارة تقويم الأداء المعرفي والمهاري";
+    const loginTitleEl = document.querySelector("#loginTitle");
+    if (loginTitleEl) loginTitleEl.textContent = "دخول إدارة تقويم الأداء المعرفي والمهاري";
     $("#loginForm [name=role]").value = "admin";
     showSection("loginPanel");
   }
