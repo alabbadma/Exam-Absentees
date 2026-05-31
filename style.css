@@ -4877,3 +4877,61 @@ body::after {
     grid-column: auto !important;
   }
 }
+
+
+/* V27.2 — إحصاءات مرنة + إعادة تنظيم منطقة نوع المانع */
+.barrier-v27-2 .barrier-primary-grid {
+  grid-template-columns: repeat(2, minmax(220px, 1fr)) !important;
+  align-items: stretch !important;
+}
+.barrier-v27-2 .barrier-primary-grid label {
+  min-height: 104px;
+}
+.barrier-v27-2 .barrier-primary-grid textarea {
+  min-height: 54px !important;
+}
+.barrier-v27-2 #barrierDynamicFields {
+  grid-template-columns: repeat(2, minmax(220px, 1fr)) !important;
+}
+.barrier-v27-2 #barrierDynamicFields label.hidden,
+#hospitalizationSection.hidden {
+  display: none !important;
+}
+.analytics-filter-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(145px, 1fr)) auto auto;
+  gap: 10px;
+  align-items: end;
+  margin: 0 0 16px;
+  padding: 14px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(239,255,250,.9));
+  border: 1px solid rgba(0,168,143,.13);
+  box-shadow: 0 12px 24px rgba(21,68,90,.07), inset 0 1px 0 rgba(255,255,255,.9);
+}
+.analytics-filter-card label {
+  font-size: 12px !important;
+}
+.analytics-filter-card input,
+.analytics-filter-card select {
+  min-height: 42px;
+  border-radius: 13px;
+}
+.analytics-scope-note {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 9px 14px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #007f68, #00a88f);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(0,168,143,.18);
+}
+@media (max-width: 1100px) {
+  .analytics-filter-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .barrier-v27-2 .barrier-primary-grid,
+  .barrier-v27-2 #barrierDynamicFields,
+  .analytics-filter-card { grid-template-columns: 1fr !important; }
+}
