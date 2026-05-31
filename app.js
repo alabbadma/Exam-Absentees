@@ -109,13 +109,29 @@ async function withButtonLoading(btn, loadingText, task) {
 let LAST_SECTION = "publicHome";
 let ACTIVE_DASH_TAB = "requests";
 function showSection(sectionId) {
-  const currentVisible = ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"].find(id => !document.getElementById(id)?.classList.contains("hidden"));
-  if (currentVisible && currentVisible !== sectionId) LAST_SECTION = currentVisible;
-  ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"].forEach(id => {
+  const sectionIds = ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"];
+  const currentVisible = sectionIds.find(id => {
     const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
+    return el && !el.classList.contains("hidden") && el.style.display !== "none";
   });
-  document.getElementById(sectionId).classList.remove("hidden");
+  if (currentVisible && currentVisible !== sectionId) LAST_SECTION = currentVisible;
+
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isActive = id === sectionId;
+    el.classList.toggle("hidden", !isActive);
+    // ضمان عدم ظهور أي تبويبة أسفل الصفحة الحالية حتى لو حدث تعارض CSS أو كاش.
+    el.style.display = isActive ? "" : "none";
+    el.setAttribute("aria-hidden", isActive ? "false" : "true");
+  });
+
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.classList.remove("hidden");
+    target.style.display = "";
+    target.setAttribute("aria-hidden", "false");
+  }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
