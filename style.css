@@ -4732,3 +4732,65 @@ body::after {
     min-height: 118px !important;
   }
 }
+
+/* =========================================================
+   V27.0 — نوع المانع والحقول النظامية الأولية
+   توزيع بصري متوازن: لا يظهر حقل منفرد إلا إذا كان آخر حقل ممتد
+   ========================================================= */
+.barrier-section {
+  grid-column: 1 / -1;
+  padding: 18px !important;
+  border: 1px solid rgba(0, 168, 143, .16) !important;
+  border-radius: 22px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(241,253,249,.90)) !important;
+  box-shadow: 0 18px 34px rgba(21,68,90,.08), inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+
+.barrier-primary-grid,
+.barrier-dynamic-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+}
+
+.barrier-primary-grid > label,
+.barrier-dynamic-grid > label {
+  min-height: 96px !important;
+  display: grid !important;
+  align-content: start !important;
+  padding: 12px 12px 14px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,252,251,.94)) !important;
+  border: 1px solid rgba(21, 68, 90, .10) !important;
+  box-shadow: 0 10px 24px rgba(21,68,90,.07) !important;
+}
+
+.barrier-dynamic-grid {
+  margin-top: 14px !important;
+}
+
+.barrier-wide-field {
+  grid-column: 1 / -1 !important;
+  min-height: 112px !important;
+}
+
+.barrier-section textarea {
+  min-height: 80px !important;
+}
+
+#barrierHint {
+  margin-top: 12px !important;
+  display: block !important;
+  line-height: 1.8 !important;
+}
+
+@media (max-width: 760px) {
+  .barrier-primary-grid,
+  .barrier-dynamic-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .barrier-wide-field {
+    grid-column: auto !important;
+  }
+}
