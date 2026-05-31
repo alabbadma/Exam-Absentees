@@ -4794,3 +4794,86 @@ body::after {
     grid-column: auto !important;
   }
 }
+
+
+/* =========================================================
+   V27.1 — إعادة هيكلة منطقة نوع المانع والحالة
+   - نوع المانع هو التصنيف النظامي الرئيسي
+   - صلة القرابة تظهر فقط في وفاة قريب أو مرافقة مريض
+   - لا يوجد حقل حالة المستند
+   - إلغاء الحقول المتعارضة بصريًا وإبقاؤها كقيم داخلية فقط
+   ========================================================= */
+.barrier-v27-1 {
+  margin-bottom: 18px !important;
+}
+
+.barrier-v27-1 .barrier-primary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.barrier-v27-1 .barrier-dynamic-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.barrier-v27-1 select,
+.barrier-v27-1 input,
+.barrier-v27-1 textarea,
+.hospital-section select,
+.hospital-section input,
+.attachment-notes-grid input,
+.attachment-notes-grid textarea {
+  font-family: "Noto Kufi Arabic", system-ui, sans-serif !important;
+}
+
+.barrier-v27-1 .barrier-primary-grid > label,
+.barrier-v27-1 .barrier-dynamic-grid > label {
+  min-height: 98px !important;
+  justify-content: start !important;
+}
+
+.barrier-v27-1 .barrier-wide-field {
+  grid-column: 1 / -1 !important;
+  min-height: 128px !important;
+}
+
+.barrier-v27-1 .barrier-wide-field textarea {
+  min-height: 92px !important;
+}
+
+#hospitalizationSection.hidden {
+  display: none !important;
+}
+
+#hospitalizationSection {
+  margin-top: 0 !important;
+  margin-bottom: 18px !important;
+}
+
+#hospitalizationSection > h3 {
+  margin-bottom: 14px !important;
+}
+
+#hospitalizationSection > label {
+  max-width: none !important;
+}
+
+#hospitalizationSection .hospital-details {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+#requestForm .hidden[aria-hidden="true"] {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .barrier-v27-1 .barrier-primary-grid,
+  .barrier-v27-1 .barrier-dynamic-grid,
+  #hospitalizationSection .hospital-details {
+    grid-template-columns: 1fr !important;
+  }
+  .barrier-v27-1 .barrier-wide-field {
+    grid-column: auto !important;
+  }
+}
