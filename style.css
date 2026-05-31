@@ -3274,3 +3274,290 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* V26.9 — تحسينات شكلية محددة بعد استقرار V26.8 */
+/* حذف الوصف العام من الهيدر */
+.removed-subtitle,
+.site-header .subtitle.removed-subtitle {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+}
+
+/* إعادة ترتيب الهيدر: التاريخ يمين، أزرار التنقل تحته، الشعار والاسم في المنتصف */
+.site-header {
+  position: relative !important;
+  min-height: 238px !important;
+  padding: 96px 34px 28px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+}
+.site-header .moe-logo-wrap {
+  width: 132px !important;
+  height: auto !important;
+  margin: 0 auto 30px !important;
+  padding: 0 !important;
+}
+.site-header .moe-logo {
+  max-width: 132px !important;
+  width: 132px !important;
+  height: auto !important;
+}
+.site-header h1 {
+  max-width: 760px !important;
+  width: fit-content !important;
+  margin: 0 auto !important;
+  padding: 9px 24px !important;
+  border-radius: 9px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background: linear-gradient(135deg, #008a73, #00a982) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 22px rgba(0, 138, 115, .16) !important;
+}
+.date-widget {
+  position: absolute !important;
+  top: 16px !important;
+  right: 34px !important;
+  width: 178px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #15445a !important;
+  text-align: right !important;
+  display: grid !important;
+  gap: 2px !important;
+  justify-items: stretch !important;
+  align-items: start !important;
+}
+.date-widget span,
+.date-widget strong,
+.date-widget small {
+  display: block !important;
+  width: 100% !important;
+  color: #15445a !important;
+  text-align: right !important;
+  direction: rtl !important;
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+}
+.date-widget strong,
+.date-widget small {
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* أزرار التنقل تحت التاريخ فقط عند فتح التبويبات الداخلية */
+.top-inline-nav {
+  display: none !important;
+  position: absolute !important;
+  top: 82px !important;
+  right: 34px !important;
+  z-index: 5 !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.app-shell:has(#requestForm:not(.hidden)) .top-inline-nav,
+.app-shell:has(#trackForm:not(.hidden)) .top-inline-nav,
+.app-shell:has(#loginPanel:not(.hidden)) .top-inline-nav {
+  display: flex !important;
+}
+.top-inline-nav .ghost-btn {
+  min-width: 78px !important;
+  height: 34px !important;
+  padding: 7px 14px !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #008a73, #00a982) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(0, 138, 115, .14) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+/* إزالة أي أزرار تنقل داخل البطاقات إن بقيت */
+#requestForm > .panel-head,
+#trackForm .panel-actions,
+#loginPanel .panel-actions {
+  display: none !important;
+}
+
+/* عنوان متابعة الطلب فقط، بدون زر/كبسولة مربكة */
+#trackForm .simple-panel-title {
+  justify-content: flex-start !important;
+  margin: 0 0 18px !important;
+}
+#trackForm .simple-panel-title h2 {
+  margin: 0 !important;
+}
+#loginPanel .panel-head,
+#loginTitle {
+  display: none !important;
+}
+
+/* تحسين لوحة التحكم: توسيع المساحة وضبط البطاقات دون تغيير ترتيب القائمة */
+.app-shell:has(#dashboard:not(.hidden)) {
+  width: min(1320px, calc(100% - 36px)) !important;
+}
+.dashboard {
+  max-width: 1240px !important;
+  grid-template-columns: 175px minmax(0, 1fr) !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+.dash-sidebar {
+  width: 175px !important;
+  min-width: 175px !important;
+  padding: 14px !important;
+}
+.dash-sidebar button {
+  width: 100% !important;
+  min-height: 34px !important;
+  padding: 8px 10px !important;
+  border-radius: 8px !important;
+  font-size: 10.5px !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+.dash-content {
+  min-width: 0 !important;
+  display: grid !important;
+  gap: 14px !important;
+}
+.welcome-strip,
+.table-card,
+.analytics-card,
+.details-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+.welcome-strip h2 {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+.welcome-strip p {
+  font-size: 11px !important;
+}
+.kpi-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+.kpi-grid article {
+  min-width: 0 !important;
+  padding: 12px 8px !important;
+  border-radius: 14px !important;
+}
+.kpi-grid b {
+  font-size: 20px !important;
+  line-height: 1.25 !important;
+}
+.kpi-grid span {
+  display: block !important;
+  font-size: 10.5px !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+}
+.analytics-kpis {
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)) !important;
+  gap: 10px !important;
+}
+.analytics-kpis article {
+  min-width: 0 !important;
+  padding: 12px 10px !important;
+  border-radius: 14px !important;
+}
+.analytics-kpis b {
+  font-size: 18px !important;
+  line-height: 1.3 !important;
+  word-break: break-word !important;
+}
+.analytics-kpis span,
+.chart-box h3,
+.bar-row span,
+.bar-row b,
+.legend-mini {
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+  white-space: normal !important;
+}
+.analytics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+.chart-box {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  border-radius: 16px !important;
+}
+.table-scroll {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+table {
+  min-width: 760px !important;
+}
+th,
+td {
+  font-size: 10.5px !important;
+  line-height: 1.65 !important;
+  padding: 8px 7px !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+}
+.status-pill {
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  padding: 4px 8px !important;
+}
+.row-actions .small-btn,
+.small-btn {
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  padding: 7px 9px !important;
+}
+.details-grid,
+.info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+}
+.info-box {
+  min-width: 0 !important;
+  border-radius: 14px !important;
+  overflow-wrap: anywhere !important;
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    padding-top: 120px !important;
+  }
+  .date-widget,
+  .top-inline-nav {
+    right: 18px !important;
+    transform: none !important;
+  }
+  .site-header h1 {
+    white-space: normal !important;
+  }
+  .dashboard {
+    grid-template-columns: 1fr !important;
+  }
+  .dash-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .analytics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
