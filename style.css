@@ -3561,3 +3561,95 @@ td {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* V26.10 — تصحيح تداخل الواجهة الرئيسية وحذف عنوان متابعة الطلب وإصلاح شكل الدخول */
+/* منع رسمة الغيمة/الشعار من تغطية نص الواجهة الرئيسية */
+#publicHome .hero-screen {
+  position: relative !important;
+  overflow: hidden !important;
+}
+#publicHome .hero-content {
+  grid-template-columns: minmax(0, 1fr) 260px !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+#publicHome .hero-copy {
+  position: relative !important;
+  z-index: 3 !important;
+  max-width: 620px !important;
+  padding-inline-start: 8px !important;
+}
+#publicHome .hero-copy h2 {
+  max-width: 600px !important;
+  background: rgba(255,255,255,.74) !important;
+  border-radius: 18px !important;
+  padding: 8px 10px !important;
+  margin-top: 14px !important;
+  line-height: 1.75 !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+#publicHome .hero-copy p {
+  max-width: 560px !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+#publicHome .hero-illustration {
+  position: relative !important;
+  z-index: 1 !important;
+  opacity: .92 !important;
+  transform: scale(.78) translateX(-12px) !important;
+  transform-origin: center !important;
+  pointer-events: none !important;
+}
+#publicHome .cloud-3d {
+  left: 12px !important;
+  top: 58px !important;
+  opacity: .72 !important;
+  z-index: 1 !important;
+}
+#publicHome .doc-stack,
+#publicHome .shield-3d {
+  z-index: 1 !important;
+}
+
+/* تغيير بطاقة الواجهة الرئيسية من متابعة المدرسة إلى متابعة الطلب تم في HTML */
+
+/* حذف زر/عنوان متابعة الطلب داخل التبويبة مع إبقاء التبويبة تعمل */
+#trackForm .track-title-removed,
+#trackForm .simple-panel-title,
+#trackForm > .panel-head.simple-panel-title {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#trackForm {
+  padding-top: 22px !important;
+}
+
+/* إبقاء تبويبة الدخول للإدارة تعمل حتى بعد حذف عنوانها */
+#loginPanel {
+  padding-top: 22px !important;
+}
+
+@media (max-width: 900px) {
+  #publicHome .hero-content {
+    grid-template-columns: 1fr !important;
+  }
+  #publicHome .hero-copy {
+    max-width: 100% !important;
+  }
+  #publicHome .hero-copy h2,
+  #publicHome .hero-copy p {
+    max-width: 100% !important;
+  }
+  #publicHome .hero-illustration {
+    position: absolute !important;
+    left: -80px !important;
+    bottom: 10px !important;
+    opacity: .18 !important;
+    transform: scale(.70) !important;
+  }
+}
