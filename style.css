@@ -3653,3 +3653,181 @@ td {
     transform: scale(.70) !important;
   }
 }
+
+
+/* V26.11 — تنظيف الواجهة الرئيسية وتبسيط لوحة التحكم دون المساس بالمنطق */
+.removed-home-browser-label,
+.removed-home-title,
+.removed-home-desc {
+  display: none !important;
+}
+#publicHome .browser-bar strong.removed-home-browser-label {
+  display: none !important;
+}
+#publicHome .hero-content {
+  grid-template-columns: minmax(0, .95fr) 290px !important;
+  min-height: 405px !important;
+  align-items: center !important;
+}
+#publicHome .hero-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 18px !important;
+  min-height: 310px !important;
+}
+#publicHome .badge {
+  align-self: flex-start !important;
+}
+#publicHome .clean-home-actions {
+  margin-top: 8px !important;
+}
+#publicHome .hero-illustration {
+  opacity: .82 !important;
+  transform: scale(.82) translateX(-4px) !important;
+}
+
+/* قائمة لوحة التحكم: حذف عناصر من HTML وتضييق الأزرار */
+.dashboard {
+  grid-template-columns: 185px minmax(0, 1fr) !important;
+  max-width: 1160px !important;
+}
+.dash-sidebar {
+  padding: 14px 12px !important;
+  gap: 7px !important;
+}
+.dash-sidebar .dash-logo {
+  width: 108px !important;
+  margin-bottom: 12px !important;
+}
+.dash-sidebar button {
+  min-height: 34px !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+.dash-sidebar .logout {
+  margin-top: auto !important;
+}
+
+/* شريط لوحة التحكم المختصر */
+.welcome-strip {
+  width: fit-content !important;
+  min-width: 210px !important;
+  max-width: 320px !important;
+  padding: 12px 20px !important;
+  border-radius: 16px !important;
+  justify-self: start !important;
+  background: linear-gradient(135deg, #007f68, #00a88f) !important;
+}
+.welcome-strip h2 {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: #fff !important;
+}
+.welcome-strip .visually-soft-hidden {
+  display: none !important;
+}
+
+/* زر عرض بدون كسر الكلمة */
+.row-actions {
+  justify-content: center !important;
+}
+.row-actions .small-btn,
+button[data-view] {
+  min-width: 58px !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  text-align: center !important;
+  padding: 8px 12px !important;
+}
+
+/* تبسيط الإحصاءات: أرقام وبطاقات دون خطوط مضللة */
+.analytics-card {
+  overflow: visible !important;
+}
+.analytics-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+  gap: 12px !important;
+}
+.chart-box {
+  padding: 14px !important;
+  border-radius: 16px !important;
+  overflow: visible !important;
+}
+.chart-box h3 {
+  font-size: 12px !important;
+  margin-bottom: 10px !important;
+}
+.stat-list-clean,
+.bar-list {
+  display: grid !important;
+  gap: 8px !important;
+}
+.stat-row-clean,
+.bar-row {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 9px 10px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(241,252,249,.95)) !important;
+  border: 1px solid rgba(0, 168, 143, .14) !important;
+  box-shadow: 0 8px 18px rgba(0, 93, 77, .05) !important;
+}
+.stat-row-clean i,
+.bar-row i {
+  display: none !important;
+}
+.stat-row-clean span,
+.bar-row span {
+  min-width: 0 !important;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+.stat-row-clean b,
+.bar-row b {
+  min-width: 34px !important;
+  height: 28px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  padding: 0 8px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #007f68, #00a88f) !important;
+  color: #fff !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+.donut-wrap {
+  gap: 12px !important;
+}
+.donut {
+  width: 104px !important;
+  height: 104px !important;
+}
+.donut::after {
+  width: 70px !important;
+  height: 70px !important;
+}
+.donut span {
+  font-size: 16px !important;
+}
+.legend-mini {
+  font-size: 11px !important;
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    grid-template-columns: 1fr !important;
+  }
+  #publicHome .hero-content {
+    grid-template-columns: 1fr !important;
+  }
+}
