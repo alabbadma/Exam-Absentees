@@ -107,7 +107,7 @@ async function withButtonLoading(btn, loadingText, task) {
 }
 
 let LAST_SECTION = "publicHome";
-let ACTIVE_DASH_TAB = "overview";
+let ACTIVE_DASH_TAB = "requests";
 function showSection(sectionId) {
   const currentVisible = ["publicHome", "requestForm", "trackForm", "loginPanel", "dashboard"].find(id => !document.getElementById(id)?.classList.contains("hidden"));
   if (currentVisible && currentVisible !== sectionId) LAST_SECTION = currentVisible;
@@ -856,6 +856,7 @@ $("#loginForm").addEventListener("submit", async (e) => {
       SESSION = result.session;
       $("#roleLabel").textContent = "إدارة تقويم الأداء المعرفي والمهاري";
       showSection("dashboard");
+      setDashboardTab("requests");
       loadDashboard({ useCache: true, background: false });
     } catch (err) {
       showToast(err.message, true);
@@ -905,7 +906,7 @@ function renderKpis(kpis) {
 
 
 function setDashboardTab(tab) {
-  ACTIVE_DASH_TAB = tab || "overview";
+  ACTIVE_DASH_TAB = tab || "requests";
   $$('[data-dash-tab]').forEach(btn => btn.classList.toggle('active', btn.dataset.dashTab === ACTIVE_DASH_TAB));
   applyDashboardTab();
 }
@@ -932,9 +933,6 @@ function applyDashboardTab() {
     if (analyticsPanel) analyticsPanel.classList.remove("hidden");
     loadAnalytics(false);
     return;
-  } else if (tab === "settings") {
-    if (title) title.textContent = "الإعدادات - بيانات الطلبات";
-    showToast("الإعدادات الأساسية تتم من Google Sheets حالياً.");
   }
   renderRequests(rows);
 }
@@ -1031,9 +1029,8 @@ function renderAnalytics(a) {
 
 function renderBarList(items, max) {
   if (!items || !items.length) return '<p class="muted">لا توجد بيانات كافية.</p>';
-  return `<div class="bar-list">${items.map(item => {
-    const pct = Math.max(4, Math.round((Number(item.count || 0) / max) * 100));
-    return `<div class="bar-row"><span>${escapeHtml(item.label || "غير محدد")}</span><b>${escapeHtml(item.count || 0)}</b><i style="width:${pct}%"></i></div>`;
+  return `<div class="bar-list stat-list-clean">${items.map(item => {
+    return `<div class="bar-row stat-row-clean"><span>${escapeHtml(item.label || "غير محدد")}</span><b>${escapeHtml(item.count || 0)}</b></div>`;
   }).join("")}</div>`;
 }
 
