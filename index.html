@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-10-fixes" />
+  <link rel="stylesheet" href="style.css?v=20260531-v26-11-dashboard-polish" />
 </head>
 
 <body>
@@ -35,13 +35,13 @@
       <section class="hero-screen glass-card">
         <div class="browser-bar">
           <span></span><span></span><span></span>
-          <strong>moe.gov.sa/excuse-platform</strong>
+          <strong class="removed-home-browser-label" aria-hidden="true"></strong>
         </div>
         <div class="hero-content">
           <div class="hero-copy">
             <span class="badge">الواجهة الرئيسية</span>
-            <h2>مرحبًا بك في منصة معالجة حالات الطلاب الذين تمنعهم ظروفهم من أداء الاختبار في المدرسة</h2>
-            <p>حلول رقمية ذكية لاستقبال الحالات، توثيقها، ومراجعتها وفق الدليل، مع اعتماد القرار النهائي من صاحب الصلاحية.</p>
+            <h2 class="removed-home-title" aria-hidden="true"></h2>
+            <p class="removed-home-desc" aria-hidden="true"></p>
 
             <div class="action-grid clean-home-actions">
               <button class="action-card primary home-action-card" data-open="requestForm" type="button">
@@ -312,20 +312,18 @@
       <aside class="dash-sidebar glass-card">
         <img src="assets/moe-logo.png" alt="وزارة التعليم" class="dash-logo" />
         <button type="button" data-dash-back>رجوع</button>
-        <button type="button" data-home>الصفحة الرئيسية</button>
-        <button type="button" class="active" data-dash-tab="overview">لوحة التحكم</button>
-        <button type="button" data-dash-tab="requests">الطلبات</button>
+        <button type="button" data-home>الرئيسية</button>
+        <button type="button" class="active" data-dash-tab="requests">الطلبات</button>
         <button type="button" data-dash-tab="decisions">القرارات</button>
         <button type="button" data-dash-tab="reports">الإحصاءات</button>
-        <button type="button" data-dash-tab="settings">الإعدادات</button>
         <button type="button" id="logoutBtn" class="logout">تسجيل الخروج</button>
       </aside>
 
       <section class="dash-content">
         <div class="welcome-strip glass-card">
           <div>
-            <h2>مرحبًا بكم في لوحة التحكم</h2>
-            <p id="roleLabel">إدارة تقويم الأداء المعرفي والمهاري</p>
+            <h2>لوحة التحكم</h2>
+            <p id="roleLabel" class="visually-soft-hidden">إدارة تقويم الأداء المعرفي والمهاري</p>
           </div>
         </div>
 
@@ -384,6 +382,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-10-fixes"></script>
+  <script src="app.js?v=20260531-v26-11-dashboard-polish"></script>
 </body>
 </html>
