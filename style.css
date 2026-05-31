@@ -3214,3 +3214,63 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* V26.8 — تنفيذ الملاحظتين 1 و2 فقط دون لمس حقول بيانات الحالة الثلاثة */
+/* 1) الفصل الدراسي وعدد مواد الغياب متجاوران */
+#requestForm .subject-date-section .subject-controls-row {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  margin: 0 0 12px !important;
+}
+#requestForm .subject-date-section .subject-controls-row > .semester-label,
+#requestForm .subject-date-section .subject-controls-row > .absence-count-label {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+#requestForm .subject-date-section .subject-controls-row > .semester-label select,
+#requestForm .subject-date-section .subject-controls-row > .absence-count-label select {
+  width: 100% !important;
+}
+
+/* 2) المرفقات وملاحظات ولي الأمر متجاوران */
+#requestForm .attachment-notes-grid {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+#requestForm .attachment-notes-grid > .file-label,
+#requestForm .attachment-notes-grid > .parent-notes-label {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+#requestForm .attachment-notes-grid > .file-label input[type="file"],
+#requestForm .attachment-notes-grid > .parent-notes-label textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 760px) {
+  #requestForm .subject-date-section .subject-controls-row,
+  #requestForm .attachment-notes-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
