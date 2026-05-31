@@ -4547,3 +4547,110 @@ body::after {
     min-height: 118px !important;
   }
 }
+
+
+/* =========================================================
+   V26.15 — تصحيح فتح التبويبات + تصغير الواجهة الرئيسية
+   ========================================================= */
+.app-shell {
+  width: min(1120px, calc(100% - 46px)) !important;
+}
+
+#publicHome.home-grid {
+  max-width: 1010px !important;
+  gap: 16px !important;
+}
+
+#publicHome .hero-screen {
+  min-height: 330px !important;
+}
+
+#publicHome .hero-content {
+  min-height: 300px !important;
+  padding: 24px 26px !important;
+  gap: 20px !important;
+}
+
+#publicHome .clean-home-actions {
+  max-width: 560px !important;
+  gap: 13px !important;
+}
+
+#publicHome .home-action-card {
+  min-height: 136px !important;
+  padding: 15px 12px !important;
+  border-radius: 21px !important;
+}
+
+#publicHome .home-action-card .svg-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 15px !important;
+}
+
+#publicHome .home-action-card .svg-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+#publicHome .home-action-card b {
+  font-size: .9rem !important;
+}
+
+#publicHome .home-action-card small {
+  font-size: .72rem !important;
+}
+
+#publicHome .hero-illustration {
+  flex-basis: 270px !important;
+  width: 270px !important;
+  height: 240px !important;
+  min-height: 240px !important;
+  transform: scale(.92) !important;
+}
+
+#publicHome .feature-card,
+#publicHome .journey-card {
+  min-height: 286px !important;
+  padding: 19px 18px !important;
+}
+
+#publicHome .features-grid article {
+  min-height: 106px !important;
+  padding: 12px !important;
+}
+
+#publicHome .journey-steps article {
+  min-height: 116px !important;
+  padding: 14px 12px !important;
+}
+
+#publicHome .journey-steps b {
+  font-size: 12.5px !important;
+}
+
+#publicHome .journey-steps small {
+  font-size: 10px !important;
+}
+
+/* دعم إضافي: عند تفعيل أي تبويبة، لا تظهر الواجهة الرئيسية تحتها */
+#requestForm:not(.hidden),
+#trackForm:not(.hidden),
+#loginPanel:not(.hidden),
+#dashboard:not(.hidden) {
+  display: grid;
+}
+
+#requestForm.hidden,
+#trackForm.hidden,
+#loginPanel.hidden,
+#dashboard.hidden,
+#publicHome.hidden {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell { width: min(100% - 20px, 1120px) !important; }
+  #publicHome .hero-content { padding: 22px !important; }
+  #publicHome .hero-illustration { transform: scale(.78) !important; }
+}
