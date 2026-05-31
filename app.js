@@ -733,6 +733,86 @@ function initHospitalizationFields() {
   sync();
 }
 
+
+function getBarrierKey(value) {
+  const v = String(value || "");
+  if (!v) return "";
+  if (v.includes("تنويم")) return "hospital";
+  if (v.includes("إقامة طويلة")) return "home";
+  if (v.includes("أورام") || v.includes("كيماوي") || v.includes("إشعاعي")) return "oncology";
+  if (v.includes("كسور") || v.includes("إصابة")) return "fracture";
+  if (v.includes("الكتابة")) return "writing";
+  if (v.includes("عارض صحي")) return "incident";
+  if (v.includes("مرافق")) return "companion";
+  if (v.includes("وفاة")) return "death";
+  if (v.includes("حادث") || v.includes("أمنية")) return "accident";
+  if (v.includes("موقوف") || v.includes("إصلاحية")) return "detention";
+  if (v.includes("مرابط")) return "border";
+  if (v.includes("استثنائية") || v.includes("لجنة")) return "exception";
+  if (v.includes("مرض")) return "medical";
+  if (v.includes("أخرى")) return "other";
+  return "medical";
+}
+
+function initBarrierFields() {
+  const select = document.getElementById("barrierTypeSelect");
+  const proof = document.getElementById("barrierProofTypeSelect");
+  const fields = Array.from(document.querySelectorAll("[data-barrier-field]"));
+  const hint = document.getElementById("barrierHint");
+  if (!select || !fields.length) return;
+
+  const proofByKey = {
+    medical: "تقرير طبي معتمد",
+    hospital: "تقرير طبي معتمد",
+    home: "تقرير طبي معتمد",
+    oncology: "تقرير طبي معتمد",
+    fracture: "تقرير طبي معتمد",
+    writing: "تقرير طبي معتمد",
+    incident: "تقرير طبي معتمد",
+    companion: "تقرير طبي معتمد",
+    death: "خطاب رسمي من جهة مختصة",
+    accident: "خطاب رسمي من جهة مختصة",
+    detention: "خطاب رسمي من جهة مختصة",
+    border: "مشهد رسمي",
+    exception: "إفادة لجنة التوجيه الطلابي",
+    other: "أخرى"
+  };
+
+  const hints = {
+    medical: "مرض موثق بتقرير طبي: أرفق التقرير وحدد الجهة والتواريخ المرتبطة بالعذر.",
+    hospital: "تنويم في المستشفى: استخدم أيضًا بطاقة حالة التنويم أدناه لتحديد البداية والنهاية ومدة التنويم.",
+    home: "إقامة طويلة في المنزل: حدّد مدة الاستشفاء المنزلي والجهة الطبية التي أوصت بذلك.",
+    oncology: "الأورام أو العلاج الكيماوي/الإشعاعي: يفضل تحديد جهة العلاج وفترة تأثير الحالة.",
+    fracture: "الكسور أو الإصابات: وضّح هل الإصابة تمنع الحضور أو تمنع الكتابة فقط.",
+    writing: "حالة تمنع الكتابة فقط: حدّد طبيعة الإصابة والحاجة إلى من يكتب عن الطالب/ـة.",
+    incident: "عارض صحي أثناء الاختبار: اكتب وقت العارض وما إذا كان الطالب/ـة أكمل الاختبار أم لا.",
+    companion: "مرافقة مريض منوم: حدّد صلة القرابة وبيانات جهة التنويم.",
+    death: "وفاة أحد أفراد العائلة: حدّد صلة القرابة وتاريخ الواقعة إن توفر.",
+    accident: "حادث أو مراجعة جهة أمنية: حدّد الجهة الرسمية وتاريخ الواقعة.",
+    detention: "موقوف أو إصلاحية: حدّد الجهة والموقع المقترح للاختبار إن توفر.",
+    border: "مرابط على الحدود: أرفق المشهد الرسمي وحدّد جهة المرابطة وفترة التأثر.",
+    exception: "حالة استثنائية: يفضل إدخال رأي لجنة التوجيه الطلابي أو مختصر التوصية.",
+    other: "أخرى: اكتب التفاصيل في ملاحظات نوع المانع وأرفق ما يثبت الحالة."
+  };
+
+  const sync = () => {
+    const key = getBarrierKey(select.value);
+    if (proof && key && !proof.value) proof.value = proofByKey[key] || "";
+    fields.forEach(label => {
+      const allowed = String(label.dataset.barrierField || "").split(",").map(x => x.trim());
+      const visible = !!key && (allowed.includes("all") || allowed.includes(key));
+      label.classList.toggle("hidden", !visible);
+      label.querySelectorAll("input,select,textarea").forEach(el => {
+        el.disabled = !visible;
+        if (!visible) el.value = "";
+      });
+    });
+    if (hint) hint.textContent = key ? (hints[key] || "اختر الحقول المناسبة لنوع المانع.") : "اختر نوع المانع لتظهر الحقول المناسبة له. هذه المرحلة لا تغيّر القرار الآلي الحالي، لكنها تنظم بيانات الحالة حسب اللائحة.";
+  };
+  select.addEventListener("change", sync);
+  sync();
+}
+
 function initFormGuards() {
   enforceDigits(document.querySelector('[name="nationalId"]'), 10);
   enforceDigits(document.querySelector('[name="mobile"]'), 10);
@@ -740,6 +820,7 @@ function initFormGuards() {
   initStageGradeSelect();
   initSchoolReferenceControls();
   initHospitalizationFields();
+  initBarrierFields();
 
   const count = document.getElementById("absenceSubjectsCount");
   if (count) {
@@ -805,6 +886,7 @@ $("#newRequestForm").addEventListener("submit", async (e) => {
       if (nameParts.some(v => !v)) throw new Error("فضلاً أكمل حقول الاسم الرباعي: الاسم الأول، اسم الأب، اسم الجد، اسم العائلة.");
       request.studentName = nameParts.join(" ");
       if (!request.requestType) throw new Error("فضلاً اختر نوع الطلب.");
+      if (!request.barrierType) throw new Error("فضلاً اختر نوع المانع.");
       if (!request.academicYear) throw new Error("فضلاً اختر العام الدراسي.");
       if (request.hospitalizationStatus !== "لا يوجد تنويم في المستشفى") {
         if (!request.hospitalFrom) throw new Error("تاريخ بداية التنويم مطلوب عند وجود تنويم.");
@@ -1156,6 +1238,10 @@ function renderDetails(r) {
       <div class="info-box"><b>المواد</b><span>${escapeHtml(r.subjects)}</span></div>
       <div class="info-box"><b>تواريخ الاختبارات</b><span>${escapeHtml(r.examDate)}</span></div>
       <div class="info-box"><b>تصنيف الحالة</b><span>${escapeHtml(r.medicalCategory)}</span></div>
+      <div class="info-box"><b>نوع المانع</b><span>${escapeHtml(r.barrierType || "")}</span></div>
+      <div class="info-box"><b>مصدر إثبات المانع</b><span>${escapeHtml(r.barrierProofType || "")}</span></div>
+      <div class="info-box"><b>جهة الإثبات</b><span>${escapeHtml(r.barrierProofSource || "")}</span></div>
+      <div class="info-box"><b>مدة تأثير المانع</b><span>${escapeHtml((r.barrierStartDate || "") + (r.barrierEndDate ? " - " + r.barrierEndDate : ""))}</span></div>
       <div class="info-box"><b>حالة التنويم</b><span>${escapeHtml(r.hospitalizationStatus || "")}</span></div>
       <div class="info-box"><b>مدة التنويم</b><span>${escapeHtml(r.hospitalDays || "")}</span></div>
       <div class="info-box"><b>وصف الحالة</b><span>${escapeHtml(r.medicalDescription)}</span></div>
