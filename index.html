@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260531-v26-5-header-form-fix" />
+  <link rel="stylesheet" href="style.css?v=20260531-v26-7-precise-grid-fix" />
 </head>
 
 <body>
@@ -281,11 +281,13 @@
           <label><input type="checkbox" name="needsHealingPlaceExam" /> يحتاج اختبار في مكان الاستشفاء</label>
         </div>
 
-        <label class="file-label">التقرير الطبي / المرفقات الداعمة
-          <input name="attachments" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
-        </label>
+        <div class="attachment-notes-grid">
+          <label class="file-label">التقرير الطبي / المرفقات الداعمة
+            <input name="attachments" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" />
+          </label>
 
-        <label>ملاحظات ولي الأمر<textarea name="parentNotes"></textarea></label>
+          <label class="parent-notes-label">ملاحظات ولي الأمر<textarea name="parentNotes"></textarea></label>
+        </div>
         <button class="submit-btn" type="submit">إرسال الطلب</button>
       </form>
     </section>
@@ -398,6 +400,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260531-v26-5-header-form-fix"></script>
+  <script src="app.js?v=20260531-v26-7-precise-grid-fix"></script>
 </body>
 </html>
