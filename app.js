@@ -17,7 +17,7 @@ let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
 const DASH_CACHE_KEY = "examAbsentees.dashboard.v25_2";
-const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v27_8";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v27_10";
 
 function readLocalCache(key) {
   try {
@@ -1207,27 +1207,41 @@ function renderBarList(items, max) {
 
 
 async function exportAnalyticsToExcel() {
+  const btn = document.getElementById("exportAnalyticsBtn");
   try {
-    const btn = document.getElementById("exportAnalyticsBtn");
     setLoading(btn, true, "جاري تجهيز Excel...");
     const result = await api("exportAnalyticsExcel", { session: SESSION, filters: getAnalyticsFilters() });
-    const bytes = atob(result.base64 || "");
-    const buffer = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) buffer[i] = bytes.charCodeAt(i);
-    const blob = new Blob([buffer], { type: result.mimeType || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    const url = URL.createObjectURL(blob);
-    const aEl = document.createElement("a");
-    aEl.href = url;
-    aEl.download = result.fileName || "تقرير_إحصاءات_الغياب.xlsx";
-    document.body.appendChild(aEl);
-    aEl.click();
-    aEl.remove();
-    URL.revokeObjectURL(url);
-    showToast("تم تصدير تقرير Excel بنجاح.", "success");
+    if (result.base64) {
+      const bytes = atob(result.base64 || "");
+      const buffer = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) buffer[i] = bytes.charCodeAt(i);
+      const blob = new Blob([buffer], { type: result.mimeType || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const aEl = document.createElement("a");
+      aEl.href = url;
+      aEl.download = result.fileName || "تقرير_إحصاءات_الغياب.xlsx";
+      document.body.appendChild(aEl);
+      aEl.click();
+      aEl.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1200);
+      showToast("تم تصدير تقرير Excel بنجاح.", "success");
+      return;
+    }
+    if (result.downloadUrl) {
+      const aEl = document.createElement("a");
+      aEl.href = result.downloadUrl;
+      aEl.target = "_blank";
+      aEl.rel = "noopener";
+      document.body.appendChild(aEl);
+      aEl.click();
+      aEl.remove();
+      showToast("تم تجهيز تقرير Excel وفتح رابط التحميل.", "success");
+      return;
+    }
+    throw new Error("لم يرجع الخادم ملف Excel صالحًا.");
   } catch (err) {
-    showToast(err.message || "تعذر تصدير ملف Excel.", "error");
+    showToast(err.message || "تعذر تصدير ملف Excel.", true);
   } finally {
-    const btn = document.getElementById("exportAnalyticsBtn");
     setLoading(btn, false);
   }
 }
