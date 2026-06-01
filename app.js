@@ -17,7 +17,7 @@ let CURRENT_ANALYTICS = null;
 let ANALYTICS_LOADING = false;
 
 const DASH_CACHE_KEY = "examAbsentees.dashboard.v25_2";
-const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v27_2";
+const ANALYTICS_CACHE_KEY = "examAbsentees.analytics.v27_8";
 
 function readLocalCache(key) {
   try {
@@ -64,7 +64,7 @@ function formatDateParts() {
   const gd = document.getElementById('gregDate');
   const hd = document.getElementById('hijriDate');
   if (dn) dn.textContent = toLatinDigits(dayName);
-  if (gd) gd.textContent = 'ميلادي: ' + greg;
+  if (gd) gd.textContent = 'ميلادي: ' + greg.replace(/(\d{4})(?!م)/, '$1م');
   if (hd) hd.textContent = 'هجري: ' + hijri;
 }
 
@@ -880,6 +880,7 @@ function initFormGuards() {
 // احتياطي مهم: لو حمل المتصفح نسخة قديمة أو تأخر تحميل DOM، نعيد توليد حقول المواد بعد جاهزية الصفحة.
 document.addEventListener("DOMContentLoaded", () => {
   initFormGuards();
+  initAnalyticsModeControls();
   ensureSubjectRowsRendered();
 });
 
@@ -1083,12 +1084,39 @@ function applyDashboardTab() {
 }
 
 
+
+function initAnalyticsModeControls() {
+  const mode = document.getElementById("analyticsMode");
+  if (!mode) return;
+  const sync = () => {
+    const useDate = mode.value === "date";
+    document.querySelectorAll(".analytics-academic-filter").forEach(el => el.classList.toggle("hidden", useDate));
+    document.querySelectorAll(".analytics-date-filter").forEach(el => el.classList.toggle("hidden", !useDate));
+    if (useDate) {
+      const y = document.getElementById("analyticsAcademicYear");
+      const s = document.getElementById("analyticsSemester");
+      if (y) y.value = "";
+      if (s) s.value = "";
+    } else {
+      const f = document.getElementById("analyticsDateFrom");
+      const t = document.getElementById("analyticsDateTo");
+      if (f) f.value = "";
+      if (t) t.value = "";
+    }
+    CURRENT_ANALYTICS = null;
+  };
+  mode.addEventListener("change", sync);
+  sync();
+}
+
 function getAnalyticsFilters() {
+  const mode = String(document.getElementById("analyticsMode")?.value || "academic").trim();
   return {
-    academicYear: String(document.getElementById("analyticsAcademicYear")?.value || "").trim(),
-    semester: String(document.getElementById("analyticsSemester")?.value || "").trim(),
-    dateFrom: String(document.getElementById("analyticsDateFrom")?.value || "").trim(),
-    dateTo: String(document.getElementById("analyticsDateTo")?.value || "").trim(),
+    mode,
+    academicYear: mode === "academic" ? String(document.getElementById("analyticsAcademicYear")?.value || "").trim() : "",
+    semester: mode === "academic" ? String(document.getElementById("analyticsSemester")?.value || "").trim() : "",
+    dateFrom: mode === "date" ? String(document.getElementById("analyticsDateFrom")?.value || "").trim() : "",
+    dateTo: mode === "date" ? String(document.getElementById("analyticsDateTo")?.value || "").trim() : "",
   };
 }
 
@@ -1115,7 +1143,7 @@ async function loadAnalytics(force = false) {
   }
   ANALYTICS_LOADING = true;
   try {
-    const result = await api("getAnalytics", { session: SESSION, filters: getAnalyticsFilters() });
+    const result = await api("getAnalytics", { session: SESSION, filters: getAnalyticsFilters(), force });
     CURRENT_ANALYTICS = result.analytics || {};
     writeLocalCache(cacheKey, CURRENT_ANALYTICS);
     renderAnalytics(CURRENT_ANALYTICS);
@@ -1178,46 +1206,30 @@ function renderBarList(items, max) {
 }
 
 
-function exportAnalyticsToExcel() {
-  const a = CURRENT_ANALYTICS || {};
-  const rows = [];
-  const addSection = (title, items) => {
-    rows.push([title, "", ""]);
-    rows.push(["البند", "العدد", "النطاق"]);
-    (items || []).forEach(x => rows.push([x.label || "غير محدد", x.count || 0, a.scopeLabel || ""]));
-    rows.push(["", "", ""]);
-  };
-  rows.push(["تقرير إحصاءات منصة معالجة حالات الطلاب", "", ""]);
-  rows.push(["النطاق", a.scopeLabel || "كل البيانات", ""]);
-  rows.push(["تاريخ التوليد", a.generatedAt || "", ""]);
-  rows.push(["", "", ""]);
-  rows.push(["المؤشر", "القيمة", ""]);
-  [
-    ["إجمالي الطلبات", a.totalRequests || 0],
-    ["طلبات منفذة / معتمدة", a.executed || 0],
-    ["لم تنفذ بعد", a.pending || 0],
-    ["عدد المدارس الرافعة", a.schoolsCount || 0],
-    ["إجمالي مواد الغياب", a.totalAbsenceSubjects || 0],
-    ["إجمالي الطلاب", a.totalStudents || 0],
-    ["طلاب", a.maleStudents || 0],
-    ["طالبات", a.femaleStudents || 0]
-  ].forEach(r => rows.push([r[0], r[1], ""]));
-  rows.push(["", "", ""]);
-  addSection("أنواع المانع", a.byBarrierType || []);
-  addSection("الأمراض / طبيعة الحالة", a.byMedicalCategory || []);
-  addSection("القرارات", a.byDecision || []);
-  addSection("المراحل", a.byStage || []);
-  addSection("أكثر المدارس رفعًا", a.topSchools || []);
-  const csv = rows.map(row => row.map(cell => '"' + String(cell ?? "").replace(/"/g, '""') + '"').join(",")).join("\n");
-  const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const aEl = document.createElement("a");
-  aEl.href = url;
-  aEl.download = "exam_absentees_analytics.csv";
-  document.body.appendChild(aEl);
-  aEl.click();
-  aEl.remove();
-  URL.revokeObjectURL(url);
+async function exportAnalyticsToExcel() {
+  try {
+    const btn = document.getElementById("exportAnalyticsBtn");
+    setLoading(btn, true, "جاري تجهيز Excel...");
+    const result = await api("exportAnalyticsExcel", { session: SESSION, filters: getAnalyticsFilters() });
+    const bytes = atob(result.base64 || "");
+    const buffer = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) buffer[i] = bytes.charCodeAt(i);
+    const blob = new Blob([buffer], { type: result.mimeType || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const aEl = document.createElement("a");
+    aEl.href = url;
+    aEl.download = result.fileName || "تقرير_إحصاءات_الغياب.xlsx";
+    document.body.appendChild(aEl);
+    aEl.click();
+    aEl.remove();
+    URL.revokeObjectURL(url);
+    showToast("تم تصدير تقرير Excel بنجاح.", "success");
+  } catch (err) {
+    showToast(err.message || "تعذر تصدير ملف Excel.", "error");
+  } finally {
+    const btn = document.getElementById("exportAnalyticsBtn");
+    setLoading(btn, false);
+  }
 }
 
 function renderEmailStatus(status) {
