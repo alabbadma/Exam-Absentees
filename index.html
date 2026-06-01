@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260601-v27-2-barrier-analytics" />
+  <link rel="stylesheet" href="style.css?v=20260601-v27-8-analytics-real-fix" />
 </head>
 
 <body>
@@ -394,7 +394,13 @@
             <button id="refreshAnalyticsBtn" class="ghost-btn" type="button">تحديث الإحصاءات</button>
           </div>
           <div class="analytics-filter-card">
-            <label>العام الدراسي
+            <label>طريقة عرض الإحصاء
+              <select id="analyticsMode">
+                <option value="academic">بالعام الدراسي</option>
+                <option value="date">بالتاريخ</option>
+              </select>
+            </label>
+            <label class="analytics-academic-filter">العام الدراسي
               <select id="analyticsAcademicYear">
                 <option value="">كل الأعوام</option>
                 <option>1447 هـ</option>
@@ -402,18 +408,17 @@
                 <option>1449 هـ</option>
               </select>
             </label>
-            <label>الفصل الدراسي
+            <label class="analytics-academic-filter">الفصل الدراسي
               <select id="analyticsSemester">
                 <option value="">كل الفصول</option>
                 <option>الفصل الدراسي الأول</option>
                 <option>الفصل الدراسي الثاني</option>
-                <option>الفصل الدراسي الثالث</option>
               </select>
             </label>
-            <label>من تاريخ
+            <label class="analytics-date-filter hidden">من تاريخ
               <input id="analyticsDateFrom" type="date" />
             </label>
-            <label>إلى تاريخ
+            <label class="analytics-date-filter hidden">إلى تاريخ
               <input id="analyticsDateTo" type="date" />
             </label>
             <button id="applyAnalyticsFiltersBtn" class="ghost-btn" type="button">تطبيق الإحصاء</button>
@@ -460,6 +465,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=20260601-v27-2-barrier-analytics"></script>
+  <script src="app.js?v=20260601-v27-8-analytics-real-fix"></script>
 </body>
 </html>
