@@ -4935,3 +4935,26 @@ body::after {
   .barrier-v27-2 #barrierDynamicFields,
   .analytics-filter-card { grid-template-columns: 1fr !important; }
 }
+
+
+/* V27.3 — ضبط طريقة عرض الإحصاءات والفلاتر */
+.analytics-filter-card {
+  align-items: end !important;
+}
+.analytics-filter-card label {
+  min-height: 74px;
+}
+.analytics-filter-card .hidden {
+  display: none !important;
+}
+#analyticsMode {
+  font-weight: 800;
+}
+@media (min-width: 980px) {
+  .analytics-filter-card {
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) auto auto !important;
+  }
+}
+
+
+/* V27.4: analytics filter binding + styled Excel export + Gregorian year suffix handled in app.js */
